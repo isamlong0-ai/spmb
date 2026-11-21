@@ -17,6 +17,9 @@ export const CONFIG = {
   // Proxy baca-saja untuk mengambil info portal dari browser (CORS)
   PROXY_BACA: "https://r.jina.ai/",
 
+  // Video resmi panduan pembuatan akun dari portal dinas
+  VIDEO_AKUN_URL: "https://drive.google.com/file/d/1pe8j7wqJFsibVZE9hQtgfaRiZ1bqU2Zi/view?usp=sharing",
+
   // Folder Google Drive tujuan (dari link yang diberikan)
   DRIVE_FOLDER_ID: "1iRtqkKP46f-hVwdpKlioHxdF2I8FDlQT",
 

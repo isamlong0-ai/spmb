@@ -51,10 +51,10 @@ Aplikasi **pengumpulan data calon siswa** untuk SPMB berbasis **HTML + CSS + Jav
 ## Fitur utama
 
 ### Beranda (`index.html`)
-- Halaman utama: hero/selamat datang, kata sambutan, **Info dari Portal Dinas**, informasi & panduan, CTA
-- **Info dari Portal Dinas** (pengumuman, **jadwal lengkap per jalur dengan timeline**, SPTJM, video SMK, **persentase minat & diagram jumlah daftar/kuota**) diambil semi-otomatis lewat tombol di admin (browser → proxy baca-saja `r.jina.ai`), lalu ditinjau sebelum tayang
+- Halaman utama: hero/selamat datang, kata sambutan, **Berita Resmi Dinas Pendidikan dan Kebudayaan Provinsi Kalimantan Barat**, informasi & panduan
+- Seksi berita resmi berisi: pengumuman, **jadwal lengkap per jalur dengan timeline**, SPTJM, **video panduan SMK & video panduan pembuatan akun**, **persentase minat & diagram jumlah daftar/kuota** — diambil semi-otomatis lewat tombol di admin (browser → proxy baca-saja `r.jina.ai`), lalu ditinjau sebelum tayang
 - Persentase minat & diagram memakai angka SMKN 1 Teluk Keramat dari portal dinas (508 pendaftar / 392 kuota = **129,59%**)
-- **Tautan resmi dinas** ditampilkan langsung di bawah waktu pengisian formulir
+- Tautan portal resmi tetap tersedia di seksi berita resmi & kartu "Portal Pendaftaran Resmi (Dinas)"
 - **Seluruh teks utama bisa diatur dari panel admin** (judul, tagline, sambutan, tahun pelajaran, waktu pengisian, status formulir, tanggal catatan)
 - Status formulir (**Dibuka / Akan Datang / Ditutup**) diatur **manual** dari panel admin → menu Konten Beranda (tidak bergantung tanggal)
 - Saat **belum dibuka / sudah ditutup**, semua tautan ke formulir & pengecekan otomatis terkunci (abu-abu + gembok), dan halaman form maupun cek data menampilkan layar pengunci

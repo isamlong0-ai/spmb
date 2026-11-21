@@ -38,6 +38,12 @@ Apps Script Web App sudah aktif & teruji (GET + POST upload ke Drive berhasil), 
 - Export Excel: 2 sheet (Calon Siswa, Nilai Rapor) via SheetJS; sudah diuji menghasilkan `.xlsx`.
 - `cek_nisn` mengembalikan `tahun_pelajaran`.
 
+## Perubahan terakhir 9 — Video akun & judul berita
+- Kartu baru "Video Panduan Pembuatan Akun" (URL resmi di `CONFIG.VIDEO_AKUN_URL`) ditambahkan di samping Video SMK.
+- Strip "Pendaftaran resmi ada di portal dinas:" di bawah Waktu Pengisian Formulir dihapus.
+- Judul seksi diubah menjadi "Berita Resmi Dinas Pendidikan dan Kebudayaan Provinsi Kalimantan Barat".
+- Sudah diuji di browser: 2 kartu video, strip hilang, judul benar, tanpa error.
+
 ## Perubahan terakhir 8 — Pembersihan beranda
 - Kartu "Distribusi Pilihan Jurusan" dihapus dari beranda (RPC `statistik_minat_jurusan` tidak lagi dipanggil).
 - Seksi CTA "Siap Mengisi Data Calon Siswa?" dihapus.

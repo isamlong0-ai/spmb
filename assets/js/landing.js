@@ -1,5 +1,5 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { CONFIG } from "./config.js?v=12";
+import { CONFIG } from "./config.js?v=15";
 import { ambilTahunAktif, tahunPelajaran } from "./tahun.js";
 import { ambilStatus, hitungStatus, LABEL_STATUS, parseTanggal } from "./status.js";
 
@@ -111,12 +111,6 @@ function renderInfoDinas(info) {
   const portal = "https://spmb-dikbud.kalbarprov.go.id/";
   const sumber = info?.sumber_update || "";
 
-  const strip = $("#dinasStrip");
-  if (strip) {
-    strip.textContent = sumber
-      ? `${sumber}` + (info?.minat_persen ? ` · Minat SMKN 1 Teluk Keramat: ${info.minat_persen}%` : "")
-      : "";
-  }
   $("#dinasSumber").textContent = sumber
     ? `Bersumber dari portal resmi SPMB Dinas Pendidikan Kalimantan Barat · ${sumber}`
     : "Bersumber dari portal resmi SPMB Dinas Pendidikan Kalimantan Barat.";
@@ -131,6 +125,7 @@ function renderInfoDinas(info) {
   if (info?.jadwal_url) $("#dinasJadwal").href = info.jadwal_url;
   if (info?.surat_url) $("#dinasSurat").href = info.surat_url;
   if (info?.video_smk_url) $("#dinasVideo").href = info.video_smk_url;
+  $("#dinasVideoAkun").href = CONFIG.VIDEO_AKUN_URL;
   $("#dinasPortalLink").href = portal;
 
   const minat = $("#dinasMinat");
