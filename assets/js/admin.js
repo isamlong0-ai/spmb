@@ -1,5 +1,5 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { CONFIG, MAPEL, SEMESTER } from "./config.js";
+import { CONFIG, MAPEL, SEMESTER } from "./config.js?v=12";
 import { ambilTahunAktif, pilihanTahunAktif, pilihanTahunData, tahunPelajaran } from "./tahun.js";
 
 const supabase = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
@@ -602,32 +602,76 @@ async function muatInfoDinas() {
 async function tarikInfoDinas() {
   const btn = $("#btnTarikDinas");
   const status = $("#tarikStatus");
-  if (!CONFIG.DRIVE_UPLOAD_URL || CONFIG.DRIVE_UPLOAD_URL.startsWith("__")) {
-    status.style.color = "var(--danger)";
-    status.textContent = "URL Web App belum diisi.";
-    return;
-  }
   btn.disabled = true;
   btn.textContent = "⏳ Mengambil…";
   status.style.color = "var(--muted)";
-  status.textContent = "Menghubungi portal dinas via Apps Script…";
+  status.textContent = "Menghubungi portal dinas…";
   try {
-    const res = await fetch(CONFIG.DRIVE_UPLOAD_URL, {
-      method: "POST",
-      headers: { "Content-Type": "text/plain;charset=utf-8" },
-      body: JSON.stringify({ aksi: "scrape_dinas" }),
-    });
-    const teks = await res.text();
-    let json;
-    try { json = JSON.parse(teks); } catch { throw new Error("Balasan tidak valid: " + teks.slice(0, 120)); }
-    if (!json.ok) throw new Error(json.error || "Gagal mengambil info");
-    const d = json.data || {};
+    const baca = async (path) => {
+      const target = CONFIG.PORTAL_DINAS.replace(/\/$/, "") + path;
+      const res = await fetch(CONFIG.PROXY_BACA + target);
+      if (!res.ok) throw new Error("Gagal membaca portal (HTTP " + res.status + ")");
+      return await res.text();
+    };
+    const [md, jsonTeks] = await Promise.all([baca("/"), baca("/home/sekolah-list")]);
+
+    // Pengumuman penting (format markdown dari proxy)
+    const pengumuman = md.split("\n")
+      .filter((l) => /check_circle/i.test(l))
+      .map((l) => l.replace(/^\s*[*]+\s*/, "").replace(/check_circle/gi, "").replace(/\*+/g, "").trim())
+      .filter(Boolean)
+      .slice(0, 10);
+
+    // Dokumen SPTJM & video SMK
+    const pdf = md.match(/https:\/\/spmb-dikbud\.kalbarprov\.go\.id\/docs\/[^)\s"]*PERNYATAAN[^)\s"]*\.pdf/i);
+    const idx = md.indexOf("Video Panduan Pendaftaran SMK");
+    const video = idx >= 0
+      ? md.slice(idx, idx + 1000).match(/https:\/\/drive\.google\.com\/file\/d\/[^)\s"]+\/view[^)\s"]*/)
+      : null;
+    const upd = md.match(/Terakhir diperbarui:\s*([^\n]+)/);
+
+    // Angka minat sekolah dari endpoint JSON portal
+    let minat = {};
+    try {
+      const awal = jsonTeks.indexOf("{");
+      const akhir = jsonTeks.lastIndexOf("}");
+      const json = JSON.parse(jsonTeks.slice(awal, akhir + 1));
+      const nama = "SMKN 1 TELUK KERAMAT";
+      const rows = json.data || [];
+      const baris = rows.find((d) => String(d.sekolah_nama).toUpperCase() === nama)
+        || rows.find((d) => String(d.sekolah_nama).toUpperCase().indexOf(nama) !== -1);
+      if (baris) {
+        minat = {
+          minat_nama_sekolah: baris.sekolah_nama,
+          minat_pendaftar: Number(baris.total_pendaftar) || 0,
+          minat_kuota: Number(baris.total_kuota) || 0,
+          minat_persen: String(baris.persen || ""),
+        };
+      }
+    } catch (e) {
+      minat = { error_minat: e.message };
+    }
+
+    const d = {
+      pengumuman,
+      jadwal_url: CONFIG.PORTAL_DINAS + "jadwal",
+      surat_url: pdf ? pdf[0] : "",
+      video_smk_url: video ? video[0] : "",
+      sumber_update: upd ? "Terakhir diperbarui: " + upd[1].trim() : "",
+      fetched_at: new Date().toISOString(),
+      ...minat,
+    };
     isiDraftDinas(d);
-    const masalah = [d.error_halaman, d.error_minat].filter(Boolean).join("; ");
-    status.style.color = masalah ? "var(--warn)" : "var(--primary)";
-    status.textContent = masalah
-      ? `Sebagian data gagal diambil (${masalah}). Periksa & edit draft sebelum menyimpan.`
-      : `Berhasil diambil ${new Date(d.fetched_at || Date.now()).toLocaleString("id-ID")}. Periksa draft lalu klik Simpan Info Dinas.`;
+
+    const masalah = [];
+    if (!pengumuman.length) masalah.push("pengumuman");
+    if (!d.surat_url) masalah.push("PDF SPTJM");
+    if (!d.video_smk_url) masalah.push("video SMK");
+    if (!d.minat_persen) masalah.push("data minat");
+    status.style.color = masalah.length ? "var(--warn)" : "var(--primary)";
+    status.textContent = masalah.length
+      ? `Sebagian data tidak terbaca (${masalah.join(", ")}). Periksa & edit draft sebelum menyimpan.`
+      : `Berhasil diambil ${new Date(d.fetched_at).toLocaleString("id-ID")}. Periksa draft lalu klik Simpan Info Dinas.`;
     toast("Info dinas berhasil diambil. Tinjau dulu sebelum disimpan.");
   } catch (e) {
     status.style.color = "var(--danger)";

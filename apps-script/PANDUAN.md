@@ -56,7 +56,7 @@ Aksi ini mengambil dari portal resmi:
 - tautan Jadwal, PDF Surat Pernyataan (SPTJM), dan video panduan SMK
 - angka minat sekolah SMKN 1 Teluk Keramat dari endpoint JSON `/home/sekolah-list`
 
-Catatan: hasilnya **draft** di panel admin. Admin harus meninjau lalu klik **Simpan Info Dinas** agar tampil di beranda. Bila pengambilan gagal, data lama tetap ditampilkan.
+Catatan penting: aksi ini **tidak aktif dipakai** karena Web App tidak memperoleh izin `script.external_request` (UrlFetchApp ditolak). Penarikan info portal kini dilakukan **langsung dari browser admin** lewat proxy baca-saja `r.jina.ai` — tidak memerlukan Apps Script. Hasilnya tetap **draft** di panel admin: admin meninjau lalu klik **Simpan Info Dinas** agar tampil di beranda. Bila gagal, data lama tetap ditampilkan. Fungsi `scrape_dinas` di `Code.gs` dibiarkan (tidak dipanggil) dan tidak mengganggu upload foto.
 
 Panduan deploy ulang sama seperti bagian 4b (New version, URL tidak berubah).
 

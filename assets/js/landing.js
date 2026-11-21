@@ -1,5 +1,5 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { CONFIG } from "./config.js";
+import { CONFIG } from "./config.js?v=12";
 import { ambilTahunAktif, tahunPelajaran } from "./tahun.js";
 import { ambilStatus, hitungStatus, LABEL_STATUS, parseTanggal } from "./status.js";
 

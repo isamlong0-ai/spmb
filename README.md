@@ -51,7 +51,7 @@ Aplikasi **pengumpulan data calon siswa** untuk SPMB berbasis **HTML + CSS + Jav
 
 ### Beranda (`index.html`)
 - Halaman utama: hero/selamat datang, kata sambutan, **Info dari Portal Dinas**, informasi & panduan, CTA
-- **Info dari Portal Dinas** (pengumuman, jadwal, SPTJM, video SMK, minat sekolah, distribusi jurusan) diambil semi-otomatis lewat tombol di admin, lalu ditinjau sebelum tayang
+- **Info dari Portal Dinas** (pengumuman, jadwal, SPTJM, video SMK, minat sekolah, distribusi jurusan) diambil semi-otomatis lewat tombol di admin (browser → proxy baca-saja `r.jina.ai`), lalu ditinjau sebelum tayang
 - **Tautan resmi dinas** ditampilkan langsung di bawah waktu pengisian formulir
 - **Seluruh teks utama bisa diatur dari panel admin** (judul, tagline, sambutan, tahun pelajaran, waktu pengisian, status formulir, tanggal catatan)
 - Status formulir (**Dibuka / Akan Datang / Ditutup**) diatur **manual** dari panel admin → menu Konten Beranda (tidak bergantung tanggal)
@@ -126,7 +126,7 @@ Project yang sudah dibuat:
 
 ✅ **Sudah aktif:** migration `supabase/migrations/0008_status_manual.sql` (status buka/tutup formulir diatur manual dari admin).
 
-⚠️ **Perlu dijalankan:** `supabase/migrations/0009_dinas_info.sql` (tabel `dinas_info` + RPC `statistik_minat_jurusan`).
+✅ **Sudah aktif:** migration `supabase/migrations/0009_dinas_info.sql` (tabel `dinas_info` + RPC `statistik_minat_jurusan`).
 
 Jika project dibuat ulang dari nol, langkahnya:
 
@@ -149,7 +149,9 @@ Password : AdminSPMB2026!
 > **Segera ganti password admin** setelah login pertama lewat menu **🔑 Ganti Password** di panel admin (cukup isi password lama, password baru, dan konfirmasinya).
 
 ### 2. Google Apps Script
-✅ **Sudah aktif:** Web App Apps Script sudah di-deploy dengan versi terbaru, diuji (GET + POST upload berhasil), dan `DRIVE_UPLOAD_URL` sudah terisi di `assets/js/config.js`. Foto otomatis masuk subfolder sesuai tahun pelajaran (mis. `2026-2027`).
+✅ **Sudah aktif:** Web App Apps Script versi terbaru sudah di-deploy, diuji (upload foto berhasil masuk subfolder `2026-2027`), dan `DRIVE_UPLOAD_URL` sudah diperbarui di `assets/js/config.js`.
+
+> Catatan: aksi `scrape_dinas` di Apps Script **tidak dipakai** karena akun tidak bisa memperoleh izin `script.external_request`. Penarikan info portal dilakukan dari browser admin lewat proxy baca-saja. Kode Apps Script tetap ada dan tidak mengganggu upload foto.
 
 Jika perlu deploy ulang, ikuti `apps-script/PANDUAN.md`.
 

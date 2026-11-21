@@ -15,9 +15,7 @@
 - Konfigurasi MCP Supabase ditulis ke `~/.config/opencode/opencode.json` (opsional, tidak dipakai).
 
 ## Yang masih perlu
-- ⚠️ **Jalankan `supabase/migrations/0009_dinas_info.sql`** di SQL Editor (tabel `dinas_info` + RPC `statistik_minat_jurusan`).
-- ⚠️ **Perbarui `apps-script/Code.gs` lalu deploy New version** agar aksi `scrape_dinas` aktif (URL tidak berubah). Panduan: `apps-script/PANDUAN.md` bagian 4b/4c.
-- Hapus 4 file uji (1x1 pixel) dari Drive: `foto_test_koneksi.jpg`, `foto_test_cors_browser.jpg`, `foto_test_folder_tahun.jpg` (folder utama), dan `foto_test_folder_final.jpg` (dalam subfolder `2026-2027`).
+- Hapus 5 file uji di Drive: `foto_test_koneksi.jpg`, `foto_test_cors_browser.jpg`, `foto_test_folder_tahun.jpg`, `foto_test_folder_final.jpg`, `foto_test_url_baru.jpg`. (1x1 pixel) dari Drive: `foto_test_koneksi.jpg`, `foto_test_cors_browser.jpg`, `foto_test_folder_tahun.jpg` (folder utama), dan `foto_test_folder_final.jpg` (dalam subfolder `2026-2027`).
 - Opsional: hapus 1 data dummy `asdfghjk` (NISN `347689054`, kode `SPMB-2027-2028-507682B3`) — bukan dibuat oleh agent, kemungkinan uji manual.
 - Ganti password admin default `AdminSPMB2026!` setelah login pertama — sekarang tersedia menu 🔑 Ganti Password di panel admin (sudah diuji, password dikembalikan ke semula setelah uji).
 
@@ -39,6 +37,14 @@ Apps Script Web App sudah aktif & teruji (GET + POST upload ke Drive berhasil), 
 - Admin: ubah tahun aktif lewat dropdown di Dashboard + filter tahun di tabel & export Excel/CSV.
 - Export Excel: 2 sheet (Calon Siswa, Nilai Rapor) via SheetJS; sudah diuji menghasilkan `.xlsx`.
 - `cek_nisn` mengembalikan `tahun_pelajaran`.
+
+## Perubahan terakhir 6 — Scrape lewat browser
+- Apps Script `scrape_dinas` Gagal: izin `script.external_request` tidak bisa diperoleh (sudah coba Run, revoke, manifest, deployment baru — tetap ditolak).
+- Solusi: `tarikInfoDinas()` di admin.js mengambil langsung dari browser via `https://r.jina.ai/` (proxy baca-saja, CORS OK) untuk halaman utama & endpoint JSON portal.
+- Parser markdown: 8 pengumuman, URL PDF SPTJM (%20), URL video SMK, "Terakhir diperbarui"; parser JSON: 508/392/129,59% untuk SMKN 1 Teluk Keramat.
+- Sudah diuji penuh: Tarik → draft terisi → Simpan → beranda menampilkan 4 pengumuman + minat + tautan. Alur seksi "alur" sudah dihapus.
+- `DRIVE_UPLOAD_URL` diperbarui ke deployment baru (upload foto teruji, folder `2026-2027`).
+- Asset diberi `?v=12` untuk menghindari cache browser.
 
 ## Perubahan terakhir 5 — Info portal dinas
 - Beranda: seksi "Alur Pengumpulan Data" dihapus; diganti seksi "Info dari Portal Dinas" (6 kartu) setelah Sambutan. Hero/Sambutan tetap dipertahankan.
