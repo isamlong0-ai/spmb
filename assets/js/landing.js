@@ -96,6 +96,76 @@ function render(data, tahunAktif, statusInfo) {
   terapkanGate(status, d);
 }
 
+function escapeHtml(s) {
+  return String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+
+function barJurusan(label, jumlah, persen, maks) {
+  const lebar = maks ? Math.max(3, Math.round((jumlah / maks) * 100)) : 0;
+  return `<div class="chart-row">
+    <div class="chart-label" title="${escapeHtml(label)}">${escapeHtml(label)}</div>
+    <div class="chart-track"><div class="chart-fill" style="width:${lebar}%"></div></div>
+    <div class="chart-nilai">${persen}%</div>
+  </div>`;
+}
+
+function renderInfoDinas(info, jurusan, tahun) {
+  const portal = "https://spmb-dikbud.kalbarprov.go.id/";
+  const sumber = info?.sumber_update || "";
+
+  const strip = $("#dinasStrip");
+  if (strip) {
+    strip.textContent = sumber
+      ? `${sumber}` + (info?.minat_persen ? ` · Minat SMKN 1 Teluk Keramat: ${info.minat_persen}%` : "")
+      : "";
+  }
+  $("#dinasSumber").textContent = sumber
+    ? `Bersumber dari portal resmi SPMB Dinas Pendidikan Kalimantan Barat · ${sumber}`
+    : "Bersumber dari portal resmi SPMB Dinas Pendidikan Kalimantan Barat.";
+
+  const daftar = Array.isArray(info?.pengumuman) ? info.pengumuman : [];
+  const ul = $("#dinasPengumuman");
+  if (ul) {
+    ul.innerHTML = daftar.length
+      ? daftar.slice(0, 4).map((p) => `<li>${escapeHtml(p)}</li>`).join("")
+      : "<li>Belum ada pengumuman yang ditampilkan.</li>";
+  }
+  if (info?.jadwal_url) $("#dinasJadwal").href = info.jadwal_url;
+  if (info?.surat_url) $("#dinasSurat").href = info.surat_url;
+  if (info?.video_smk_url) $("#dinasVideo").href = info.video_smk_url;
+  $("#dinasPortalLink").href = portal;
+
+  const minat = $("#dinasMinat");
+  if (minat) {
+    minat.innerHTML = info?.minat_pendaftar != null
+      ? `<div style="font-size:26px;font-weight:800;color:var(--primary);line-height:1.2">${escapeHtml(info.minat_persen || "0")}%</div>
+         <div style="margin-top:6px"><b>${escapeHtml(info.minat_nama_sekolah || "SMKN 1 Teluk Keramat")}</b></div>
+         <div>${Number(info.minat_pendaftar).toLocaleString("id-ID")} pendaftar / ${Number(info.minat_kuota || 0).toLocaleString("id-ID")} kuota</div>`
+      : "Data belum tersedia.";
+  }
+
+  $("#jurusanTahun").textContent = tahun;
+  const chart = $("#jurusanChart");
+  if (chart) {
+    const maks = jurusan.length ? Number(jurusan[0].jumlah) : 0;
+    chart.innerHTML = jurusan.length
+      ? jurusan.slice(0, 7).map((j) => barJurusan(j.jurusan, Number(j.jumlah), j.persen, maks)).join("")
+      : '<div class="hint">Belum ada data formulir pada tahun ini.</div>';
+  }
+}
+
+async function muatInfoDinas(tahun) {
+  try {
+    const [r1, r2] = await Promise.all([
+      supabase.from("dinas_info").select("*").eq("id", 1).maybeSingle(),
+      supabase.rpc("statistik_minat_jurusan", { p_tahun: tahun }),
+    ]);
+    renderInfoDinas(r1.data, r2.data || [], tahun);
+  } catch (e) {
+    renderInfoDinas(null, [], tahun);
+  }
+}
+
 async function muat() {
   const [tahun, statusInfo] = await Promise.all([
     ambilTahunAktif(supabase),
@@ -107,6 +177,7 @@ async function muat() {
   } catch (e) {
     render(null, tahun, statusInfo);
   }
+  muatInfoDinas(tahun);
 }
 
 muat();

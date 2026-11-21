@@ -15,6 +15,8 @@
 - Konfigurasi MCP Supabase ditulis ke `~/.config/opencode/opencode.json` (opsional, tidak dipakai).
 
 ## Yang masih perlu
+- ⚠️ **Jalankan `supabase/migrations/0009_dinas_info.sql`** di SQL Editor (tabel `dinas_info` + RPC `statistik_minat_jurusan`).
+- ⚠️ **Perbarui `apps-script/Code.gs` lalu deploy New version** agar aksi `scrape_dinas` aktif (URL tidak berubah). Panduan: `apps-script/PANDUAN.md` bagian 4b/4c.
 - Hapus 4 file uji (1x1 pixel) dari Drive: `foto_test_koneksi.jpg`, `foto_test_cors_browser.jpg`, `foto_test_folder_tahun.jpg` (folder utama), dan `foto_test_folder_final.jpg` (dalam subfolder `2026-2027`).
 - Opsional: hapus 1 data dummy `asdfghjk` (NISN `347689054`, kode `SPMB-2027-2028-507682B3`) — bukan dibuat oleh agent, kemungkinan uji manual.
 - Ganti password admin default `AdminSPMB2026!` setelah login pertama — sekarang tersedia menu 🔑 Ganti Password di panel admin (sudah diuji, password dikembalikan ke semula setelah uji).
@@ -37,6 +39,14 @@ Apps Script Web App sudah aktif & teruji (GET + POST upload ke Drive berhasil), 
 - Admin: ubah tahun aktif lewat dropdown di Dashboard + filter tahun di tabel & export Excel/CSV.
 - Export Excel: 2 sheet (Calon Siswa, Nilai Rapor) via SheetJS; sudah diuji menghasilkan `.xlsx`.
 - `cek_nisn` mengembalikan `tahun_pelajaran`.
+
+## Perubahan terakhir 5 — Info portal dinas
+- Beranda: seksi "Alur Pengumpulan Data" dihapus; diganti seksi "Info dari Portal Dinas" (6 kartu) setelah Sambutan. Hero/Sambutan tetap dipertahankan.
+- Strip ringkas di bawah "Waktu Pengisian Formulir" menampilkan sumber/update + minat sekolah.
+- Apps Script: aksi `scrape_dinas` (UrlFetchApp) → ekstrak 8 pengumuman, URL PDF SPTJM, URL video SMK, JSON minat sekolah. Logika regex sudah diuji terhadap portal asli (8 pengumuman, 508/392 = 129,59%).
+- Admin Konten Beranda: tombol "Tarik Info dari Portal Dinas" → draft editable → "Simpan Info Dinas" ke tabel `dinas_info`.
+- Video dibuka di tab baru; PDF taut langsung ke sumber resmi dinas.
+- Distribusi jurusan: RPC `statistik_minat_jurusan(p_tahun)` (agregat, tanpa PII) → chart di beranda.
 
 ## Perubahan terakhir 4 — Rekosakataan
 - Posisi aplikasi ditegaskan: **pengumpulan data calon siswa**, bukan pendaftaran resmi.

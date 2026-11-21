@@ -159,6 +159,34 @@
           <input id="lp_edit_selesai" type="date">
         </div>
       </div>
+
+      <!-- ============ INFO PORTAL DINAS (SEMI-OTOMATIS) ============ -->
+      <div class="callout" style="margin-top:8px">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
+          <div>
+            <b>Info dari Portal Dinas</b><br>
+            <span class="hint">Tarik otomatis, lalu tinjau &amp; simpan. Data lama tetap tampil bila gagal.</span>
+          </div>
+          <button class="btn btn-info btn-sm" id="btnTarikDinas">🔄 Tarik Info dari Portal Dinas</button>
+        </div>
+        <div id="tarikStatus" style="font-size:12px;margin-top:8px;color:var(--muted)"></div>
+      </div>
+      <div class="grid" id="dinasDraft" style="margin-top:14px">
+        <div class="field full">
+          <label for="dinas_pengumuman">Pengumuman Penting <span class="hint">(satu per baris)</span></label>
+          <textarea id="dinas_pengumuman" rows="6"></textarea>
+        </div>
+        <div class="field"><label for="dinas_jadwal">Tautan Jadwal</label><input id="dinas_jadwal" type="text"></div>
+        <div class="field"><label for="dinas_surat">Tautan Surat Pernyataan (PDF)</label><input id="dinas_surat" type="text"></div>
+        <div class="field full"><label for="dinas_video">Tautan Video Panduan SMK</label><input id="dinas_video" type="text"></div>
+        <div class="field"><label for="dinas_minat_nama">Nama Sekolah (minat)</label><input id="dinas_minat_nama" type="text"></div>
+        <div class="field"><label for="dinas_minat_persen">Persentase Minat</label><input id="dinas_minat_persen" type="text"></div>
+        <div class="field"><label for="dinas_minat_pendaftar">Jumlah Pendaftar</label><input id="dinas_minat_pendaftar" type="number"></div>
+        <div class="field"><label for="dinas_minat_kuota">Kuota</label><input id="dinas_minat_kuota" type="number"></div>
+        <div class="field full"><label for="dinas_sumber_update">Keterangan Sumber / Update</label><input id="dinas_sumber_update" type="text"></div>
+        <div class="field full"><button class="btn btn-primary" id="btnSimpanDinas">💾 Simpan Info Dinas</button></div>
+      </div>
+
       <div class="form-nav">
         <span id="lpSimpanStatus" style="font-size:12px;color:var(--muted);align-self:center"></span>
         <button class="btn btn-primary" id="btnSimpanLanding">💾 Simpan Konten Beranda</button>

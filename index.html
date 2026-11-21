@@ -58,6 +58,7 @@
         🌐 Pendaftaran resmi ada di portal dinas:<br>
         <a href="https://spmb-dikbud.kalbarprov.go.id/" target="_blank" rel="noopener">spmb-dikbud.kalbarprov.go.id</a>
         <span>(wajib diisi terpisah)</span>
+        <div id="dinasStrip" style="margin-top:4px;opacity:.85"></div>
       </div>
       <div class="lp-info-row">
         <div class="lp-info-icon">📢</div>
@@ -92,19 +93,47 @@
   </div>
 </section>
 
-<!-- ===================== ALUR ===================== -->
-<section class="lp-section alt" id="alur">
+<!-- ===================== INFO PORTAL DINAS ===================== -->
+<section class="lp-section alt" id="infoDinas">
   <div class="wrap">
     <div class="lp-head">
-      <div class="kicker">Panduan</div>
-      <h2>Alur Pengumpulan Data Calon Siswa</h2>
-      <p>Empat langkah mudah untuk mengikuti proses pengisian data dan pendaftaran resmi.</p>
+      <div class="kicker">Info Resmi</div>
+      <h2>Info dari Portal Dinas</h2>
+      <p id="dinasSumber">Bersumber dari portal resmi SPMB Dinas Pendidikan Kalimantan Barat.</p>
     </div>
-    <div class="lp-steps">
-      <div class="lp-step"><div class="n">1</div><h4>Isi Formulir Online</h4><p>Lengkapi data diri, alamat, orang tua, nilai rapor, dan pilihan jurusan di formulir.</p></div>
-      <div class="lp-step"><div class="n">2</div><h4>Unggah Foto</h4><p>Unggah satu foto siswa ukuran 3x4 (opsional). Foto tersimpan otomatis di folder Google Drive sesuai tahun pelajaran.</p></div>
-      <div class="lp-step"><div class="n">3</div><h4>Simpan Bukti Pengisian Formulir</h4><p>Setelah data terkirim, unduh/cetak bukti pengisian formulir sebagai tanda bukti pengiriman.</p></div>
-      <div class="lp-step"><div class="n">4</div><h4>Daftar di Portal Dinas (Resmi)</h4><p>Pendaftaran resmi dilakukan di portal Dinas Pendidikan Kalimantan Barat dengan sekolah &amp; jurusan yang sama. Formulir sekolah <b>bukan pengganti</b> pendaftaran dinas.</p></div>
+    <div class="lp-grid-info">
+      <div class="lp-card" style="grid-column:1/-1">
+        <h4>📢 Pengumuman Penting</h4>
+        <ul id="dinasPengumuman" style="margin:0 0 12px;padding-left:20px;color:var(--ink-2);font-size:13.5px;line-height:1.8">
+          <li>Belum ada pengumuman yang ditampilkan.</li>
+        </ul>
+        <a id="dinasPortalLink" href="https://spmb-dikbud.kalbarprov.go.id/" target="_blank" rel="noopener">Buka portal resmi ↗</a>
+      </div>
+      <div class="lp-card">
+        <h4>🗓 Jadwal Lengkap</h4>
+        <p style="font-size:13.5px;color:var(--ink-2);line-height:1.7;margin:0 0 12px">Tahapan pendaftaran, seleksi, dan pengumuman hasil sesuai portal dinas.</p>
+        <a id="dinasJadwal" href="https://spmb-dikbud.kalbarprov.go.id/jadwal" target="_blank" rel="noopener">Lihat Jadwal ↗</a>
+      </div>
+      <div class="lp-card">
+        <h4>📄 Surat Pernyataan (SPTJM)</h4>
+        <p style="font-size:13.5px;color:var(--ink-2);line-height:1.7;margin:0 0 12px">Format resmi Surat Pernyataan Tanggung Jawab Mutlak dari portal dinas.</p>
+        <a id="dinasSurat" href="https://spmb-dikbud.kalbarprov.go.id/" target="_blank" rel="noopener">Unduh Dokumen ↗</a>
+      </div>
+      <div class="lp-card">
+        <h4>🎬 Video Panduan SMK</h4>
+        <p style="font-size:13.5px;color:var(--ink-2);line-height:1.7;margin:0 0 12px">Panduan pendaftaran tingkat SMK dari portal dinas (dibuka di tab baru).</p>
+        <a id="dinasVideo" href="https://spmb-dikbud.kalbarprov.go.id/" target="_blank" rel="noopener">Tonton Video ↗</a>
+      </div>
+      <div class="lp-card">
+        <h4>📊 Minat Calon Siswa — SMKN 1 Teluk Keramat</h4>
+        <div id="dinasMinat" style="font-size:13.5px;color:var(--ink-2);line-height:1.8">Data belum tersedia.</div>
+        <span class="hint" style="display:block;margin-top:10px">Sumber: portal dinas</span>
+      </div>
+      <div class="lp-card">
+        <h4>🎯 Distribusi Pilihan Jurusan</h4>
+        <p class="hint" style="margin:0 0 12px">Berdasarkan formulir di halaman ini · <span id="jurusanTahun">2026/2027</span></p>
+        <div id="jurusanChart" class="chart-list"></div>
+      </div>
     </div>
   </div>
 </section>

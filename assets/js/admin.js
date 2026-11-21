@@ -573,6 +573,106 @@ async function simpanLanding() {
   }
 }
 
+/* ---------------------------- Info portal dinas ------------------------ */
+function isiDraftDinas(d) {
+  const data = d || {};
+  $("#dinas_pengumuman").value = (data.pengumuman || []).join("\n");
+  $("#dinas_jadwal").value = data.jadwal_url || "";
+  $("#dinas_surat").value = data.surat_url || "";
+  $("#dinas_video").value = data.video_smk_url || "";
+  $("#dinas_minat_nama").value = data.minat_nama_sekolah || "";
+  $("#dinas_minat_persen").value = data.minat_persen || "";
+  $("#dinas_minat_pendaftar").value = data.minat_pendaftar ?? "";
+  $("#dinas_minat_kuota").value = data.minat_kuota ?? "";
+  $("#dinas_sumber_update").value = data.sumber_update || "";
+}
+
+async function muatInfoDinas() {
+  try {
+    const { data } = await supabase.from("dinas_info").select("*").eq("id", 1).maybeSingle();
+    isiDraftDinas(data);
+    $("#tarikStatus").textContent = data?.published_at
+      ? `Info ditayangkan: ${tgl(data.published_at)}` + (data.fetched_at ? ` · diambil: ${tgl(data.fetched_at)}` : "")
+      : "Belum ada info dinas yang disimpan.";
+  } catch (e) {
+    $("#tarikStatus").textContent = "Gagal memuat info dinas: " + e.message;
+  }
+}
+
+async function tarikInfoDinas() {
+  const btn = $("#btnTarikDinas");
+  const status = $("#tarikStatus");
+  if (!CONFIG.DRIVE_UPLOAD_URL || CONFIG.DRIVE_UPLOAD_URL.startsWith("__")) {
+    status.style.color = "var(--danger)";
+    status.textContent = "URL Web App belum diisi.";
+    return;
+  }
+  btn.disabled = true;
+  btn.textContent = "⏳ Mengambil…";
+  status.style.color = "var(--muted)";
+  status.textContent = "Menghubungi portal dinas via Apps Script…";
+  try {
+    const res = await fetch(CONFIG.DRIVE_UPLOAD_URL, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify({ aksi: "scrape_dinas" }),
+    });
+    const teks = await res.text();
+    let json;
+    try { json = JSON.parse(teks); } catch { throw new Error("Balasan tidak valid: " + teks.slice(0, 120)); }
+    if (!json.ok) throw new Error(json.error || "Gagal mengambil info");
+    const d = json.data || {};
+    isiDraftDinas(d);
+    const masalah = [d.error_halaman, d.error_minat].filter(Boolean).join("; ");
+    status.style.color = masalah ? "var(--warn)" : "var(--primary)";
+    status.textContent = masalah
+      ? `Sebagian data gagal diambil (${masalah}). Periksa & edit draft sebelum menyimpan.`
+      : `Berhasil diambil ${new Date(d.fetched_at || Date.now()).toLocaleString("id-ID")}. Periksa draft lalu klik Simpan Info Dinas.`;
+    toast("Info dinas berhasil diambil. Tinjau dulu sebelum disimpan.");
+  } catch (e) {
+    status.style.color = "var(--danger)";
+    status.textContent = "Gagal: " + e.message;
+    toast("Gagal mengambil info dinas: " + e.message, "error");
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "🔄 Tarik Info dari Portal Dinas";
+  }
+}
+
+async function simpanInfoDinas() {
+  const btn = $("#btnSimpanDinas");
+  btn.disabled = true;
+  btn.textContent = "Menyimpan…";
+  const payload = {
+    id: 1,
+    pengumuman: $("#dinas_pengumuman").value.split("\n").map((s) => s.trim()).filter(Boolean),
+    jadwal_url: $("#dinas_jadwal").value.trim() || null,
+    surat_url: $("#dinas_surat").value.trim() || null,
+    video_smk_url: $("#dinas_video").value.trim() || null,
+    minat_nama_sekolah: $("#dinas_minat_nama").value.trim() || null,
+    minat_persen: $("#dinas_minat_persen").value.trim() || null,
+    minat_pendaftar: $("#dinas_minat_pendaftar").value ? Number($("#dinas_minat_pendaftar").value) : null,
+    minat_kuota: $("#dinas_minat_kuota").value ? Number($("#dinas_minat_kuota").value) : null,
+    sumber_update: $("#dinas_sumber_update").value.trim() || null,
+    published_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+  };
+  try {
+    const { error } = await supabase.from("dinas_info").upsert(payload, { onConflict: "id" });
+    if (error) throw error;
+    $("#tarikStatus").style.color = "var(--primary)";
+    $("#tarikStatus").textContent = "✓ Info dinas tersimpan & tampil di beranda: " + tgl(new Date());
+    toast("Info portal dinas berhasil disimpan.");
+  } catch (e) {
+    $("#tarikStatus").style.color = "var(--danger)";
+    $("#tarikStatus").textContent = "Gagal menyimpan: " + e.message;
+    toast("Gagal menyimpan info dinas: " + e.message, "error");
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "💾 Simpan Info Dinas";
+  }
+}
+
 /* ---------------------------- Ganti password --------------------------- */
 async function gantiPassword() {
   const lama = $("#passLama").value;
@@ -659,6 +759,7 @@ function bindEvents() {
     $("#landingSection").classList.remove("hidden");
     $("#passwordSection").classList.add("hidden");
     muatLanding();
+    muatInfoDinas();
   });
   $("#navPassword").addEventListener("click", () => {
     gantiMenu("navPassword", "Ganti Password");
@@ -670,6 +771,8 @@ function bindEvents() {
     ["passLama", "passBaru", "passUlang"].forEach((id) => { $("#" + id).value = ""; });
   });
   $("#btnSimpanLanding").addEventListener("click", simpanLanding);
+  $("#btnTarikDinas").addEventListener("click", tarikInfoDinas);
+  $("#btnSimpanDinas").addEventListener("click", simpanInfoDinas);
   $("#btnGantiPassword").addEventListener("click", gantiPassword);
 }
 

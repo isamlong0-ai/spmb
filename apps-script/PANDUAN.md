@@ -44,6 +44,22 @@ Versi `Code.gs` terbaru otomatis membuat subfolder bernama tahun pelajaran
    **Version: New version** → Deploy.
    (URL Web App tetap sama, jadi tidak perlu mengubah `config.js`.)
 
+## 4c. Aksi "Tarik Info dari Portal Dinas"
+Versi `Code.gs` terbaru juga menerima POST dengan badan:
+
+```json
+{ "aksi": "scrape_dinas" }
+```
+
+Aksi ini mengambil dari portal resmi:
+- 8 pengumuman penting (dari blok `announcement-content`)
+- tautan Jadwal, PDF Surat Pernyataan (SPTJM), dan video panduan SMK
+- angka minat sekolah SMKN 1 Teluk Keramat dari endpoint JSON `/home/sekolah-list`
+
+Catatan: hasilnya **draft** di panel admin. Admin harus meninjau lalu klik **Simpan Info Dinas** agar tampil di beranda. Bila pengambilan gagal, data lama tetap ditampilkan.
+
+Panduan deploy ulang sama seperti bagian 4b (New version, URL tidak berubah).
+
 ## 5. Uji coba
 Buka URL Web App di browser. Jika muncul JSON seperti:
 

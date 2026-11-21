@@ -28,6 +28,12 @@ function doPost(e) {
     }
 
     const req = JSON.parse(e.postData.contents);
+
+    // Aksi khusus: tarik info dari portal dinas (dipanggil panel admin)
+    if (req.aksi === 'scrape_dinas' || req.action === 'scrape_dinas') {
+      return balasan({ ok: true, data: ambilInfoDinas() });
+    }
+
     const folderId = req.folderId || DEFAULT_FOLDER_ID;
     const base64 = String(req.base64 || '');
     const filename = String(req.filename || 'foto.jpg');
@@ -75,6 +81,91 @@ function ambilFolderTahun(folderId, tahun) {
   const sudahAda = induk.getFoldersByName(nama);
   if (sudahAda.hasNext()) return sudahAda.next();
   return induk.createFolder(nama);
+}
+
+/** -------------------- Info dari portal dinas (semi-otomatis) ---------------- */
+const PORTAL_DINAS = 'https://spmb-dikbud.kalbarprov.go.id';
+const NAMA_SEKOLAH = 'SMKN 1 TELUK KERAMAT';
+
+function bersihkanTeks(html) {
+  return String(html || '')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+/** Tarik pengumuman, tautan dokumen/video, dan angka minat dari portal dinas. */
+function ambilInfoDinas() {
+  const hasil = {
+    pengumuman: [],
+    jadwal_url: PORTAL_DINAS + '/jadwal',
+    surat_url: '',
+    video_smk_url: '',
+    minat_nama_sekolah: NAMA_SEKOLAH,
+    minat_pendaftar: null,
+    minat_kuota: null,
+    minat_persen: '',
+    sumber_update: '',
+    fetched_at: new Date().toISOString()
+  };
+
+  try {
+    const resp = UrlFetchApp.fetch(PORTAL_DINAS + '/', {
+      muteHttpExceptions: true, followRedirects: true
+    });
+    if (resp.getResponseCode() !== 200) throw new Error('HTTP ' + resp.getResponseCode());
+    const html = resp.getContentText();
+
+    const blok = html.match(/<div class="announcement-content"[^>]*>([\s\S]*?)<\/div>/i);
+    if (blok) {
+      const re = /<li[^>]*>[\s\S]*?check_circle<\/span>\s*<span[^>]*>([\s\S]*?)<\/span>\s*<\/li>/gi;
+      let m;
+      while ((m = re.exec(blok[1])) !== null && hasil.pengumuman.length < 10) {
+        const t = bersihkanTeks(m[1]);
+        if (t) hasil.pengumuman.push(t);
+      }
+    }
+
+    const pdf = html.match(/href="[^"]+\.pdf"/gi) || [];
+    const surat = pdf
+      .map(x => x.replace(/^href="/i, '').replace(/"$/, ''))
+      .find(u => /PERNYATAAN/i.test(u));
+    if (surat) hasil.surat_url = surat.replace(/ /g, '%20');
+
+    const video = html.match(/data-video-title="Video Panduan Pendaftaran SMK"[\s\S]{0,2000}?data-video-link="([^"]+)"/i);
+    if (video) hasil.video_smk_url = video[1];
+
+    const upd = html.match(/Terakhir diperbarui:\s*([^<]+)/i);
+    if (upd) hasil.sumber_update = 'Terakhir diperbarui: ' + bersihkanTeks(upd[1]);
+  } catch (e) {
+    hasil.error_halaman = e.message;
+  }
+
+  try {
+    const r2 = UrlFetchApp.fetch(PORTAL_DINAS + '/home/sekolah-list', { muteHttpExceptions: true });
+    if (r2.getResponseCode() === 200) {
+      const json = JSON.parse(r2.getContentText());
+      const data = json.data || [];
+      const baris = data.find(d => String(d.sekolah_nama).toUpperCase() === NAMA_SEKOLAH)
+        || data.find(d => String(d.sekolah_nama).toUpperCase().indexOf(NAMA_SEKOLAH) !== -1);
+      if (baris) {
+        hasil.minat_nama_sekolah = baris.sekolah_nama;
+        hasil.minat_pendaftar = Number(baris.total_pendaftar) || 0;
+        hasil.minat_kuota = Number(baris.total_kuota) || 0;
+        hasil.minat_persen = String(baris.persen || '');
+      }
+    }
+  } catch (e) {
+    hasil.error_minat = e.message;
+  }
+
+  return hasil;
 }
 
 function balasan(obj) {
