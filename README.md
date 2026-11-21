@@ -21,7 +21,9 @@ Aplikasi pendaftaran siswa baru berbasis **HTML + CSS + JavaScript (ES modules)*
 │       ├── config.js             # Konfigurasi Supabase, Drive, jurusan
 │       ├── tahun.js              # Tahun pelajaran otomatis (sekarang + depan)
 │       ├── wilayah.js            # Autocomplete wilayah nasional (kalbar offline)
-│       ├── landing.js            # Render konten beranda & status/hitung mundur
+│       ├── landing.js            # Render konten beranda, status & kunci akses
+│       ├── status.js             # Status jadwal pendaftaran (dibuka/tutup)
+│       ├── guard.js              # Pengunci halaman form saat pendaftaran tutup
 │       ├── form.js               # Logika wizard, validasi, upload, submit
 │       └── admin.js              # Logika CRUD panel admin
 ├── supabase/migrations/
@@ -43,7 +45,8 @@ Aplikasi pendaftaran siswa baru berbasis **HTML + CSS + JavaScript (ES modules)*
 ### Beranda (`index.html`)
 - Halaman utama yang menarik: hero, kartu informasi, kata sambutan, alur pendaftaran, dan panduan
 - **Seluruh teks utama bisa diatur dari panel admin** (judul, tagline, sambutan, tahun pelajaran, waktu pendaftaran, tanggal mulai/selesai)
-- Status pendaftaran (**Akan Datang / Dibuka / Ditutup**) dan hitung mundur dihitung otomatis dari tanggal
+- Status jadwal (**Akan Datang / Dibuka / Ditutup**) dan hitung mundur dihitung otomatis dari tanggal
+- Saat **belum dibuka / sudah ditutup**, semua tautan ke formulir & pengecekan otomatis terkunci (abu-abu + gembok) dan halaman form menampilkan layar pengunci
 - Tombol menuju formulir dan pencarian data
 
 ### Form pendaftar (`pendaftaran.html`)
@@ -56,22 +59,24 @@ Aplikasi pendaftaran siswa baru berbasis **HTML + CSS + JavaScript (ES modules)*
 - Upload satu foto 3x4 siswa dengan kompresi sisi klien, **opsional**, tersimpan di subfolder Google Drive sesuai tahun pelajaran
 - Nomor KIP bebas huruf/angka/tanda baca; orang tua meninggal otomatis menyembunyikan isian rinciannya
 - Data wali lengkap seperti ayah/ibu (satu set), ikut tersembunyi bila status meninggal
-- Cek status pendaftaran berdasarkan NISN (hanya menampilkan field terbatas)
+- Cek data pendaftaran berdasarkan NISN (hanya menampilkan field terbatas)
 - Bukti pendaftaran bisa dicetak / diunduh sebagai PDF
 - Tombol bantuan WhatsApp panitia
 
 ### Panel admin (`admin.html`)
 - Login dengan Supabase Auth
 - Dashboard statistik (total, menunggu, diterima, ditolak)
-- Pencarian & filter status, pagination "muat lebih banyak"
-- **CRUD lengkap**: lihat, edit seluruh field + nilai rapor, ubah status, hapus data
+- Pencarian & filter tahun, pagination "muat lebih banyak"
+- Tabel menampilkan **ketiga pilihan jurusan** dalam satu kolom
+- **CRUD lengkap**: lihat, edit seluruh field + nilai rapor, hapus data
 - Export **Excel (.xlsx)** dengan 2 sheet: Pendaftar & Nilai Rapor (tetap tersedia CSV)
 - **Editor Konten Beranda**: mengatur judul, tagline, sambutan, tahun pelajaran, waktu & tanggal pendaftaran
 - Pengatur tahun pelajaran aktif untuk form publik
+- **Ganti password** akun admin langsung dari panel (menu 🔑 Ganti Password)
 
 ### Keamanan
 - RLS: `anon` hanya bisa **INSERT**; tidak bisa membaca data pendaftar
-- Fungsi `cek_nisn` (SECURITY DEFINER) hanya mengembalikan nama, sekolah, 3 jurusan, status, dan waktu — tidak mengekspos NIK/foto/alamat
+- Fungsi `cek_nisn` (SECURITY DEFINER) hanya mengembalikan nama, sekolah, 3 jurusan, tahun, dan waktu — tidak mengekspos NIK/foto/alamat
 - Admin memakai role `authenticated` dengan hak CRUD penuh
 
 ---
@@ -117,7 +122,7 @@ Email    : admin@smkn1tk.sch.id
 Password : AdminSPMB2026!
 ```
 
-> **Segera ganti password admin** setelah login pertama (Supabase → Authentication → Users).
+> **Segera ganti password admin** setelah login pertama lewat menu **🔑 Ganti Password** di panel admin (cukup isi password lama, password baru, dan konfirmasinya).
 
 ### 2. Google Apps Script
 ✅ **Sudah aktif:** Web App Apps Script sudah di-deploy dengan versi terbaru, diuji (GET + POST upload berhasil), dan `DRIVE_UPLOAD_URL` sudah terisi di `assets/js/config.js`. Foto otomatis masuk subfolder sesuai tahun pelajaran (mis. `2026-2027`).

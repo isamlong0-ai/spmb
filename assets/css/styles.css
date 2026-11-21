@@ -320,6 +320,17 @@ table.data-table { width: 100%; border-collapse: collapse; font-size: 13px; min-
 .lp-links .cta { background:var(--primary); color:#fff; }
 .lp-links .cta:hover { background:var(--primary-600); color:#fff; }
 
+.lp-gate {
+  max-width:1080px; margin:16px auto 0; padding:14px 18px; border-radius:12px;
+  background:#fff7ed; border:1px solid #fed7aa; color:#9a3412; font-size:13.5px;
+  text-align:center; font-weight:600; width:calc(100% - 32px);
+}
+.lp-gate.closed { background:#fef2f2; border-color:#fecaca; color:#991b1b; }
+[data-requires-open].terkunci {
+  opacity:.45; pointer-events:none; cursor:not-allowed; filter:grayscale(.6);
+}
+[data-requires-open].terkunci::after { content:" 🔒"; }
+
 .lp-hero {
   position:relative; overflow:hidden; color:#fff;
   background:linear-gradient(135deg,#052e25 0%,#065f46 45%,#047857 75%,#059669 100%);

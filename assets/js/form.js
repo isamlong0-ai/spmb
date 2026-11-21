@@ -434,7 +434,6 @@ async function cariData() {
         <div><b>Pilihan 1:</b> ${escapeHtml(r.jurusan1)}</div>
         <div><b>Pilihan 2:</b> ${escapeHtml(r.jurusan2)}</div>
         <div><b>Pilihan 3:</b> ${escapeHtml(r.jurusan3)}</div>
-        <div><b>Status:</b> <span class="badge ${String(r.status).toLowerCase()}">${escapeHtml(r.status)}</span></div>
         <div><b>Tahun Pelajaran:</b> ${escapeHtml(r.tahun_pelajaran || "-")}</div>
         <div style="color:var(--muted);font-size:11px;margin-top:6px">Waktu daftar: ${escapeHtml(r.waktu_daftar)} WIB</div>`;
     } else {

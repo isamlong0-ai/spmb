@@ -16,7 +16,7 @@
 ## Yang masih perlu
 - Hapus 4 file uji (1x1 pixel) dari Drive: `foto_test_koneksi.jpg`, `foto_test_cors_browser.jpg`, `foto_test_folder_tahun.jpg` (folder utama), dan `foto_test_folder_final.jpg` (dalam subfolder `2026-2027`).
 - Opsional: hapus 1 data dummy `asdfghjk` (NISN `347689054`, kode `SPMB-2027-2028-507682B3`) — bukan dibuat oleh agent, kemungkinan uji manual.
-- Ganti password admin default `AdminSPMB2026!` setelah login pertama.
+- Ganti password admin default `AdminSPMB2026!` setelah login pertama — sekarang tersedia menu 🔑 Ganti Password di panel admin (sudah diuji, password dikembalikan ke semula setelah uji).
 
 Apps Script Web App sudah aktif & teruji (GET + POST upload ke Drive berhasil), URL terisi di config.
 
@@ -36,6 +36,12 @@ Apps Script Web App sudah aktif & teruji (GET + POST upload ke Drive berhasil), 
 - Admin: ubah tahun aktif lewat dropdown di Dashboard + filter tahun di tabel & export Excel/CSV.
 - Export Excel: 2 sheet (Pendaftar, Nilai Rapor) via SheetJS; sudah diuji menghasilkan `.xlsx`.
 - `cek_nisn` mengembalikan `tahun_pelajaran`.
+
+## Perubahan terakhir
+- Tabel admin: kolom "Pilihan Jurusan" menampilkan ke-3 jurusan; kolom status dihapus dari UI.
+- Halaman beranda mengunci 8 tautan form saat status Akan Datang/Ditutup; `guard.js` memblokir form.
+  Sudah diuji untuk ketiga kondisi lalu jadwal dikembalikan ke 2026-11-01 s.d. 2026-12-31 (Dibuka).
+- Menu Ganti Password ditambahkan & diuji (verifikasi password lama + updateUser), lalu password dikembalikan.
 
 ## Kredensial
 - Anon key: `sb_publishable_XBST_lVhiVHsq6FpFAmx-A_ddN0JB1K`

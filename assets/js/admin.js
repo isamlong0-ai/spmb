@@ -116,20 +116,18 @@ function kumpulkanTahun() {
 
 function updateStat() {
   $("#stTotal").textContent = dataTerfilter.length;
-  $("#stMenunggu").textContent = dataTerfilter.filter((d) => d.status === "menunggu").length;
-  $("#stDiterima").textContent = dataTerfilter.filter((d) => d.status === "diterima").length;
-  $("#stDitolak").textContent = dataTerfilter.filter((d) => d.status === "ditolak").length;
+  $("#stKip").textContent = dataTerfilter.filter((d) => d.punya_kip).length;
+  $("#stFoto").textContent = dataTerfilter.filter((d) => d.foto_siswa).length;
 }
 
 function terapkanFilter() {
   const q = $("#cari").value.trim().toLowerCase();
-  const st = $("#filterStatus").value;
   const th = $("#filterTahun").value;
   dataTerfilter = semuaData.filter((d) => {
     const cocokTeks = !q || [d.nama, d.nisn, d.nama_sekolah, d.kode_pendaftaran]
       .some((v) => String(v || "").toLowerCase().includes(q));
     const cocokTahun = !th || d.tahun_pelajaran === th;
-    return cocokTeks && cocokTahun && (!st || d.status === st);
+    return cocokTeks && cocokTahun;
   });
   updateStat();
   renderTabel();
@@ -138,7 +136,7 @@ function terapkanFilter() {
 function renderTabel() {
   const body = $("#dataBody");
   if (!dataTerfilter.length) {
-    body.innerHTML = `<tr><td colspan="9" style="padding:30px;color:var(--muted)">Belum ada data pendaftar untuk tahun ini.</td></tr>`;
+    body.innerHTML = `<tr><td colspan="8" style="padding:30px;color:var(--muted)">Belum ada data pendaftar untuk tahun ini.</td></tr>`;
     $("#infoData").textContent = "0 data";
     return;
   }
@@ -149,8 +147,11 @@ function renderTabel() {
       <td><b>${escapeHtml(d.nama)}</b><br><span style="font-size:11px;color:var(--muted)">${escapeHtml(d.provinsi)} / ${escapeHtml(d.kabupaten)}</span></td>
       <td>${escapeHtml(d.nisn)}</td>
       <td>${escapeHtml(d.nama_sekolah)}</td>
-      <td>${escapeHtml(d.jurusan1)}</td>
-      <td><span class="badge ${escapeHtml(d.status)}">${escapeHtml(d.status)}</span></td>
+      <td style="font-size:12px;line-height:1.7">
+        <div><span style="color:var(--muted)">1.</span> ${escapeHtml(d.jurusan1 || "-")}</div>
+        <div><span style="color:var(--muted)">2.</span> ${escapeHtml(d.jurusan2 || "-")}</div>
+        <div><span style="color:var(--muted)">3.</span> ${escapeHtml(d.jurusan3 || "-")}</div>
+      </td>
       <td style="font-size:11px">${tgl(d.created_at)}</td>
       <td>
         <div class="row-actions">
@@ -217,7 +218,6 @@ const GRUP = [
     ["jurusan1", "Pilihan Jurusan 1", "select", CONFIG.JURUSAN],
     ["jurusan2", "Pilihan Jurusan 2", "select", CONFIG.JURUSAN],
     ["jurusan3", "Pilihan Jurusan 3", "select", CONFIG.JURUSAN],
-    ["status", "Status Pendaftaran", "select", ["menunggu", "diterima", "ditolak"]],
   ]},
   { judul: "Foto / Dokumen", field: [
     ["foto_siswa", "URL Foto Siswa (Drive)", "text"], ["foto_kk", "URL Foto KK", "text"],
@@ -330,7 +330,7 @@ async function hapusData(id) {
 /* -------------------------------- Export ------------------------------- */
 function exportCSV() {
   if (!dataTerfilter.length) { toast("Belum ada data untuk diekspor.", "warn"); return; }
-  const kolom = ["tahun_pelajaran", "kode_pendaftaran", "nama", "nik", "nisn", "nama_sekolah", "provinsi", "kabupaten", "kecamatan", "desa", "jurusan1", "jurusan2", "jurusan3", "status", "created_at"];
+  const kolom = ["tahun_pelajaran", "kode_pendaftaran", "nama", "nik", "nisn", "nama_sekolah", "provinsi", "kabupaten", "kecamatan", "desa", "jurusan1", "jurusan2", "jurusan3", "created_at"];
   const baris = [kolom.join(",")].concat(dataTerfilter.map((d) =>
     kolom.map((k) => `"${String(d[k] ?? "").replace(/"/g, '""')}"`).join(",")
   ));
@@ -358,7 +358,7 @@ const KOLOM_EXCEL = [
   ["tahun_lulus", "Tahun Lulus"], ["punya_kip", "Punya KIP"], ["no_kip", "No. KIP"],
   ["jurusan1", "Pilihan 1"], ["jurusan2", "Pilihan 2"], ["jurusan3", "Pilihan 3"],
   ["peringkat_5", "Peringkat"], ["rata_rata", "Rata-rata"],
-  ["foto_siswa", "URL Foto 3x4"], ["status", "Status"], ["created_at", "Waktu Daftar"],
+  ["foto_siswa", "URL Foto 3x4"], ["created_at", "Waktu Daftar"],
 ];
 
 async function exportExcel() {
@@ -462,7 +462,7 @@ async function simpanTahunAktif() {
 
 /* --------------------------- Konten beranda ---------------------------- */
 function gantiMenu(id, judul) {
-  ["navDashboard", "navPendaftar", "navLanding"].forEach((n) =>
+  ["navDashboard", "navPendaftar", "navLanding", "navPassword"].forEach((n) =>
     $("#" + n).classList.toggle("active", n === id));
   $("#pageTitle").textContent = judul;
   perbaruiSubtitle();
@@ -517,10 +517,58 @@ async function simpanLanding() {
   }
 }
 
+/* ---------------------------- Ganti password --------------------------- */
+async function gantiPassword() {
+  const lama = $("#passLama").value;
+  const baru = $("#passBaru").value;
+  const ulang = $("#passUlang").value;
+  const pesan = $("#passPesan");
+
+  if (!lama || !baru || !ulang) {
+    pesan.style.color = "var(--danger)";
+    pesan.textContent = "Lengkapi semua kolom.";
+    return;
+  }
+  if (baru.length < 6) {
+    pesan.style.color = "var(--danger)";
+    pesan.textContent = "Password baru minimal 6 karakter.";
+    return;
+  }
+  if (baru !== ulang) {
+    pesan.style.color = "var(--danger)";
+    pesan.textContent = "Konfirmasi password baru tidak cocok.";
+    return;
+  }
+
+  const btn = $("#btnGantiPassword");
+  btn.disabled = true;
+  btn.textContent = "Menyimpan…";
+  pesan.style.color = "var(--muted)";
+  pesan.textContent = "Memverifikasi password lama…";
+  try {
+    const cek = await supabase.auth.signInWithPassword({ email: emailAdmin, password: lama });
+    if (cek.error) throw new Error("Password lama tidak benar.");
+
+    pesan.textContent = "Menyimpan password baru…";
+    const { error } = await supabase.auth.updateUser({ password: baru });
+    if (error) throw error;
+
+    ["passLama", "passBaru", "passUlang"].forEach((id) => { $("#" + id).value = ""; });
+    pesan.style.color = "var(--primary)";
+    pesan.textContent = "✓ Password berhasil diubah. Gunakan password baru untuk login berikutnya.";
+    toast("Password admin berhasil diubah.");
+  } catch (e) {
+    pesan.style.color = "var(--danger)";
+    pesan.textContent = "Gagal: " + e.message;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "🔑 Simpan Password Baru";
+  }
+}
+
 /* ------------------------------- Events -------------------------------- */
 function bindEvents() {
   $("#cari").addEventListener("input", terapkanFilter);
-  $("#filterStatus").addEventListener("change", terapkanFilter);
   $("#filterTahun").addEventListener("change", terapkanFilter);
   $("#btnSimpanTahun").addEventListener("click", simpanTahunAktif);
   $("#btnRefresh").addEventListener("click", () => { muatData(); toast("Data dimuat ulang."); });
@@ -538,12 +586,14 @@ function bindEvents() {
     $("#statGrid").classList.remove("hidden");
     $("#dataSection").classList.remove("hidden");
     $("#landingSection").classList.add("hidden");
+    $("#passwordSection").classList.add("hidden");
   });
   $("#navPendaftar").addEventListener("click", () => {
     gantiMenu("navPendaftar", "Data Pendaftar");
     $("#statGrid").classList.add("hidden");
     $("#dataSection").classList.remove("hidden");
     $("#landingSection").classList.add("hidden");
+    $("#passwordSection").classList.add("hidden");
     $("#dataSection").scrollIntoView({ behavior: "smooth" });
   });
   $("#navLanding").addEventListener("click", () => {
@@ -551,9 +601,20 @@ function bindEvents() {
     $("#statGrid").classList.add("hidden");
     $("#dataSection").classList.add("hidden");
     $("#landingSection").classList.remove("hidden");
+    $("#passwordSection").classList.add("hidden");
     muatLanding();
   });
+  $("#navPassword").addEventListener("click", () => {
+    gantiMenu("navPassword", "Ganti Password");
+    $("#statGrid").classList.add("hidden");
+    $("#dataSection").classList.add("hidden");
+    $("#landingSection").classList.add("hidden");
+    $("#passwordSection").classList.remove("hidden");
+    $("#passPesan").textContent = `Akun: ${emailAdmin}`;
+    ["passLama", "passBaru", "passUlang"].forEach((id) => { $("#" + id).value = ""; });
+  });
   $("#btnSimpanLanding").addEventListener("click", simpanLanding);
+  $("#btnGantiPassword").addEventListener("click", gantiPassword);
 }
 
 bindEvents();
