@@ -118,6 +118,8 @@ Project yang sudah dibuat:
 
 ✅ **Sudah aktif:** migration `supabase/migrations/0007_cek_nisn_kode.sql` (kode pendaftaran pada hasil cek, dipakai cetak ulang).
 
+✅ **Sudah aktif:** migration `supabase/migrations/0008_status_manual.sql` (status buka/tutup pendaftaran diatur manual dari admin).
+
 Jika project dibuat ulang dari nol, langkahnya:
 
 1. Buka Supabase SQL Editor untuk project tersebut.

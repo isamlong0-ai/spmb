@@ -14,7 +14,6 @@
 - Konfigurasi MCP Supabase ditulis ke `~/.config/opencode/opencode.json` (opsional, tidak dipakai).
 
 ## Yang masih perlu
-- ⚠️ **Jalankan `supabase/migrations/0008_status_manual.sql`** di SQL Editor (kolom `status_pendaftaran` di tabel `landing`).
 - Hapus 4 file uji (1x1 pixel) dari Drive: `foto_test_koneksi.jpg`, `foto_test_cors_browser.jpg`, `foto_test_folder_tahun.jpg` (folder utama), dan `foto_test_folder_final.jpg` (dalam subfolder `2026-2027`).
 - Opsional: hapus 1 data dummy `asdfghjk` (NISN `347689054`, kode `SPMB-2027-2028-507682B3`) — bukan dibuat oleh agent, kemungkinan uji manual.
 - Ganti password admin default `AdminSPMB2026!` setelah login pertama — sekarang tersedia menu 🔑 Ganti Password di panel admin (sudah diuji, password dikembalikan ke semula setelah uji).
@@ -37,6 +36,13 @@ Apps Script Web App sudah aktif & teruji (GET + POST upload ke Drive berhasil), 
 - Admin: ubah tahun aktif lewat dropdown di Dashboard + filter tahun di tabel & export Excel/CSV.
 - Export Excel: 2 sheet (Pendaftar, Nilai Rapor) via SheetJS; sudah diuji menghasilkan `.xlsx`.
 - `cek_nisn` mengembalikan `tahun_pelajaran`.
+
+## Perubahan terakhir 3
+- Status pendaftaran manual (migration 0008): kolom `status_pendaftaran` di tabel `landing`.
+- Admin → Konten Beranda → dropdown Status Pendaftaran (Dibuka / Akan Datang / Ditutup).
+- `status.js` memakai nilai manual; tanggal hanya fallback & catatan. Countdown disembunyikan saat manual.
+- `cek.html` juga terkunci bila status bukan Dibuka.
+- Sudah diuji: ubah ke Ditutup → 8 tautan beranda terkunci + guard form + guard cek muncul → dikembalikan ke Dibuka.
 
 ## Perubahan terakhir 2
 - Halaman `cek.html` mandiri: cari by NISN + Cetak Ulang + Unduh PDF (sudah diuji, PDF 172 KB terunduh).
