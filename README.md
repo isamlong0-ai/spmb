@@ -88,7 +88,7 @@ Project yang sudah dibuat:
 
 ✅ **Sudah aktif:** migration `supabase/migrations/0002_tahun_pelajaran.sql` juga sudah dijalankan (kolom tahun, tabel pengaturan, RPC terbaru).
 
-⚠️ **Perlu dijalankan:** `supabase/migrations/0003_landing.sql` — menambah tabel `landing` untuk konten beranda.
+✅ **Sudah aktif:** migration `supabase/migrations/0003_landing.sql` juga sudah dijalankan (tabel `landing` + RLS + konten awal).
 
 Jika project dibuat ulang dari nol, langkahnya:
 

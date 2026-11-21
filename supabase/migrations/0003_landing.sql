@@ -33,7 +33,7 @@ insert into public.landing (
   1,
   'Selamat Datang di Penerimaan Murid Baru',
   'Raih masa depanmu bersama keluarga besar SMK Negeri 1 Teluk Keramat. Pendaftaran tahun pelajaran 2026/2027 telah dibuka.',
-  'Assalamu''alaikum wr. wb.\n\nDengan hormat, kami menyampaikan sambutan hangat kepada seluruh calon siswa serta orang tua/wali. Semoga senantiasa dalam keadaan sehat dan dilimpahi keberkahan dari Allah Swt.\n\nPenerimaan Murid Baru (SPMB) adalah langkah awal menuju masa depan yang cerah. Di SMK Negeri 1 Teluk Keramat, kami berkomitmen membentuk generasi yang kompeten, berkarakter, dan siap menghadapi dunia kerja maupun melanjutkan pendidikan.\n\nKami mengundang putra-putri terbaik untuk bergabung bersama keluarga besar kami. Isilah formulir pendaftaran dengan jujur dan lengkap. Selamat bergabung!',
+  E'Assalamu''alaikum wr. wb.\n\nDengan hormat, kami menyampaikan sambutan hangat kepada seluruh calon siswa serta orang tua/wali. Semoga senantiasa dalam keadaan sehat dan dilimpahi keberkahan dari Allah Swt.\n\nPenerimaan Murid Baru (SPMB) adalah langkah awal menuju masa depan yang cerah. Di SMK Negeri 1 Teluk Keramat, kami berkomitmen membentuk generasi yang kompeten, berkarakter, dan siap menghadapi dunia kerja maupun melanjutkan pendidikan.\n\nKami mengundang putra-putri terbaik untuk bergabung bersama keluarga besar kami. Isilah formulir pendaftaran dengan jujur dan lengkap. Selamat bergabung!',
   '2026/2027',
   '01 November 2026 – 31 Desember 2026',
   '2026-11-01',
