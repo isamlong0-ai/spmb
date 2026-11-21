@@ -13,10 +13,11 @@
 - ✅ Sudah di-push ke https://github.com/isamlong0-ai/spmb.git (branch `main`).
 - Konfigurasi MCP Supabase ditulis ke `~/.config/opencode/opencode.json` (opsional, tidak dipakai).
 
-## Yang masih perlu (tinggal 1)
-- **Deploy Apps Script** sebagai Web App dan isi `DRIVE_UPLOAD_URL` di `assets/js/config.js`,
-  lalu commit + push. Panduan: `apps-script/PANDUAN.md`.
+## Yang masih perlu
+- Hapus 1 file uji `foto_test_koneksi.jpg` (1x1 pixel) dari folder Drive — dibuat saat tes koneksi.
 - Ganti password admin default `AdminSPMB2026!` setelah login pertama.
+
+Apps Script Web App sudah aktif & teruji (GET + POST upload ke Drive berhasil), URL terisi di config.
 
 ## Kredensial
 - Anon key: `sb_publishable_XBST_lVhiVHsq6FpFAmx-A_ddN0JB1K`

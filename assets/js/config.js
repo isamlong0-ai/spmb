@@ -9,7 +9,7 @@ export const CONFIG = {
 
   // Google Apps Script Web App (deployment) untuk upload foto ke Google Drive
   // Kosongkan jika ingin sementara menyimpan foto sebagai data URL / belum aktif.
-  DRIVE_UPLOAD_URL: "__APPS_SCRIPT_WEBAPP_URL__",
+  DRIVE_UPLOAD_URL: "https://script.google.com/macros/s/AKfycbxvSsnW5DGlJTDjC-tXyEeMnF2iWPDtJ4yzyQmP2bwvpEzrnxXnXZTK_iHbBL-MLC1jVA/exec",
 
   // Folder Google Drive tujuan (dari link yang diberikan)
   DRIVE_FOLDER_ID: "1iRtqkKP46f-hVwdpKlioHxdF2I8FDlQT",

@@ -95,7 +95,9 @@ Password : AdminSPMB2026!
 > **Segera ganti password admin** setelah login pertama (Supabase → Authentication → Users).
 
 ### 2. Google Apps Script
-Ikuti `apps-script/PANDUAN.md`, lalu isi `DRIVE_UPLOAD_URL` di `assets/js/config.js` dengan Web App URL hasil deployment.
+✅ **Sudah aktif:** Web App Apps Script sudah di-deploy, diuji (GET + POST upload berhasil), dan `DRIVE_UPLOAD_URL` sudah terisi di `assets/js/config.js`.
+
+Jika perlu deploy ulang, ikuti `apps-script/PANDUAN.md`.
 
 Folder Drive tujuan:
 `https://drive.google.com/drive/folders/1iRtqkKP46f-hVwdpKlioHxdF2I8FDlQT`
