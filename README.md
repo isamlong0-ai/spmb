@@ -114,6 +114,8 @@ Project yang sudah dibuat:
 
 ✅ **Sudah aktif:** migration `supabase/migrations/0005_wali_kip_upload.sql` (field wali tambahan).
 
+✅ **Sudah aktif:** migration `supabase/migrations/0007_cek_nisn_kode.sql` (kode pendaftaran pada hasil cek, dipakai cetak ulang).
+
 Jika project dibuat ulang dari nol, langkahnya:
 
 1. Buka Supabase SQL Editor untuk project tersebut.

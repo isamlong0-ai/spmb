@@ -14,7 +14,6 @@
 - Konfigurasi MCP Supabase ditulis ke `~/.config/opencode/opencode.json` (opsional, tidak dipakai).
 
 ## Yang masih perlu
-- ⚠️ **Jalankan `supabase/migrations/0007_cek_nisn_kode.sql`** di SQL Editor (tambah kode pendaftaran pada RPC cek_nisn, dipakai cetak ulang).
 - Hapus 4 file uji (1x1 pixel) dari Drive: `foto_test_koneksi.jpg`, `foto_test_cors_browser.jpg`, `foto_test_folder_tahun.jpg` (folder utama), dan `foto_test_folder_final.jpg` (dalam subfolder `2026-2027`).
 - Opsional: hapus 1 data dummy `asdfghjk` (NISN `347689054`, kode `SPMB-2027-2028-507682B3`) — bukan dibuat oleh agent, kemungkinan uji manual.
 - Ganti password admin default `AdminSPMB2026!` setelah login pertama — sekarang tersedia menu 🔑 Ganti Password di panel admin (sudah diuji, password dikembalikan ke semula setelah uji).
@@ -37,6 +36,13 @@ Apps Script Web App sudah aktif & teruji (GET + POST upload ke Drive berhasil), 
 - Admin: ubah tahun aktif lewat dropdown di Dashboard + filter tahun di tabel & export Excel/CSV.
 - Export Excel: 2 sheet (Pendaftar, Nilai Rapor) via SheetJS; sudah diuji menghasilkan `.xlsx`.
 - `cek_nisn` mengembalikan `tahun_pelajaran`.
+
+## Perubahan terakhir 2
+- Halaman `cek.html` mandiri: cari by NISN + Cetak Ulang + Unduh PDF (sudah diuji, PDF 172 KB terunduh).
+- Migration 0007 aktif: `cek_nisn` mengembalikan `kode_pendaftaran`.
+- Form: menu "Area Admin" dihapus.
+- Admin: tombol Excel/CSV pindah ke toolbar Data Pendaftar; tombol Simpan tahun & pemilih tahun hanya di Dashboard; tombol Muat Ulang dihapus.
+- Dashboard kini hanya grafik + 4 kartu atas (Total + top 3 jurusan); tabel tidak tampil di Dashboard.
 
 ## Perubahan terakhir
 - Tabel admin: kolom "Pilihan Jurusan" menampilkan ke-3 jurusan; kolom status dihapus dari UI.
