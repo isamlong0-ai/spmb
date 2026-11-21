@@ -329,6 +329,28 @@ table.data-table { width: 100%; border-collapse: collapse; font-size: 13px; min-
 .lp-links .cta { background:var(--primary); color:#fff; }
 .lp-links .cta:hover { background:var(--primary-600); color:#fff; }
 
+.jadwal-tabs { display:flex; gap:8px; flex-wrap:wrap; margin:16px 0; }
+.jadwal-tab {
+  border:1px solid var(--line); background:#f8fafc; color:var(--ink-2);
+  padding:7px 14px; border-radius:999px; font-size:12.5px; font-weight:700; cursor:pointer;
+}
+.jadwal-tab:hover { border-color:var(--primary-500); }
+.jadwal-tab.aktif { background:var(--primary); border-color:var(--primary); color:#fff; }
+.jadwal-timeline { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:12px; }
+.jadwal-item {
+  border:1px solid var(--line); border-left:4px solid var(--primary-500);
+  border-radius:10px; padding:12px 14px; background:#fcfdfd;
+}
+.jadwal-item .tahap { font-weight:750; font-size:13.5px; color:var(--ink); }
+.jadwal-item .tanggal { font-size:13px; color:var(--primary); font-weight:700; margin-top:4px; }
+.jadwal-item .jam { font-size:11.5px; color:var(--muted); margin-top:2px; }
+.jadwal-item .status {
+  display:inline-block; margin-top:8px; font-size:10.5px; font-weight:800;
+  padding:3px 9px; border-radius:999px; background:#d1fae5; color:#065f46;
+}
+.minat-ringkas { font-weight:600; }
+.minat-ringkas b { color:var(--primary); }
+
 .lp-gate {
   max-width:1080px; margin:16px auto 0; padding:14px 18px; border-radius:12px;
   background:#fff7ed; border:1px solid #fed7aa; color:#9a3412; font-size:13.5px;

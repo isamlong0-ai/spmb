@@ -38,7 +38,8 @@ Aplikasi **pengumpulan data calon siswa** untuk SPMB berbasis **HTML + CSS + Jav
 │   ├── 0005_wali_kip_upload.sql  # Field wali lengkap & penyesuaian form
 │   ├── 0007_cek_nisn_kode.sql    # Kode pengiriman data pada hasil cek NISN
 │   ├── 0008_status_manual.sql    # Buka/tutup formulir diatur manual
-│   └── 0009_dinas_info.sql       # Info portal dinas + RPC minat jurusan
+│   ├── 0009_dinas_info.sql       # Info portal dinas + RPC minat jurusan
+│   └── 0010_jadwal_validasi.sql  # Jadwal lengkap & jumlah validasi sekolah
 ├── apps-script/
 │   ├── Code.gs                   # Web App upload foto ke Google Drive
 │   └── PANDUAN.md                # Cara deploy Apps Script
@@ -51,7 +52,8 @@ Aplikasi **pengumpulan data calon siswa** untuk SPMB berbasis **HTML + CSS + Jav
 
 ### Beranda (`index.html`)
 - Halaman utama: hero/selamat datang, kata sambutan, **Info dari Portal Dinas**, informasi & panduan, CTA
-- **Info dari Portal Dinas** (pengumuman, jadwal, SPTJM, video SMK, minat sekolah, distribusi jurusan) diambil semi-otomatis lewat tombol di admin (browser → proxy baca-saja `r.jina.ai`), lalu ditinjau sebelum tayang
+- **Info dari Portal Dinas** (pengumuman, **jadwal lengkap per jalur dengan timeline**, SPTJM, video SMK, **diagram jumlah daftar/kuota/validasi** sekolah, distribusi jurusan) diambil semi-otomatis lewat tombol di admin (browser → proxy baca-saja `r.jina.ai`), lalu ditinjau sebelum tayang
+- Diagram jumlah daftar / kuota / validasi memakai angka SMKN 1 Teluk Keramat dari halaman statistik sekolah dinas (508 / 392 / 503)
 - **Tautan resmi dinas** ditampilkan langsung di bawah waktu pengisian formulir
 - **Seluruh teks utama bisa diatur dari panel admin** (judul, tagline, sambutan, tahun pelajaran, waktu pengisian, status formulir, tanggal catatan)
 - Status formulir (**Dibuka / Akan Datang / Ditutup**) diatur **manual** dari panel admin → menu Konten Beranda (tidak bergantung tanggal)
@@ -128,10 +130,12 @@ Project yang sudah dibuat:
 
 ✅ **Sudah aktif:** migration `supabase/migrations/0009_dinas_info.sql` (tabel `dinas_info` + RPC `statistik_minat_jurusan`).
 
+⚠️ **Perlu dijalankan:** `supabase/migrations/0010_jadwal_validasi.sql` (kolom `jadwal_data` & `minat_validasi` + data awal).
+
 Jika project dibuat ulang dari nol, langkahnya:
 
 1. Buka Supabase SQL Editor untuk project tersebut.
-2. Jalankan berurutan: `0001_init.sql`, `0002_tahun_pelajaran.sql`, `0003_landing.sql`, `0004_auto_tahun.sql`, `0005_wali_kip_upload.sql`, `0007_cek_nisn_kode.sql`, `0008_status_manual.sql`, `0009_dinas_info.sql`.
+2. Jalankan berurutan: `0001_init.sql`, `0002_tahun_pelajaran.sql`, `0003_landing.sql`, `0004_auto_tahun.sql`, `0005_wali_kip_upload.sql`, `0007_cek_nisn_kode.sql`, `0008_status_manual.sql`, `0009_dinas_info.sql`, `0010_jadwal_validasi.sql`.
 3. Di **Project Settings → API**, salin **anon / publishable key**.
 4. Isi ke `assets/js/config.js`:
 

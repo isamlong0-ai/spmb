@@ -16,26 +16,6 @@ const DEFAULT = {
   tanggal_selesai: null,
 };
 
-function aturCountdown(target, caption) {
-  $("#cdCaption").textContent = caption;
-  const box = $("#lpCountdown");
-  if (!target) { box.style.display = "none"; return; }
-  box.style.display = "grid";
-  const tick = () => {
-    const s = target.getTime() - Date.now();
-    if (s <= 0) {
-      $("#cdHari").textContent = $("#cdJam").textContent = $("#cdMenit").textContent = $("#cdDetik").textContent = "0";
-      return;
-    }
-    $("#cdHari").textContent = Math.floor(s / 86400000);
-    $("#cdJam").textContent = Math.floor((s % 86400000) / 3600000);
-    $("#cdMenit").textContent = Math.floor((s % 3600000) / 60000);
-    $("#cdDetik").textContent = Math.floor((s % 60000) / 1000);
-  };
-  tick();
-  setInterval(tick, 1000);
-}
-
 /** Kunci semua tautan/form bila formulir belum dibuka atau sudah ditutup. */
 function terapkanGate(status, data) {
   const buka = status === "dibuka";
@@ -76,23 +56,6 @@ function render(data, tahunAktif, statusInfo) {
   elStatus.className = `lp-status ${status}`;
   elStatus.textContent = LABEL_STATUS[status];
 
-  const mulai = parseTanggal(d.tanggal_mulai);
-  const selesai = parseTanggal(d.tanggal_selesai);
-  const modeManual = !!d.status_pendaftaran;
-
-  if (modeManual) {
-    // Mode manual: status dikontrol admin, hitung mundur dinonaktifkan
-    aturCountdown(null, status === "dibuka"
-      ? "Formulir pengumpulan data sedang dibuka."
-      : "Status formulir diatur oleh panitia.");
-  } else if (status === "akan-datang") {
-    aturCountdown(mulai, "Menuju pembukaan formulir:");
-  } else if (status === "ditutup") {
-    aturCountdown(null, "Pengisian formulir telah berakhir.");
-  } else {
-    aturCountdown(selesai ? new Date(selesai.getTime() + 86400000) : null, "Menuju penutupan formulir:");
-  }
-
   terapkanGate(status, d);
 }
 
@@ -107,6 +70,50 @@ function barJurusan(label, jumlah, persen, maks) {
     <div class="chart-track"><div class="chart-fill" style="width:${lebar}%"></div></div>
     <div class="chart-nilai">${persen}%</div>
   </div>`;
+}
+
+function barAngka(label, jumlah, maks, kelas = "") {
+  const lebar = maks ? Math.max(3, Math.round((jumlah / maks) * 100)) : 0;
+  return `<div class="chart-row">
+    <div class="chart-label">${escapeHtml(label)}</div>
+    <div class="chart-track"><div class="chart-fill ${kelas}" style="width:${lebar}%"></div></div>
+    <div class="chart-nilai">${Number(jumlah).toLocaleString("id-ID")}</div>
+  </div>`;
+}
+
+function renderJadwal(data) {
+  const daftar = Array.isArray(data) ? data : [];
+  const tabs = $("#jadwalTabs");
+  const timeline = $("#jadwalTimeline");
+  if (!tabs || !timeline) return;
+  if (!daftar.length) {
+    tabs.innerHTML = "";
+    timeline.innerHTML = '<div class="hint">Jadwal belum tersedia.</div>';
+    return;
+  }
+  const urutan = [...daftar].sort((a, b) => {
+    if (a.jalur === "SMK") return -1;
+    if (b.jalur === "SMK") return 1;
+    return 0;
+  });
+  tabs.innerHTML = urutan.map((g, i) =>
+    `<button type="button" class="jadwal-tab ${i === 0 ? "aktif" : ""}" data-jalur="${i}">${escapeHtml(g.jalur)}</button>`
+  ).join("");
+
+  const tampilkan = (i) => {
+    const grup = urutan[i] || urutan[0];
+    timeline.innerHTML = (grup.items || []).map((it) => `
+      <div class="jadwal-item">
+        <div class="tahap">${escapeHtml(it.tahap)}</div>
+        <div class="tanggal">${escapeHtml(it.tanggal)}</div>
+        <div class="jam">${escapeHtml(it.jam)}</div>
+        <span class="status">${escapeHtml(it.status || "-")}</span>
+      </div>`).join("");
+    tabs.querySelectorAll(".jadwal-tab").forEach((b, j) => b.classList.toggle("aktif", j === i));
+  };
+  tabs.querySelectorAll(".jadwal-tab").forEach((b, i) =>
+    b.addEventListener("click", () => tampilkan(i)));
+  tampilkan(0);
 }
 
 function renderInfoDinas(info, jurusan, tahun) {
@@ -136,13 +143,25 @@ function renderInfoDinas(info, jurusan, tahun) {
   $("#dinasPortalLink").href = portal;
 
   const minat = $("#dinasMinat");
+  const chartMinat = $("#minatChart");
   if (minat) {
     minat.innerHTML = info?.minat_pendaftar != null
-      ? `<div style="font-size:26px;font-weight:800;color:var(--primary);line-height:1.2">${escapeHtml(info.minat_persen || "0")}%</div>
-         <div style="margin-top:6px"><b>${escapeHtml(info.minat_nama_sekolah || "SMKN 1 Teluk Keramat")}</b></div>
-         <div>${Number(info.minat_pendaftar).toLocaleString("id-ID")} pendaftar / ${Number(info.minat_kuota || 0).toLocaleString("id-ID")} kuota</div>`
+      ? `Peminat <b>${Number(info.minat_pendaftar).toLocaleString("id-ID")}</b> untuk <b>${Number(info.minat_kuota || 0).toLocaleString("id-ID")}</b> kuota (${escapeHtml(info.minat_persen || "0")}%).`
       : "Data belum tersedia.";
   }
+  if (chartMinat) {
+    const daftar = Number(info?.minat_pendaftar || 0);
+    const kuota = Number(info?.minat_kuota || 0);
+    const validasi = Number(info?.minat_validasi || 0);
+    const maks = Math.max(daftar, kuota, validasi, 1);
+    chartMinat.innerHTML = (daftar || kuota || validasi)
+      ? barAngka("Jumlah Daftar", daftar, maks) +
+        barAngka("Jumlah Kuota", kuota, maks) +
+        barAngka("Jumlah Validasi", validasi, maks, "info")
+      : '<div class="hint">Data belum tersedia.</div>';
+  }
+
+  renderJadwal(info?.jadwal_data);
 
   $("#jurusanTahun").textContent = tahun;
   const chart = $("#jurusanChart");

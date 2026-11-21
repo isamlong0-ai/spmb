@@ -574,8 +574,36 @@ async function simpanLanding() {
 }
 
 /* ---------------------------- Info portal dinas ------------------------ */
+let draftJadwal = [];
+
+function parseJadwal(md) {
+  const lines = md.split("\n").map((s) => s.trim()).filter(Boolean);
+  const grup = [];
+  const namaJalur = /^(Afirmasi\/Disabilitas|Mutasi|Domisili|Prestasi|SMK)$/;
+  const namaTahap = /^(Pembuatan akun dan Pendaftaran|Masa Sanggah|Pengumuman|Daftar Ulang)$/;
+  let aktif = null;
+  for (let i = 0; i < lines.length; i++) {
+    const l = lines[i].replace(/^#+\s*/, "");
+    if (namaJalur.test(l)) {
+      aktif = { jalur: l, items: [] };
+      grup.push(aktif);
+      const c = lines.slice(i + 1, i + 5);
+      if (c.length === 4) aktif.items.push({ tahap: c[0], tanggal: c[1], status: c[2], jam: c[3] });
+      i += 4;
+    } else if (aktif && namaTahap.test(l)) {
+      const c = lines.slice(i, i + 4);
+      if (c.length === 4) {
+        aktif.items.push({ tahap: c[0], tanggal: c[1], status: c[2], jam: c[3] });
+        i += 3;
+      }
+    }
+  }
+  return grup.filter((g) => g.items.length);
+}
+
 function isiDraftDinas(d) {
   const data = d || {};
+  draftJadwal = Array.isArray(data.jadwal_data) ? data.jadwal_data : [];
   $("#dinas_pengumuman").value = (data.pengumuman || []).join("\n");
   $("#dinas_jadwal").value = data.jadwal_url || "";
   $("#dinas_surat").value = data.surat_url || "";
@@ -584,7 +612,14 @@ function isiDraftDinas(d) {
   $("#dinas_minat_persen").value = data.minat_persen || "";
   $("#dinas_minat_pendaftar").value = data.minat_pendaftar ?? "";
   $("#dinas_minat_kuota").value = data.minat_kuota ?? "";
+  $("#dinas_minat_validasi").value = data.minat_validasi ?? "";
   $("#dinas_sumber_update").value = data.sumber_update || "";
+  const info = $("#jadwalDraftInfo");
+  if (info) {
+    info.textContent = draftJadwal.length
+      ? draftJadwal.map((g) => `${g.jalur}: ${g.items.length} tahap`).join(" · ")
+      : "Belum ada jadwal tersimpan.";
+  }
 }
 
 async function muatInfoDinas() {
@@ -613,7 +648,10 @@ async function tarikInfoDinas() {
       if (!res.ok) throw new Error("Gagal membaca portal (HTTP " + res.status + ")");
       return await res.text();
     };
-    const [md, jsonTeks] = await Promise.all([baca("/"), baca("/home/sekolah-list")]);
+    const [md, jsonTeks, jadwalMd] = await Promise.all([
+      baca("/"), baca("/home/sekolah-list"), baca("/jadwal"),
+    ]);
+    const jadwal = parseJadwal(jadwalMd);
 
     // Pengumuman penting (format markdown dari proxy)
     const pengumuman = md.split("\n")
@@ -646,6 +684,7 @@ async function tarikInfoDinas() {
           minat_pendaftar: Number(baris.total_pendaftar) || 0,
           minat_kuota: Number(baris.total_kuota) || 0,
           minat_persen: String(baris.persen || ""),
+          minat_validasi: null,
         };
       }
     } catch (e) {
@@ -659,6 +698,7 @@ async function tarikInfoDinas() {
       video_smk_url: video ? video[0] : "",
       sumber_update: upd ? "Terakhir diperbarui: " + upd[1].trim() : "",
       fetched_at: new Date().toISOString(),
+      jadwal_data: jadwal,
       ...minat,
     };
     isiDraftDinas(d);
@@ -668,6 +708,7 @@ async function tarikInfoDinas() {
     if (!d.surat_url) masalah.push("PDF SPTJM");
     if (!d.video_smk_url) masalah.push("video SMK");
     if (!d.minat_persen) masalah.push("data minat");
+    if (!jadwal.length) masalah.push("jadwal");
     status.style.color = masalah.length ? "var(--warn)" : "var(--primary)";
     status.textContent = masalah.length
       ? `Sebagian data tidak terbaca (${masalah.join(", ")}). Periksa & edit draft sebelum menyimpan.`
@@ -697,6 +738,8 @@ async function simpanInfoDinas() {
     minat_persen: $("#dinas_minat_persen").value.trim() || null,
     minat_pendaftar: $("#dinas_minat_pendaftar").value ? Number($("#dinas_minat_pendaftar").value) : null,
     minat_kuota: $("#dinas_minat_kuota").value ? Number($("#dinas_minat_kuota").value) : null,
+    minat_validasi: $("#dinas_minat_validasi").value ? Number($("#dinas_minat_validasi").value) : null,
+    jadwal_data: draftJadwal,
     sumber_update: $("#dinas_sumber_update").value.trim() || null,
     published_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),

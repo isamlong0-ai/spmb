@@ -64,13 +64,6 @@
         <div class="lp-info-icon">📢</div>
         <div><small>Status Formulir</small><span class="lp-status dibuka" id="lpStatus">Dibuka</span></div>
       </div>
-      <p id="cdCaption" style="font-size:11px;color:#a7f3d0;margin:18px 0 0">Status formulir diatur oleh panitia.</p>
-      <div class="lp-countdown" id="lpCountdown">
-        <div class="lp-count"><b id="cdHari">–</b><span id="cdLabelHari">Hari</span></div>
-        <div class="lp-count"><b id="cdJam">–</b><span>Jam</span></div>
-        <div class="lp-count"><b id="cdMenit">–</b><span>Menit</span></div>
-        <div class="lp-count"><b id="cdDetik">–</b><span>Detik</span></div>
-      </div>
     </aside>
   </div>
 </header>
@@ -109,10 +102,13 @@
         </ul>
         <a id="dinasPortalLink" href="https://spmb-dikbud.kalbarprov.go.id/" target="_blank" rel="noopener">Buka portal resmi ↗</a>
       </div>
-      <div class="lp-card">
-        <h4>🗓 Jadwal Lengkap</h4>
-        <p style="font-size:13.5px;color:var(--ink-2);line-height:1.7;margin:0 0 12px">Tahapan pendaftaran, seleksi, dan pengumuman hasil sesuai portal dinas.</p>
-        <a id="dinasJadwal" href="https://spmb-dikbud.kalbarprov.go.id/jadwal" target="_blank" rel="noopener">Lihat Jadwal ↗</a>
+      <div class="lp-card" style="grid-column:1/-1">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+          <h4 style="margin:0">🗓 Jadwal Lengkap SPMB Kalbar 2026</h4>
+          <a id="dinasJadwal" href="https://spmb-dikbud.kalbarprov.go.id/jadwal" target="_blank" rel="noopener" style="font-size:12.5px">Buka di portal dinas ↗</a>
+        </div>
+        <div id="jadwalTabs" class="jadwal-tabs"></div>
+        <div id="jadwalTimeline" class="jadwal-timeline"></div>
       </div>
       <div class="lp-card">
         <h4>📄 Surat Pernyataan (SPTJM)</h4>
@@ -125,9 +121,10 @@
         <a id="dinasVideo" href="https://spmb-dikbud.kalbarprov.go.id/" target="_blank" rel="noopener">Tonton Video ↗</a>
       </div>
       <div class="lp-card">
-        <h4>📊 Minat Calon Siswa — SMKN 1 Teluk Keramat</h4>
-        <div id="dinasMinat" style="font-size:13.5px;color:var(--ink-2);line-height:1.8">Data belum tersedia.</div>
-        <span class="hint" style="display:block;margin-top:10px">Sumber: portal dinas</span>
+        <h4>📊 Jumlah Daftar, Kuota &amp; Validasi</h4>
+        <p class="hint" style="margin:0 0 12px">SMKN 1 Teluk Keramat · sumber: portal dinas</p>
+        <div id="dinasMinat" class="minat-ringkas" style="font-size:13.5px;color:var(--ink-2)">Data belum tersedia.</div>
+        <div id="minatChart" class="chart-list" style="margin-top:14px"></div>
       </div>
       <div class="lp-card">
         <h4>🎯 Distribusi Pilihan Jurusan</h4>
@@ -223,6 +220,6 @@
   <div class="wrap bottom">© <span id="lpTahunPoros">2026</span> SMKN 1 Teluk Keramat · Dibuat untuk keperluan SPMB.</div>
 </footer>
 
-<script type="module" src="assets/js/landing.js?v=12"></script>
+<script type="module" src="assets/js/landing.js?v=13"></script>
 </body>
 </html>

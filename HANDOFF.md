@@ -15,6 +15,7 @@
 - Konfigurasi MCP Supabase ditulis ke `~/.config/opencode/opencode.json` (opsional, tidak dipakai).
 
 ## Yang masih perlu
+- ⚠️ **Jalankan `supabase/migrations/0010_jadwal_validasi.sql`** di SQL Editor (kolom `jadwal_data`, `minat_validasi`, + seed jadwal & angka 508/392/503).
 - Hapus 5 file uji di Drive: `foto_test_koneksi.jpg`, `foto_test_cors_browser.jpg`, `foto_test_folder_tahun.jpg`, `foto_test_folder_final.jpg`, `foto_test_url_baru.jpg`. (1x1 pixel) dari Drive: `foto_test_koneksi.jpg`, `foto_test_cors_browser.jpg`, `foto_test_folder_tahun.jpg` (folder utama), dan `foto_test_folder_final.jpg` (dalam subfolder `2026-2027`).
 - Opsional: hapus 1 data dummy `asdfghjk` (NISN `347689054`, kode `SPMB-2027-2028-507682B3`) — bukan dibuat oleh agent, kemungkinan uji manual.
 - Ganti password admin default `AdminSPMB2026!` setelah login pertama — sekarang tersedia menu 🔑 Ganti Password di panel admin (sudah diuji, password dikembalikan ke semula setelah uji).
@@ -37,6 +38,12 @@ Apps Script Web App sudah aktif & teruji (GET + POST upload ke Drive berhasil), 
 - Admin: ubah tahun aktif lewat dropdown di Dashboard + filter tahun di tabel & export Excel/CSV.
 - Export Excel: 2 sheet (Calon Siswa, Nilai Rapor) via SheetJS; sudah diuji menghasilkan `.xlsx`.
 - `cek_nisn` mengembalikan `tahun_pelajaran`.
+
+## Perubahan terakhir 7 — Jadwal & diagram validasi
+- Hero: caption "Status formulir diatur oleh panitia." dan kotak hitung mundur dihapus.
+- Kartu Jadwal Lengkap sekarang menampilkan timeline per jalur (SMK default) dari `/jadwal`, diambil via proxy saat Tarik Info, disimpan di `jadwal_data`.
+- Diagram baru: Jumlah Daftar / Jumlah Kuota / Jumlah Validasi (503) dari halaman `/statsekolah/school` (POST+CSRF, tidak bisa diakses browser → diisi manual di admin, seeded via migration).
+- Data angka: SMKN 1 Teluk Keramat = 508 daftar / 392 kuota / 503 validasi.
 
 ## Perubahan terakhir 6 — Scrape lewat browser
 - Apps Script `scrape_dinas` Gagal: izin `script.external_request` tidak bisa diperoleh (sudah coba Run, revoke, manifest, deployment baru — tetap ditolak).
