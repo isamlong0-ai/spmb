@@ -13,8 +13,8 @@ if (statusInfo.status !== "dibuka" && !new URLSearchParams(location.search).has(
   box.style.cssText = "position:fixed;inset:0;z-index:500;background:rgba(15,23,42,.75);display:flex;align-items:center;justify-content:center;padding:18px;backdrop-filter:blur(4px)";
   box.innerHTML = `<div style="background:#fff;border-radius:18px;padding:30px;max-width:420px;width:100%;text-align:center">
     <div style="font-size:42px">${statusInfo.status === "akan-datang" ? "⏳" : "🔒"}</div>
-    <h2 style="margin:8px 0">Pendaftaran ${LABEL_STATUS[statusInfo.status]}</h2>
-    <p style="color:#64748b;font-size:14px;line-height:1.7;margin:0 0 18px">Pengecekan data tidak tersedia saat pendaftaran ${LABEL_STATUS[statusInfo.status].toLowerCase()}.</p>
+    <h2 style="margin:8px 0">Formulir ${LABEL_STATUS[statusInfo.status]}</h2>
+    <p style="color:#64748b;font-size:14px;line-height:1.7;margin:0 0 18px">Pengecekan data tidak tersedia saat formulir pengumpulan data dalam kondisi ${LABEL_STATUS[statusInfo.status].toLowerCase()}.</p>
     <a class="btn btn-primary" href="index.html">← Kembali ke Beranda</a>
   </div>`;
   document.body.appendChild(box);
@@ -65,7 +65,7 @@ async function cari() {
     if (error) throw error;
     const r = Array.isArray(data) ? data[0] : data;
     if (!r?.ditemukan) {
-      hasil.innerHTML = `<div class="callout" style="background:var(--danger-50);border-color:#fecaca;color:#991b1b">Data dengan NISN <b>${escapeHtml(nisn)}</b> belum terdaftar atau tidak ditemukan.</div>`;
+      hasil.innerHTML = `<div class="callout" style="background:var(--danger-50);border-color:#fecaca;color:#991b1b">Data calon siswa dengan NISN <b>${escapeHtml(nisn)}</b> belum ditemukan.</div>`;
       return;
     }
     dataTerakhir = r;
@@ -79,7 +79,7 @@ async function cari() {
         <div>1. ${escapeHtml(r.jurusan1)}</div>
         <div>2. ${escapeHtml(r.jurusan2)}</div>
         <div>3. ${escapeHtml(r.jurusan3)}</div>
-        <div style="margin-top:6px;color:var(--muted);font-size:12px">Waktu daftar: ${escapeHtml(r.waktu_daftar)} WIB</div>
+        <div style="margin-top:6px;color:var(--muted);font-size:12px">Waktu pengiriman data: ${escapeHtml(r.waktu_daftar)} WIB</div>
       </div>`;
     isiBukti(r);
     $("#buktiCetak").classList.remove("hidden");

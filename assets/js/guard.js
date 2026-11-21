@@ -1,6 +1,6 @@
 /**
  * Pengaman halaman formulir.
- * Jika pendaftaran belum dibuka / sudah ditutup, seluruh form dinonaktifkan
+ * Jika formulir belum dibuka / sudah ditutup, seluruh form dinonaktifkan
  * dan pengunjung dikembalikan ke beranda.
  * (Bukan pengamanan server — aturan tegas tetap ada di RLS/landing.)
  */
@@ -26,12 +26,13 @@ if (info.status !== "dibuka" && !bolehLewat) {
   overlay.innerHTML = `
     <div style="background:#fff;border-radius:18px;padding:30px;max-width:440px;width:100%;text-align:center;box-shadow:0 24px 60px rgba(0,0,0,.3)">
       <div style="font-size:44px;margin-bottom:8px">${info.status === "akan-datang" ? "⏳" : "🔒"}</div>
-      <h2 style="margin:0 0 10px;font-size:21px">Pendaftaran ${LABEL_STATUS[info.status]}</h2>
+      <h2 style="margin:0 0 10px;font-size:21px">Formulir ${LABEL_STATUS[info.status]}</h2>
       <p style="color:#64748b;font-size:14px;line-height:1.7;margin:0 0 18px">
         ${info.status === "akan-datang"
-          ? `Formulir belum dapat diisi. Jadwal pendaftaran:<br><b>${info.waktu_pendaftaran || "-"}</b>`
-          : "Masa pendaftaran telah berakhir. Formulir tidak lagi tersedia."}
+          ? `Formulir pengumpulan data belum dapat diisi. Jadwal pengisian:<br><b>${info.waktu_pendaftaran || "-"}</b>`
+          : "Masa pengisian formulir telah berakhir. Formulir tidak lagi tersedia."}
       </p>
+      <p style="font-size:12px;color:#64748b;margin:0 0 16px">Untuk pendaftaran resmi, kunjungi <a href="https://spmb-dikbud.kalbarprov.go.id/" target="_blank" rel="noopener">portal dinas</a>.</p>
       <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
         <a class="btn btn-primary" href="index.html">← Kembali ke Beranda</a>
         <a class="btn btn-ghost" href="admin.html">Area Admin</a>

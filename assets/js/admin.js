@@ -150,12 +150,12 @@ function updateDashboard() {
   [1, 2, 3].forEach((i) => {
     const [nama, jumlah] = urut[i - 1] || ["-", 0];
     $("#stJ" + i).textContent = jumlah > 0 ? nama : "-";
-    $("#stJ" + i + "n").textContent = jumlah + " pendaftar";
+    $("#stJ" + i + "n").textContent = jumlah + " calon siswa";
   });
   const maksJ = urut[0]?.[1] || 1;
   $("#chartJurusan").innerHTML = data.length
     ? urut.map(([n, v]) => barisChart(n, v, maksJ)).join("")
-    : '<div class="hint">Belum ada pendaftar pada tahun ini.</div>';
+    : '<div class="hint">Belum ada calon siswa pada tahun ini.</div>';
 
   const kip = data.filter((d) => d.punya_kip).length;
   const foto = data.filter((d) => d.foto_siswa).length;
@@ -188,7 +188,7 @@ function terapkanFilter() {
 function renderTabel() {
   const body = $("#dataBody");
   if (!dataTerfilter.length) {
-    body.innerHTML = `<tr><td colspan="8" style="padding:30px;color:var(--muted)">Belum ada data pendaftar untuk tahun ini.</td></tr>`;
+    body.innerHTML = `<tr><td colspan="8" style="padding:30px;color:var(--muted)">Belum ada data calon siswa untuk tahun ini.</td></tr>`;
     $("#infoData").textContent = "0 data";
     return;
   }
@@ -373,7 +373,7 @@ async function simpanEdit() {
 
 async function hapusData(id) {
   const d = semuaData.find((x) => x.id === id);
-  if (!confirm(`Yakin ingin menghapus data pendaftar "${d?.nama || id}"?\n\nTindakan ini tidak dapat dibatalkan.`)) return;
+  if (!confirm(`Yakin ingin menghapus data calon siswa "${d?.nama || id}"?\n\nTindakan ini tidak dapat dibatalkan.`)) return;
   const { error } = await supabase.from("pendaftar").delete().eq("id", id);
   if (error) toast("Gagal menghapus: " + error.message, "error");
   else { toast("Data berhasil dihapus."); muatData(); }
@@ -390,13 +390,13 @@ function exportCSV() {
   const a = document.createElement("a");
   a.href = URL.createObjectURL(blob);
   const label = ($("#filterTahun").value || "semua-tahun").replace("/", "-");
-  a.download = `pendaftar-spmb-${label}-${new Date().toISOString().slice(0, 10)}.csv`;
+  a.download = `calon-siswa-spmb-${label}-${new Date().toISOString().slice(0, 10)}.csv`;
   a.click();
   URL.revokeObjectURL(a.href);
 }
 
 const KOLOM_EXCEL = [
-  ["tahun_pelajaran", "Tahun Pelajaran"], ["kode_pendaftaran", "Kode Pendaftaran"],
+  ["tahun_pelajaran", "Tahun Pelajaran"], ["kode_pendaftaran", "Kode Pengiriman Data"],
   ["nama", "Nama"], ["nik", "NIK"], ["kk", "No. KK"], ["nisn", "NISN"],
   ["tempat_lahir", "Tempat Lahir"], ["tanggal_lahir", "Tanggal Lahir"],
   ["jenis_kelamin", "Jenis Kelamin"], ["agama", "Agama"],
@@ -410,7 +410,7 @@ const KOLOM_EXCEL = [
   ["tahun_lulus", "Tahun Lulus"], ["punya_kip", "Punya KIP"], ["no_kip", "No. KIP"],
   ["jurusan1", "Pilihan 1"], ["jurusan2", "Pilihan 2"], ["jurusan3", "Pilihan 3"],
   ["peringkat_5", "Peringkat"], ["rata_rata", "Rata-rata"],
-  ["foto_siswa", "URL Foto 3x4"], ["created_at", "Waktu Daftar"],
+  ["foto_siswa", "URL Foto 3x4"], ["created_at", "Waktu Pengiriman Data"],
 ];
 
 async function exportExcel() {
@@ -450,11 +450,11 @@ async function exportExcel() {
     ws2["!cols"] = [{ wch: 16 }, { wch: 24 }, { wch: 13 }, { wch: 16 }, { wch: 8 }, { wch: 8 }, { wch: 8 }, { wch: 8 }, { wch: 8 }];
 
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws1, "Pendaftar");
+    XLSX.utils.book_append_sheet(wb, ws1, "Calon Siswa");
     XLSX.utils.book_append_sheet(wb, ws2, "Nilai Rapor");
     const label = ($("#filterTahun").value || "semua-tahun").replace("/", "-");
     XLSX.writeFile(wb, `SPMB_${label}_${new Date().toISOString().slice(0, 10)}.xlsx`);
-    toast(`Excel berhasil diunduh (${baris.length} pendaftar).`);
+    toast(`Excel berhasil diunduh (${baris.length} calon siswa).`);
   } catch (e) {
     toast("Gagal membuat Excel: " + e.message, "error");
   } finally {
@@ -511,7 +511,7 @@ async function simpanTahunAktif() {
   terapkanFilter();
   toast(otomatis
     ? `Tahun pelajaran otomatis: ${tahun}. Berganti sendiri setiap tahun.`
-    : `Tahun pelajaran aktif sekarang ${tahun}. Form pendaftaran ikut berubah.`);
+    : `Tahun pelajaran aktif sekarang ${tahun}. Formulir ikut berubah.`);
 }
 
 /* --------------------------- Konten beranda ---------------------------- */
@@ -645,7 +645,7 @@ function bindEvents() {
     $("#passwordSection").classList.add("hidden");
   });
   $("#navPendaftar").addEventListener("click", () => {
-    gantiMenu("navPendaftar", "Data Pendaftar");
+    gantiMenu("navPendaftar", "Data Calon Siswa");
     $("#dashboardSection").classList.add("hidden");
     $("#dataSection").classList.remove("hidden");
     $("#landingSection").classList.add("hidden");

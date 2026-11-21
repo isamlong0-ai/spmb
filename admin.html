@@ -24,7 +24,7 @@
     <div class="field" style="margin-top:12px"><label for="password">Password</label><input id="password" type="password" placeholder="••••••••" autocomplete="current-password"></div>
     <button class="btn btn-primary btn-block" id="btnLogin" style="margin-top:20px">Masuk</button>
     <p id="loginError" style="color:var(--danger);font-size:12px;margin-top:12px;text-align:center"></p>
-    <div style="text-align:center;margin-top:18px"><a href="index.html" style="font-size:12.5px">← Kembali ke beranda</a> · <a href="pendaftaran.html" style="font-size:12.5px">Form pendaftaran</a></div>
+    <div style="text-align:center;margin-top:18px"><a href="index.html" style="font-size:12.5px">← Kembali ke beranda</a> · <a href="pendaftaran.html" style="font-size:12.5px">Formulir data calon siswa</a></div>
   </div>
 </div>
 
@@ -36,7 +36,7 @@
       <div><strong>ADMIN SPMB</strong><span>SMKN 1 Teluk Keramat</span></div>
     </div>
     <button class="nav-item active" id="navDashboard">📊 Dashboard</button>
-    <button class="nav-item" id="navPendaftar">👥 Data Pendaftar</button>
+    <button class="nav-item" id="navPendaftar">👥 Data Calon Siswa</button>
     <button class="nav-item" id="navLanding">🏠 Konten Beranda</button>
     <button class="nav-item" id="navPassword">🔑 Ganti Password</button>
     <div style="flex:1"></div>
@@ -45,13 +45,13 @@
 
   <main class="admin-main">
     <div class="admin-head">
-      <div><h1 id="pageTitle">Dashboard</h1><p id="pageSubtitle">Ringkasan pendaftaran SPMB</p></div>
+      <div><h1 id="pageTitle">Dashboard</h1><p id="pageSubtitle">Ringkasan pengumpulan data calon siswa — SPMB</p></div>
     </div>
 
     <!-- ============ DASHBOARD (grafik saja) ============ -->
     <section class="card" id="dashboardSection">
       <div class="card-head">
-        <div><h2>Ringkasan Pendaftaran</h2><p id="dashboardSubtitle">Statistik tahun pelajaran.</p></div>
+        <div><h2>Ringkasan Pengumpulan Data</h2><p id="dashboardSubtitle">Statistik tahun pelajaran.</p></div>
         <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
           <span style="font-size:12px;color:var(--muted)">Statistik tahun:</span>
           <select id="statTahun" style="width:auto;padding:7px 9px;font-size:12px"></select>
@@ -63,10 +63,10 @@
       </div>
 
       <div class="stat-grid" id="statGrid">
-        <div class="stat-card"><div class="n" id="stTotal">0</div><div class="l">Total Pendaftar</div></div>
-        <div class="stat-card top-jurusan"><div class="n" id="stJ1">-</div><div class="l">Jurusan Pilihan #1</div><div class="sub" id="stJ1n">0 pendaftar</div></div>
-        <div class="stat-card top-jurusan"><div class="n" id="stJ2">-</div><div class="l">Jurusan Pilihan #2</div><div class="sub" id="stJ2n">0 pendaftar</div></div>
-        <div class="stat-card top-jurusan"><div class="n" id="stJ3">-</div><div class="l">Jurusan Pilihan #3</div><div class="sub" id="stJ3n">0 pendaftar</div></div>
+        <div class="stat-card"><div class="n" id="stTotal">0</div><div class="l">Total Calon Siswa</div></div>
+        <div class="stat-card top-jurusan"><div class="n" id="stJ1">-</div><div class="l">Jurusan Pilihan #1</div><div class="sub" id="stJ1n">0 calon siswa</div></div>
+        <div class="stat-card top-jurusan"><div class="n" id="stJ2">-</div><div class="l">Jurusan Pilihan #2</div><div class="sub" id="stJ2n">0 calon siswa</div></div>
+        <div class="stat-card top-jurusan"><div class="n" id="stJ3">-</div><div class="l">Jurusan Pilihan #3</div><div class="sub" id="stJ3n">0 calon siswa</div></div>
       </div>
 
       <div class="grid" style="margin-top:4px">
@@ -79,7 +79,7 @@
           <div class="chart-list" id="chartLain"></div>
         </div>
         <div class="lp-card">
-          <h4>🗓 Pendaftar per Tahun Pelajaran</h4>
+          <h4>🗓 Calon Siswa per Tahun Pelajaran</h4>
           <div class="chart-list" id="chartTahun"></div>
         </div>
       </div>
@@ -138,11 +138,11 @@
           <span class="hint">Otomatis mengikuti tahun pelajaran aktif (diatur di Dashboard).</span>
         </div>
         <div class="field">
-          <label for="lp_edit_waktu">Waktu Pendaftaran (teks)</label>
+          <label for="lp_edit_waktu">Waktu Pengisian Formulir (teks)</label>
           <input id="lp_edit_waktu" type="text" placeholder="01 November – 31 Desember 2026">
         </div>
         <div class="field full">
-          <label for="lp_edit_status">Status Pendaftaran</label>
+          <label for="lp_edit_status">Status Formulir</label>
           <select id="lp_edit_status">
             <option value="dibuka">Dibuka — formulir &amp; cek data dapat diakses</option>
             <option value="akan-datang">Akan Datang — formulir &amp; cek data dikunci</option>
@@ -195,7 +195,7 @@
 <div class="overlay" id="overlayEdit">
   <div class="modal wide">
     <div class="modal-head">
-      <h3 id="editTitle">Edit Pendaftar</h3>
+      <h3 id="editTitle">Edit Data Calon Siswa</h3>
       <button class="modal-close" id="editClose">×</button>
     </div>
     <div id="editBody"></div>

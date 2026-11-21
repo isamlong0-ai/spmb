@@ -7,7 +7,7 @@ const supabase = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
 const $ = (s) => document.querySelector(s);
 
 const DEFAULT = {
-  judul: "Selamat Datang di Penerimaan Murid Baru",
+  judul: "Selamat Datang di Pengumpulan Data Calon Siswa",
   tagline: "Raih masa depanmu bersama keluarga besar SMK Negeri 1 Teluk Keramat.",
   sambutan: "Isi sambutan belum diatur. Silakan atur melalui panel admin.",
   tahun_pelajaran: CONFIG.TAHUN_PELAJARAN,
@@ -36,7 +36,7 @@ function aturCountdown(target, caption) {
   setInterval(tick, 1000);
 }
 
-/** Kunci semua tautan/form bila pendaftaran belum dibuka atau sudah ditutup. */
+/** Kunci semua tautan/form bila formulir belum dibuka atau sudah ditutup. */
 function terapkanGate(status, data) {
   const buka = status === "dibuka";
   const notice = $("#lpGateNotice");
@@ -46,16 +46,16 @@ function terapkanGate(status, data) {
     else {
       el.setAttribute("aria-disabled", "true");
       el.title = status === "akan-datang"
-        ? `Pendaftaran belum dibuka. Mulai ${data.waktu_pendaftaran || "-"}.`
-        : "Pendaftaran sudah ditutup.";
+        ? `Formulir belum dibuka. Mulai ${data.waktu_pendaftaran || "-"}.`
+        : "Formulir sudah ditutup.";
     }
   });
   if (!buka) {
     notice.classList.remove("hidden");
     notice.classList.toggle("closed", status === "ditutup");
     notice.innerHTML = status === "akan-datang"
-      ? `⏳ <b>Pendaftaran belum dibuka.</b> Formulir &amp; pengecekan data sedang dinonaktifkan. Jadwal: ${data.waktu_pendaftaran || "-"}.`
-      : `🔒 <b>Pendaftaran sudah ditutup.</b> Formulir &amp; pengecekan data tidak tersedia. Hubungi panitia melalui menu Bantuan bila ada kendala.`;
+      ? `⏳ <b>Formulir pengumpulan data belum dibuka.</b> Pengisian &amp; pengecekan data sedang dinonaktifkan. Jadwal: ${data.waktu_pendaftaran || "-"}. Untuk pendaftaran resmi, kunjungi <a href="https://spmb-dikbud.kalbarprov.go.id/" target="_blank" rel="noopener">portal dinas</a>.`
+      : `🔒 <b>Formulir pengumpulan data sudah ditutup.</b> Pengisian &amp; pengecekan data tidak tersedia. Untuk pendaftaran resmi, kunjungi <a href="https://spmb-dikbud.kalbarprov.go.id/" target="_blank" rel="noopener">portal dinas</a>.`;
   }
 }
 
@@ -83,14 +83,14 @@ function render(data, tahunAktif, statusInfo) {
   if (modeManual) {
     // Mode manual: status dikontrol admin, hitung mundur dinonaktifkan
     aturCountdown(null, status === "dibuka"
-      ? "Pendaftaran sedang dibuka."
-      : "Status pendaftaran diatur oleh panitia.");
+      ? "Formulir pengumpulan data sedang dibuka."
+      : "Status formulir diatur oleh panitia.");
   } else if (status === "akan-datang") {
-    aturCountdown(mulai, "Menuju pembukaan pendaftaran:");
+    aturCountdown(mulai, "Menuju pembukaan formulir:");
   } else if (status === "ditutup") {
-    aturCountdown(null, "Pendaftaran telah berakhir.");
+    aturCountdown(null, "Pengisian formulir telah berakhir.");
   } else {
-    aturCountdown(selesai ? new Date(selesai.getTime() + 86400000) : null, "Menuju penutupan pendaftaran:");
+    aturCountdown(selesai ? new Date(selesai.getTime() + 86400000) : null, "Menuju penutupan formulir:");
   }
 
   terapkanGate(status, d);

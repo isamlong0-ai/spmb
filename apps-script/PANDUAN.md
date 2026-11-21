@@ -51,7 +51,7 @@ Buka URL Web App di browser. Jika muncul JSON seperti:
 {"ok":true,"layanan":"SPMB Drive Upload Proxy","folderId":"1iRtq..."}
 ```
 
-berarti Web App sudah aktif. Selanjutnya coba unggah foto lewat form pendaftaran.
+berarti Web App sudah aktif. Selanjutnya coba unggah foto lewat formulir pengumpulan data calon siswa.
 
 ## Troubleshooting CORS
 Jika browser menolak permintaan (error CORS), pastikan script mengembalikan `ContentService.createTextOutput(...)` seperti pada kode di atas, dan frontend mengirim `Content-Type: text/plain` (sudah diatur di `form.js`). Hindari `application/json` karena memicu preflight OPTIONS yang tidak didukung Apps Script.

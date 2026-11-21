@@ -1,5 +1,5 @@
 /**
- * Status pendaftaran: Akan Datang / Dibuka / Ditutup.
+ * Status formulir pengumpulan data: Akan Datang / Dibuka / Ditutup.
  * Diatur manual dari panel admin (kolom `status_pendaftaran`).
  * Tanggal mulai/selesai hanya dipakai sebagai fallback bila kolom belum ada.
  * Dipakai beranda dan halaman form agar aturannya identik.

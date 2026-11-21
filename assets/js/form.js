@@ -395,17 +395,17 @@ async function submitAkhir(e) {
     $(".hero").classList.add("hidden");
     $("#buktiBox").classList.remove("hidden");
     window.scrollTo({ top: 0, behavior: "smooth" });
-    toast("Pendaftaran berhasil disimpan.");
+    toast("Data calon siswa berhasil dikirim.");
   } catch (err) {
     let pesan = err?.message || String(err);
     if (pesan.includes("duplicate key") || pesan.includes("23505")) {
-      pesan = "NISN atau NIK sudah terdaftar. Silakan hubungi panitia bila ini kesalahan.";
+      pesan = "NISN atau NIK sudah tercatat dalam data calon siswa. Hubungi panitia bila ini kesalahan.";
     }
     setStatus("Gagal menyimpan: " + pesan, "var(--danger)");
     toast("Gagal: " + pesan, "error");
   } finally {
     btn.disabled = false;
-    btn.textContent = "Kirim Pendaftaran ✓";
+    btn.textContent = "Kirim Data Calon Siswa ✓";
   }
 }
 
@@ -437,7 +437,7 @@ async function cariData() {
         <div><b>Tahun Pelajaran:</b> ${escapeHtml(r.tahun_pelajaran || "-")}</div>
         <div style="color:var(--muted);font-size:11px;margin-top:6px">Waktu daftar: ${escapeHtml(r.waktu_daftar)} WIB</div>`;
     } else {
-      box.innerHTML = `<span style="color:var(--danger)">Data dengan NISN <b>${escapeHtml(nisn)}</b> belum terdaftar.</span>`;
+      box.innerHTML = `<span style="color:var(--danger)">Data calon siswa dengan NISN <b>${escapeHtml(nisn)}</b> belum ditemukan.</span>`;
     }
   } catch (err) {
     box.innerHTML = `<span style="color:var(--danger)">Terjadi kesalahan: ${escapeHtml(err.message)}</span>`;
@@ -453,7 +453,7 @@ function escapeHtml(s) {
 function bukaBantuan() {
   const wa = (no, nama) => `<div style="padding:7px 0;display:flex;justify-content:space-between;align-items:center;gap:10px">
       <span>${nama}</span><a href="https://wa.me/${no}" target="_blank" rel="noopener" class="btn btn-sm btn-primary">Chat WA</a></div>`;
-  bukaModal("Bantuan Pendaftaran", `
+  bukaModal("Bantuan Pengisian Formulir", `
     <p style="margin-top:0">Jika mengalami kendala, hubungi panitia SPMB:</p>
     ${wa("6281345497178", "Randika")}
     ${wa("6285174399784", "Luffi Mardiansyah")}

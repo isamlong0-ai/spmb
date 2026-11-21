@@ -1,10 +1,12 @@
 # SPMB SMK Negeri 1 Teluk Keramat — 2026/2027
 
-Aplikasi pendaftaran siswa baru berbasis **HTML + CSS + JavaScript (ES modules)**, dengan:
+Aplikasi **pengumpulan data calon siswa** untuk SPMB berbasis **HTML + CSS + JavaScript (ES modules)**, dengan:
 
 - **Supabase** sebagai database & autentikasi admin (Postgres + RLS)
 - **Google Apps Script Web App** sebagai proxy unggah foto ke **Google Drive**
 - Antarmuka modern, responsif, dan ramah HP maupun komputer
+
+> ⚠️ **Posisi aplikasi:** halaman-halaman di repo ini **hanya untuk pengumpulan data calon siswa** di sekolah. **Bukan pendaftaran resmi.** Pendaftaran resmi SPMB dilakukan di portal Dinas Pendidikan Provinsi Kalimantan Barat: https://spmb-dikbud.kalbarprov.go.id/ — tautan ini ditampilkan di beranda (tepat di bawah waktu pengisian), di halaman formulir, dan di bukti pengiriman data.
 
 ---
 
@@ -13,7 +15,7 @@ Aplikasi pendaftaran siswa baru berbasis **HTML + CSS + JavaScript (ES modules)*
 ```
 .
 ├── index.html                    # BERANDA / landing page (konten bisa diatur di admin)
-├── pendaftaran.html              # Form pendaftaran (wizard 6 langkah)
+├── pendaftaran.html              # Formulir pengumpulan data calon siswa (wizard 6 langkah)
 ├── cek.html                      # Halaman cek data + cetak ulang bukti
 ├── admin.html                    # Panel admin (dashboard grafik + CRUD + editor beranda)
 ├── assets/
@@ -24,8 +26,8 @@ Aplikasi pendaftaran siswa baru berbasis **HTML + CSS + JavaScript (ES modules)*
 │       ├── wilayah.js            # Autocomplete wilayah nasional (kalbar offline)
 │       ├── cek.js                # Logika halaman cek data & cetak ulang
 │       ├── landing.js            # Render konten beranda, status & kunci akses
-│       ├── status.js             # Status jadwal pendaftaran (dibuka/tutup)
-│       ├── guard.js              # Pengunci halaman form saat pendaftaran tutup
+│       ├── status.js             # Status formulir (dibuka/tutup) dari pengaturan admin
+│       ├── guard.js              # Pengunci halaman form saat formulir ditutup
 │       ├── form.js               # Logika wizard, validasi, upload, submit
 │       └── admin.js              # Logika CRUD panel admin
 ├── supabase/migrations/
@@ -34,8 +36,8 @@ Aplikasi pendaftaran siswa baru berbasis **HTML + CSS + JavaScript (ES modules)*
 │   ├── 0003_landing.sql          # Tabel konten beranda
 │   ├── 0004_auto_tahun.sql       # Mode tahun pelajaran otomatis
 │   ├── 0005_wali_kip_upload.sql  # Field wali lengkap & penyesuaian form
-│   ├── 0007_cek_nisn_kode.sql    # Kode pendaftaran pada hasil cek NISN
-│   └── 0008_status_manual.sql    # Buka/tutup pendaftaran diatur manual
+│   ├── 0007_cek_nisn_kode.sql    # Kode pengiriman data pada hasil cek NISN
+│   └── 0008_status_manual.sql    # Buka/tutup formulir diatur manual
 ├── apps-script/
 │   ├── Code.gs                   # Web App upload foto ke Google Drive
 │   └── PANDUAN.md                # Cara deploy Apps Script
@@ -47,18 +49,19 @@ Aplikasi pendaftaran siswa baru berbasis **HTML + CSS + JavaScript (ES modules)*
 ## Fitur utama
 
 ### Beranda (`index.html`)
-- Halaman utama yang menarik: hero, kartu informasi, kata sambutan, alur pendaftaran, dan panduan
-- **Seluruh teks utama bisa diatur dari panel admin** (judul, tagline, sambutan, tahun pelajaran, waktu pendaftaran, tanggal mulai/selesai)
-- Status pendaftaran (**Dibuka / Akan Datang / Ditutup**) diatur **manual** dari panel admin → menu Konten Beranda (tidak bergantung tanggal)
+- Halaman utama yang menarik: hero, kartu informasi, kata sambutan, alur pengumpulan data, dan panduan
+- **Tautan resmi dinas** ditampilkan langsung di bawah waktu pengisian formulir
+- **Seluruh teks utama bisa diatur dari panel admin** (judul, tagline, sambutan, tahun pelajaran, waktu pengisian, status formulir, tanggal catatan)
+- Status formulir (**Dibuka / Akan Datang / Ditutup**) diatur **manual** dari panel admin → menu Konten Beranda (tidak bergantung tanggal)
 - Saat **belum dibuka / sudah ditutup**, semua tautan ke formulir & pengecekan otomatis terkunci (abu-abu + gembok), dan halaman form maupun cek data menampilkan layar pengunci
 - Tombol menuju formulir dan pencarian data
 
 ### Cek data (`cek.html`)
-- Halaman mandiri untuk mencari pendaftaran berdasarkan NISN
+- Halaman mandiri untuk mencari data calon siswa berdasarkan NISN
 - Jika data ditemukan, tersedia tombol **🖨 Cetak Ulang Bukti** dan **⬇ Unduh PDF**
 - Bisa dibuka langsung dengan `cek.html?nisn=0071234567`
 
-### Form pendaftar (`pendaftaran.html`)
+### Formulir pengumpulan data calon siswa (`pendaftaran.html`)
 - Wizard **6 langkah** dengan progress bar dan navigasi bebas ke langkah sebelumnya
 - **Alamat terpisah per wilayah**: provinsi → kabupaten → kecamatan → desa → RT → RW → kode pos → patokan → alamat lengkap
 - **Autocomplete provinsi & kabupaten**, dengan default **Kalimantan Barat / Kabupaten Sambas**
@@ -68,26 +71,26 @@ Aplikasi pendaftaran siswa baru berbasis **HTML + CSS + JavaScript (ES modules)*
 - Upload satu foto 3x4 siswa dengan kompresi sisi klien, **opsional**, tersimpan di subfolder Google Drive sesuai tahun pelajaran
 - Nomor KIP bebas huruf/angka/tanda baca; orang tua meninggal otomatis menyembunyikan isian rinciannya
 - Data wali lengkap seperti ayah/ibu (satu set), ikut tersembunyi bila status meninggal
-- Cek data pendaftaran berdasarkan NISN (hanya menampilkan field terbatas)
-- Bukti pendaftaran bisa dicetak / diunduh sebagai PDF
+- Cek data calon siswa berdasarkan NISN (hanya menampilkan field terbatas)
+- Bukti pengiriman data bisa dicetak / diunduh sebagai PDF
 - Tombol bantuan WhatsApp panitia
 
 ### Panel admin (`admin.html`)
 - Login dengan Supabase Auth
-- **Dashboard khusus grafik**: total pendaftar, 3 jurusan paling banyak dipilih, grafik jurusan/KIP/tahun — **tanpa tabel data**
+- **Dashboard khusus grafik**: total calon siswa, 3 jurusan paling banyak dipilih, grafik jurusan/KIP/tahun — **tanpa tabel data**
 - Statistik dihitung **per tahun pelajaran** lewat dropdown **"Statistik tahun"** (default: tahun aktif; ada opsi **Semua Tahun**). Grafik "per tahun" tetap menampilkan semua tahun untuk perbandingan
-- Tabel data pendaftar hanya tampil di menu **Data Pendaftar**, lengkap dengan tombol Excel/CSV di toolbar
+- Tabel data calon siswa hanya tampil di menu **Data Calon Siswa**, lengkap dengan tombol Excel/CSV di toolbar
 - Pengatur tahun pelajaran & tombol Simpan hanya ada di Dashboard
 - Pencarian & filter tahun, pagination "muat lebih banyak"
 - Tabel menampilkan **ketiga pilihan jurusan** dalam satu kolom
 - **CRUD lengkap**: lihat, edit seluruh field + nilai rapor, hapus data
-- Export **Excel (.xlsx)** dengan 2 sheet: Pendaftar & Nilai Rapor (tetap tersedia CSV)
-- **Editor Konten Beranda**: mengatur judul, tagline, sambutan, tahun pelajaran, waktu, **status buka/tutup pendaftaran**, dan tanggal sebagai catatan
+- Export **Excel (.xlsx)** dengan 2 sheet: Calon Siswa & Nilai Rapor (tetap tersedia CSV)
+- **Editor Konten Beranda**: mengatur judul, tagline, sambutan, tahun pelajaran, waktu, **status buka/tutup formulir**, dan tanggal sebagai catatan
 - Pengatur tahun pelajaran aktif untuk form publik
 - **Ganti password** akun admin langsung dari panel (menu 🔑 Ganti Password)
 
 ### Keamanan
-- RLS: `anon` hanya bisa **INSERT**; tidak bisa membaca data pendaftar
+- RLS: `anon` hanya bisa **INSERT**; tidak bisa membaca data calon siswa
 - Fungsi `cek_nisn` (SECURITY DEFINER) hanya mengembalikan nama, sekolah, 3 jurusan, tahun, dan waktu — tidak mengekspos NIK/foto/alamat
 - Admin memakai role `authenticated` dengan hak CRUD penuh
 
@@ -116,9 +119,9 @@ Project yang sudah dibuat:
 
 ✅ **Sudah aktif:** migration `supabase/migrations/0005_wali_kip_upload.sql` (field wali tambahan).
 
-✅ **Sudah aktif:** migration `supabase/migrations/0007_cek_nisn_kode.sql` (kode pendaftaran pada hasil cek, dipakai cetak ulang).
+✅ **Sudah aktif:** migration `supabase/migrations/0007_cek_nisn_kode.sql` (kode pengiriman data pada hasil cek, dipakai cetak ulang).
 
-✅ **Sudah aktif:** migration `supabase/migrations/0008_status_manual.sql` (status buka/tutup pendaftaran diatur manual dari admin).
+✅ **Sudah aktif:** migration `supabase/migrations/0008_status_manual.sql` (status buka/tutup formulir diatur manual dari admin).
 
 Jika project dibuat ulang dari nol, langkahnya:
 
@@ -159,7 +162,7 @@ npx serve .
 
 Lalu buka:
 - Beranda: `http://localhost:8000/index.html`
-- Form: `http://localhost:8000/pendaftaran.html`
+- Formulir data calon siswa: `http://localhost:8000/pendaftaran.html`
 - Cek data: `http://localhost:8000/cek.html`
 - Admin: `http://localhost:8000/admin.html`
 
@@ -173,11 +176,11 @@ Tahun pelajaran dihitung **otomatis dari tanggal** (mulai bulan Juli):
 bulan Januari–Juni 2026 → `2025/2026`, bulan Juli–Desember 2026 → `2026/2027`.
 
 - Form, beranda, dan admin semuanya memakai fungsi `tahunPelajaran()` di `assets/js/tahun.js`.
-- Setiap pendaftar tersimpan dengan kolom `tahun_pelajaran`; kode pendaftaran mengikuti tahun, mis. `SPMB-2026-2027-XXXXXXXX`.
+- Setiap calon siswa tersimpan dengan kolom `tahun_pelajaran`; kode pengiriman data mengikuti tahun, mis. `SPMB-2026-2027-XXXXXXXX`.
 - Secara default mode = **Otomatis**, sehingga berganti tahun dengan sendirinya tanpa edit kode/SQL.
 - Di **panel admin → Dashboard**, dropdown tahun menyediakan:
   - **Otomatis (tahun berjalan)** — kembali ke mode otomatis
-  - **Tahun sekarang** dan **tahun depan** — untuk membuka pendaftaran tahun depan lebih awal (mode manual)
+  - **Tahun sekarang** dan **tahun depan** — untuk membuka formulir tahun depan lebih awal (mode manual)
   - Tahun-tahun yang sudah ada di database
 - Dropdown **filter tahun** di tabel dipakai untuk melihat/mengekspor data per tahun. Data lama tetap tersimpan dan bisa dilihat lewat **Semua Tahun**.
 

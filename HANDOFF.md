@@ -7,7 +7,8 @@
 - ✅ Anon/publishable key sudah terisi di `assets/js/config.js`.
 - ✅ Tes end-to-end berhasil: insert via RPC → cek NISN → hapus data dummy (DB bersih).
 - ✅ Login admin Supabase Auth berhasil.
-- Aplikasi: `index.html` (beranda/landing, konten bisa diatur admin), `pendaftaran.html` (wizard 6 langkah), `admin.html` (CRUD + editor beranda), CSS/JS responsif.
+- Aplikasi: `index.html` (beranda/landing, konten bisa diatur admin), `pendaftaran.html` (formulir pengumpulan data calon siswa, wizard 6 langkah), `cek.html` (cek data + cetak ulang), `admin.html` (CRUD + editor beranda), CSS/JS responsif.
+- ⚠️ Posisi: halaman ini **bukan pendaftaran resmi**; pendaftaran resmi di portal dinas https://spmb-dikbud.kalbarprov.go.id/ (tautan tampil di beranda di bawah waktu pengisian, di form, dan di bukti).
 - Alamat terstruktur + autocomplete wilayah (default Kalimantan Barat / Kabupaten Sambas).
 - Apps Script proxy upload Drive: `apps-script/Code.gs` + `PANDUAN.md`.
 - ✅ Sudah di-push ke https://github.com/isamlong0-ai/spmb.git (branch `main`).
@@ -31,15 +32,25 @@ Apps Script Web App sudah aktif & teruji (GET + POST upload ke Drive berhasil), 
 - Autocomplete wilayah nasional dari data lokal `wilayah-data.js` (generate via `scripts/generate-wilayah.ps1`); Kalbar/Sambas juga fallback offline. Tidak bergantung CORS.
 
 ## Fitur tahun pelajaran
-- Kolom `tahun_pelajaran` di `pendaftar`; kode pendaftaran mengikuti tahun.
+- Kolom `tahun_pelajaran` di `pendaftar`; kode pengiriman data mengikuti tahun.
 - Tabel `pengaturan` menyimpan `tahun_pelajaran_aktif` untuk form publik.
 - Admin: ubah tahun aktif lewat dropdown di Dashboard + filter tahun di tabel & export Excel/CSV.
-- Export Excel: 2 sheet (Pendaftar, Nilai Rapor) via SheetJS; sudah diuji menghasilkan `.xlsx`.
+- Export Excel: 2 sheet (Calon Siswa, Nilai Rapor) via SheetJS; sudah diuji menghasilkan `.xlsx`.
 - `cek_nisn` mengembalikan `tahun_pelajaran`.
 
+## Perubahan terakhir 4 — Rekosakataan
+- Posisi aplikasi ditegaskan: **pengumpulan data calon siswa**, bukan pendaftaran resmi.
+- Pendaftaran resmi = portal dinas https://spmb-dikbud.kalbarprov.go.id/, ditampilkan:
+  - di beranda tepat di bawah "Waktu Pengisian Formulir" (`.lp-dinas-link`),
+  - di hero formulir, di banner pengunci (gate/notice), dan di CATATAN PENTING bukti (form & cek).
+- Istilah publik diganti: "Formulir Pengumpulan Data Calon Siswa", "Isi Formulir", "Waktu Pengisian Formulir", "Status Formulir", "Cek Data Calon Siswa", "Bukti Pengiriman Data Calon Siswa", "Kode Pengiriman Data".
+- Admin: "Data Calon Siswa", "Total Calon Siswa", sheet Excel "Calon Siswa".
+- Identifier DB/JS (pendaftar, kode_pendaftaran, status_pendaftaran, formPendaftaran) sengaja tidak diubah → tanpa migrasi baru.
+- Sudah diuji di browser: beranda, form, cek, admin — tanpa error.
+
 ## Perubahan terakhir 3
-- Status pendaftaran manual (migration 0008): kolom `status_pendaftaran` di tabel `landing`.
-- Admin → Konten Beranda → dropdown Status Pendaftaran (Dibuka / Akan Datang / Ditutup).
+- Status formulir manual (migration 0008): kolom `status_pendaftaran` di tabel `landing`.
+- Admin → Konten Beranda → dropdown Status Formulir (Dibuka / Akan Datang / Ditutup).
 - `status.js` memakai nilai manual; tanggal hanya fallback & catatan. Countdown disembunyikan saat manual.
 - `cek.html` juga terkunci bila status bukan Dibuka.
 - Sudah diuji: ubah ke Ditutup → 8 tautan beranda terkunci + guard form + guard cek muncul → dikembalikan ke Dibuka.
@@ -48,7 +59,7 @@ Apps Script Web App sudah aktif & teruji (GET + POST upload ke Drive berhasil), 
 - Halaman `cek.html` mandiri: cari by NISN + Cetak Ulang + Unduh PDF (sudah diuji, PDF 172 KB terunduh).
 - Migration 0007 aktif: `cek_nisn` mengembalikan `kode_pendaftaran`.
 - Form: menu "Area Admin" dihapus.
-- Admin: tombol Excel/CSV pindah ke toolbar Data Pendaftar; tombol Simpan tahun & pemilih tahun hanya di Dashboard; tombol Muat Ulang dihapus.
+- Admin: tombol Excel/CSV pindah ke toolbar Data Calon Siswa; tombol Simpan tahun & pemilih tahun hanya di Dashboard; tombol Muat Ulang dihapus.
 - Dashboard kini hanya grafik + 4 kartu atas (Total + top 3 jurusan); tabel tidak tampil di Dashboard.
 - Statistik dashboard scoped per tahun lewat dropdown `#statTahun` (default tahun aktif + opsi Semua Tahun). Sudah diuji: 2026/2027 → 0, 2027/2028 → 1, Semua Tahun → 1. Grafik per tahun tetap memakai semuaData.
 
