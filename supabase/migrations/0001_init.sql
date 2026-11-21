@@ -182,9 +182,21 @@ as $$
 declare
   v_id uuid;
   v_kode text;
+  v_data jsonb;
 begin
+  -- jsonb_populate_record mengisi field yang absen dengan NULL, sehingga
+  -- nilai default kolom tidak dipakai. Tambahkan eksplisit di sini.
+  v_data := p_data || jsonb_build_object(
+    'id', gen_random_uuid(),
+    'kode_pendaftaran', 'SPMB-' || to_char(now(), 'YYYY') || '-' ||
+      upper(substring(replace(gen_random_uuid()::text, '-', '') from 1 for 8)),
+    'status', 'menunggu',
+    'created_at', now(),
+    'updated_at', now()
+  );
+
   insert into public.pendaftar
-  select * from jsonb_populate_record(null::public.pendaftar, p_data)
+  select * from jsonb_populate_record(null::public.pendaftar, v_data)
   returning public.pendaftar.id, public.pendaftar.kode_pendaftaran into v_id, v_kode;
 
   insert into public.nilai_rapor (pendaftar_id, mapel, semester, nilai)
