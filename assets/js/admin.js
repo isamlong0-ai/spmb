@@ -1,0 +1,337 @@
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { CONFIG, MAPEL, SEMESTER } from "./config.js";
+
+const supabase = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+const PAGE_SIZE = 25;
+
+let offset = 0;
+let semuaData = [];
+let dataTerfilter = [];
+let editId = null;
+
+/* -------------------------------- Util -------------------------------- */
+function toast(pesan, tipe = "") {
+  const el = document.createElement("div");
+  el.className = `toast ${tipe}`;
+  el.textContent = pesan;
+  $("#toastWrap").appendChild(el);
+  setTimeout(() => el.remove(), 4000);
+}
+function escapeHtml(s) {
+  return String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+function tgl(s) {
+  if (!s) return "-";
+  return new Date(s).toLocaleString("id-ID", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" });
+}
+
+/* ------------------------------ Autentikasi ---------------------------- */
+async function initAuth() {
+  const { data } = await supabase.auth.getSession();
+  if (data.session) tampilkanAdmin(data.session.user);
+  supabase.auth.onAuthStateChange((_event, session) => {
+    if (session) tampilkanAdmin(session.user);
+    else {
+      $("#adminView").classList.add("hidden");
+      $("#loginView").classList.remove("hidden");
+    }
+  });
+
+  $("#btnLogin").addEventListener("click", async () => {
+    const btn = $("#btnLogin");
+    btn.disabled = true;
+    btn.textContent = "Memproses…";
+    $("#loginError").textContent = "";
+    const { error } = await supabase.auth.signInWithPassword({
+      email: $("#email").value.trim(),
+      password: $("#password").value,
+    });
+    if (error) $("#loginError").textContent = error.message;
+    btn.disabled = false;
+    btn.textContent = "Masuk";
+  });
+  $("#password").addEventListener("keydown", (e) => { if (e.key === "Enter") $("#btnLogin").click(); });
+  $("#btnLogout").addEventListener("click", async () => {
+    await supabase.auth.signOut();
+    toast("Anda telah keluar.");
+  });
+}
+
+function tampilkanAdmin(user) {
+  $("#loginView").classList.add("hidden");
+  $("#adminView").classList.remove("hidden");
+  $("#pageSubtitle").textContent = `Login sebagai ${user.email} · Tahun Pelajaran 2026/2027`;
+  muatData();
+}
+
+/* ------------------------------- Data ---------------------------------- */
+async function muatData(reset = true) {
+  if (reset) offset = 0;
+  const { data, error } = await supabase
+    .from("pendaftar")
+    .select("*")
+    .order("created_at", { ascending: false })
+    .range(offset, offset + PAGE_SIZE - 1);
+
+  if (error) {
+    toast("Gagal memuat data: " + error.message, "error");
+    $("#dataBody").innerHTML = `<tr><td colspan="8" style="padding:30px;color:var(--danger)">${escapeHtml(error.message)}</td></tr>`;
+    return;
+  }
+  semuaData = reset ? (data || []) : [...semuaData, ...(data || [])];
+  offset += data?.length || 0;
+  updateStat();
+  terapkanFilter();
+  $("#btnMore").style.display = (data?.length || 0) < PAGE_SIZE ? "none" : "";
+}
+
+function updateStat() {
+  $("#stTotal").textContent = semuaData.length;
+  $("#stMenunggu").textContent = semuaData.filter((d) => d.status === "menunggu").length;
+  $("#stDiterima").textContent = semuaData.filter((d) => d.status === "diterima").length;
+  $("#stDitolak").textContent = semuaData.filter((d) => d.status === "ditolak").length;
+}
+
+function terapkanFilter() {
+  const q = $("#cari").value.trim().toLowerCase();
+  const st = $("#filterStatus").value;
+  dataTerfilter = semuaData.filter((d) => {
+    const cocokTeks = !q || [d.nama, d.nisn, d.nama_sekolah, d.kode_pendaftaran]
+      .some((v) => String(v || "").toLowerCase().includes(q));
+    return cocokTeks && (!st || d.status === st);
+  });
+  renderTabel();
+}
+
+function renderTabel() {
+  const body = $("#dataBody");
+  if (!dataTerfilter.length) {
+    body.innerHTML = `<tr><td colspan="8" style="padding:30px;color:var(--muted)">Belum ada data pendaftar.</td></tr>`;
+    $("#infoData").textContent = "0 data";
+    return;
+  }
+  body.innerHTML = dataTerfilter.map((d) => `
+    <tr>
+      <td style="font-size:11px;color:var(--muted)">${escapeHtml(d.kode_pendaftaran)}</td>
+      <td><b>${escapeHtml(d.nama)}</b><br><span style="font-size:11px;color:var(--muted)">${escapeHtml(d.provinsi)} / ${escapeHtml(d.kabupaten)}</span></td>
+      <td>${escapeHtml(d.nisn)}</td>
+      <td>${escapeHtml(d.nama_sekolah)}</td>
+      <td>${escapeHtml(d.jurusan1)}</td>
+      <td><span class="badge ${escapeHtml(d.status)}">${escapeHtml(d.status)}</span></td>
+      <td style="font-size:11px">${tgl(d.created_at)}</td>
+      <td>
+        <div class="row-actions">
+          <button class="btn btn-sm btn-info" data-edit="${d.id}">Edit</button>
+          <button class="btn btn-sm btn-danger" data-hapus="${d.id}">Hapus</button>
+        </div>
+      </td>
+    </tr>`).join("");
+  $("#infoData").textContent = `Menampilkan ${dataTerfilter.length} dari ${semuaData.length} data`;
+
+  $$("[data-edit]", body).forEach((b) => b.addEventListener("click", () => bukaEdit(b.dataset.edit)));
+  $$("[data-hapus]", body).forEach((b) => b.addEventListener("click", () => hapusData(b.dataset.hapus)));
+}
+
+/* ---------------------------- Modal edit -------------------------------- */
+const GRUP = [
+  { judul: "Data Diri", field: [
+    ["nama", "Nama Lengkap", "text"], ["nik", "NIK", "text"],
+    ["kk", "Nomor KK", "text"], ["akta", "Nomor Akta", "text"],
+    ["tempat_lahir", "Tempat Lahir", "text"], ["tanggal_lahir", "Tanggal Lahir", "date"],
+    ["jenis_kelamin", "Jenis Kelamin", "select", ["Laki-laki", "Perempuan"]],
+    ["agama", "Agama", "select", ["Islam", "Kristen", "Katolik", "Hindu", "Buddha", "Khonghucu"]],
+    ["anak_ke", "Anak Ke-", "number"], ["jumlah_saudara", "Jumlah Saudara", "number"],
+    ["tinggi_badan", "Tinggi Badan (cm)", "number"], ["berat_badan", "Berat Badan (kg)", "number"],
+    ["jenis_tempat_tinggal", "Jenis Tempat Tinggal", "text"], ["tempat_tinggal_lain", "Tempat Tinggal Lain", "text"],
+    ["moda_transportasi", "Moda Transportasi", "text"], ["transportasi_lain", "Transportasi Lain", "text"],
+    ["no_hp_siswa", "No. HP Siswa", "text"],
+  ]},
+  { judul: "Alamat", field: [
+    ["provinsi", "Provinsi", "text"], ["kabupaten", "Kabupaten / Kota", "text"],
+    ["kecamatan", "Kecamatan", "text"], ["desa", "Desa / Kelurahan", "text"],
+    ["rt", "RT", "text"], ["rw", "RW", "text"], ["kode_pos", "Kode Pos", "text"],
+    ["alamat_keterangan", "Patokan", "text"], ["alamat_lengkap", "Alamat Lengkap", "textarea"],
+  ]},
+  { judul: "Orang Tua", field: [
+    ["nama_ayah", "Nama Ayah", "text"], ["status_ayah", "Status Ayah", "select", ["Hidup", "Meninggal"]],
+    ["nik_ayah", "NIK Ayah", "text"], ["tempat_lahir_ayah", "Tempat Lahir Ayah", "text"],
+    ["tanggal_lahir_ayah", "Tanggal Lahir Ayah", "date"], ["pendidikan_ayah", "Pendidikan Ayah", "text"],
+    ["pekerjaan_ayah", "Pekerjaan Ayah", "text"], ["pekerjaan_ayah_lain", "Pekerjaan Ayah Lain", "text"],
+    ["penghasilan_ayah", "Penghasilan Ayah", "text"],
+    ["nama_ibu", "Nama Ibu", "text"], ["status_ibu", "Status Ibu", "select", ["Hidup", "Meninggal"]],
+    ["nik_ibu", "NIK Ibu", "text"], ["tempat_lahir_ibu", "Tempat Lahir Ibu", "text"],
+    ["tanggal_lahir_ibu", "Tanggal Lahir Ibu", "date"], ["pendidikan_ibu", "Pendidikan Ibu", "text"],
+    ["pekerjaan_ibu", "Pekerjaan Ibu", "text"], ["pekerjaan_ibu_lain", "Pekerjaan Ibu Lain", "text"],
+    ["penghasilan_ibu", "Penghasilan Ibu", "text"],
+    ["alamat_orang_tua", "Alamat Orang Tua", "textarea"], ["no_hp_orang_tua", "No. HP Orang Tua", "text"],
+  ]},
+  { judul: "Wali (opsional)", field: [
+    ["nama_wali", "Nama Wali", "text"], ["pekerjaan_wali", "Pekerjaan Wali", "text"],
+    ["pekerjaan_wali_lain", "Pekerjaan Wali Lain", "text"],
+    ["no_hp_wali", "No. HP Wali", "text"], ["alamat_wali", "Alamat Wali", "textarea"],
+  ]},
+  { judul: "Sekolah & Jurusan", field: [
+    ["nisn", "NISN", "text"], ["bentuk_sekolah", "Bentuk Sekolah", "select", ["SMP", "MTs.", "Paket B"]],
+    ["nama_sekolah", "Nama Asal Sekolah", "text"], ["alamat_sekolah", "Alamat Sekolah", "textarea"],
+    ["tahun_lulus", "Tahun Lulus", "number"], ["punya_kip", "Memiliki KIP", "select", ["true", "false"]],
+    ["no_kip", "Nomor KIP", "text"],
+    ["peringkat_5", "Peringkat Kelas Smt 5", "number"], ["rata_rata", "Rata-rata Nilai", "number"],
+    ["jurusan1", "Pilihan Jurusan 1", "select", CONFIG.JURUSAN],
+    ["jurusan2", "Pilihan Jurusan 2", "select", CONFIG.JURUSAN],
+    ["jurusan3", "Pilihan Jurusan 3", "select", CONFIG.JURUSAN],
+    ["status", "Status Pendaftaran", "select", ["menunggu", "diterima", "ditolak"]],
+  ]},
+  { judul: "Foto / Dokumen", field: [
+    ["foto_siswa", "URL Foto Siswa (Drive)", "text"], ["foto_kk", "URL Foto KK", "text"],
+    ["foto_akta", "URL Foto Akta", "text"], ["foto_rapor", "URL Foto Rapor", "text"],
+  ]},
+];
+
+function inputEdit(field, val) {
+  const [name, label, type, opsi] = field;
+  const v = val == null ? "" : String(val);
+  if (type === "textarea") {
+    return `<div class="field"><label>${label}</label><textarea name="${name}" rows="2">${escapeHtml(v)}</textarea></div>`;
+  }
+  if (type === "select") {
+    return `<div class="field"><label>${label}</label><select name="${name}">
+      <option value="">-- Kosong --</option>
+      ${(opsi || []).map((o) => `<option value="${escapeHtml(o)}" ${o === v ? "selected" : ""}>${escapeHtml(o)}</option>`).join("")}
+    </select></div>`;
+  }
+  return `<div class="field"><label>${label}</label><input name="${name}" type="${type}" value="${escapeHtml(v)}" ${type === "number" ? 'step="any"' : ""}></div>`;
+}
+
+async function bukaEdit(id) {
+  const d = semuaData.find((x) => x.id === id);
+  if (!d) return;
+  editId = id;
+  $("#editTitle").textContent = `Edit: ${d.nama}`;
+
+  let html = `<div class="grid">`;
+  GRUP.forEach((g) => {
+    html += `<div class="section-title">${g.judul}</div>`;
+    g.field.forEach((f) => { html += inputEdit(f, d[f[0]]); });
+  });
+
+  const { data: nilai } = await supabase.from("nilai_rapor").select("mapel,semester,nilai").eq("pendaftar_id", id);
+  const peta = new Map((nilai || []).map((n) => [`${n.mapel}|${n.semester}`, n.nilai]));
+
+  html += `<div class="section-title">Nilai Rapor</div>
+    <div class="field full"><div class="table-wrap"><table class="data-table">
+      <thead><tr><th>Mapel</th>${SEMESTER.map((s) => `<th>Smt ${s}</th>`).join("")}</tr></thead>
+      <tbody>${MAPEL.map((m, mi) => `<tr><td>${m}</td>${SEMESTER.map((s) => {
+        const val = peta.get(`${m}|${s}`) ?? "";
+        return `<td><input type="number" min="0" max="100" step="0.01" name="nilai_${mi}_${s}" value="${val}"></td>`;
+      }).join("")}</tr>`).join("")}</tbody>
+    </table></div></div>`;
+  html += `</div>`;
+
+  $("#editBody").innerHTML = html;
+  $("#overlayEdit").classList.add("show");
+  document.body.classList.add("lock-scroll");
+}
+
+function tutupEdit() {
+  $("#overlayEdit").classList.remove("show");
+  document.body.classList.remove("lock-scroll");
+  editId = null;
+}
+
+async function simpanEdit() {
+  if (!editId) return;
+  const btn = $("#editSimpan");
+  btn.disabled = true;
+  btn.textContent = "Menyimpan…";
+
+  const payload = {};
+  $$("#editBody [name]").forEach((el) => {
+    if (el.name.startsWith("nilai_")) return;
+    let v = el.value;
+    if (["anak_ke", "jumlah_saudara", "tinggi_badan", "berat_badan", "tahun_lulus", "peringkat_5", "rata_rata"].includes(el.name)) v = v === "" ? null : Number(v);
+    if (el.name === "punya_kip") v = v === "true";
+    payload[el.name] = v === "" ? null : v;
+  });
+
+  try {
+    const { error: e1 } = await supabase.from("pendaftar").update(payload).eq("id", editId);
+    if (e1) throw e1;
+
+    const nilai = [];
+    MAPEL.forEach((mapel, mi) => SEMESTER.forEach((s) => {
+      const v = parseFloat($(`#editBody [name="nilai_${mi}_${s}"]`).value);
+      if (!isNaN(v)) nilai.push({ pendaftar_id: editId, mapel, semester: s, nilai: v });
+    }));
+    const { error: e2 } = await supabase.from("nilai_rapor").delete().eq("pendaftar_id", editId);
+    if (e2) throw e2;
+    if (nilai.length) {
+      const { error: e3 } = await supabase.from("nilai_rapor").insert(nilai);
+      if (e3) throw e3;
+    }
+
+    toast("Perubahan berhasil disimpan.");
+    tutupEdit();
+    muatData();
+  } catch (err) {
+    toast("Gagal menyimpan: " + err.message, "error");
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "💾 Simpan Perubahan";
+  }
+}
+
+async function hapusData(id) {
+  const d = semuaData.find((x) => x.id === id);
+  if (!confirm(`Yakin ingin menghapus data pendaftar "${d?.nama || id}"?\n\nTindakan ini tidak dapat dibatalkan.`)) return;
+  const { error } = await supabase.from("pendaftar").delete().eq("id", id);
+  if (error) toast("Gagal menghapus: " + error.message, "error");
+  else { toast("Data berhasil dihapus."); muatData(); }
+}
+
+/* -------------------------------- Export ------------------------------- */
+function exportCSV() {
+  if (!semuaData.length) { toast("Belum ada data untuk diekspor.", "warn"); return; }
+  const kolom = ["kode_pendaftaran", "nama", "nik", "nisn", "nama_sekolah", "provinsi", "kabupaten", "kecamatan", "desa", "jurusan1", "jurusan2", "jurusan3", "status", "created_at"];
+  const baris = [kolom.join(",")].concat(semuaData.map((d) =>
+    kolom.map((k) => `"${String(d[k] ?? "").replace(/"/g, '""')}"`).join(",")
+  ));
+  const blob = new Blob(["\ufeff" + baris.join("\r\n")], { type: "text/csv;charset=utf-8" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = `pendaftar-spmb-${new Date().toISOString().slice(0, 10)}.csv`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+/* ------------------------------- Events -------------------------------- */
+function bindEvents() {
+  $("#cari").addEventListener("input", terapkanFilter);
+  $("#filterStatus").addEventListener("change", terapkanFilter);
+  $("#btnRefresh").addEventListener("click", () => { muatData(); toast("Data dimuat ulang."); });
+  $("#btnMore").addEventListener("click", () => muatData(false));
+  $("#btnExport").addEventListener("click", exportCSV);
+
+  $("#editClose").addEventListener("click", tutupEdit);
+  $("#editBatal").addEventListener("click", tutupEdit);
+  $("#overlayEdit").addEventListener("click", (e) => { if (e.target.id === "overlayEdit") tutupEdit(); });
+  $("#editSimpan").addEventListener("click", simpanEdit);
+
+  $("#navDashboard").addEventListener("click", () => {
+    $("#navDashboard").classList.add("active");
+    $("#navPendaftar").classList.remove("active");
+    $("#pageTitle").textContent = "Dashboard";
+    $("#statGrid").classList.remove("hidden");
+  });
+  $("#navPendaftar").addEventListener("click", () => {
+    $("#navPendaftar").classList.add("active");
+    $("#navDashboard").classList.remove("active");
+    $("#pageTitle").textContent = "Data Pendaftar";
+    $("#statGrid").classList.add("hidden");
+    $("#dataSection").scrollIntoView({ behavior: "smooth" });
+  });
+}
+
+bindEvents();
+initAuth();

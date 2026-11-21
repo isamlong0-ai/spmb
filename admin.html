@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#047857">
+  <title>Admin SPMB — SMKN 1 Teluk Keramat</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+
+<!-- ============== LOGIN ============== -->
+<div class="login-wrap" id="loginView">
+  <div class="login-card">
+    <div style="text-align:center;margin-bottom:18px">
+      <img src="https://lh3.googleusercontent.com/d/1zArv6yZsZ-YZCSTtEbTBUQp4C0kv325f" alt="Logo" style="width:64px;background:#f1f5f9;border-radius:14px;padding:6px">
+      <h1 style="margin-top:12px">Panel Admin SPMB</h1>
+      <p>SMK Negeri 1 Teluk Keramat</p>
+    </div>
+    <div class="field"><label for="email">Email</label><input id="email" type="email" placeholder="admin@smkn1tk.sch.id" autocomplete="username"></div>
+    <div class="field" style="margin-top:12px"><label for="password">Password</label><input id="password" type="password" placeholder="••••••••" autocomplete="current-password"></div>
+    <button class="btn btn-primary btn-block" id="btnLogin" style="margin-top:20px">Masuk</button>
+    <p id="loginError" style="color:var(--danger);font-size:12px;margin-top:12px;text-align:center"></p>
+    <div style="text-align:center;margin-top:18px"><a href="index.html" style="font-size:12.5px">← Kembali ke form pendaftaran</a></div>
+  </div>
+</div>
+
+<!-- ============== ADMIN ============== -->
+<div class="admin-layout hidden" id="adminView">
+  <aside class="sidebar">
+    <div class="brand-side">
+      <img src="https://lh3.googleusercontent.com/d/1zArv6yZsZ-YZCSTtEbTBUQp4C0kv325f" alt="Logo">
+      <div><strong>ADMIN SPMB</strong><span>SMKN 1 Teluk Keramat</span></div>
+    </div>
+    <button class="nav-item active" id="navDashboard">📊 Dashboard</button>
+    <button class="nav-item" id="navPendaftar">👥 Data Pendaftar</button>
+    <div style="flex:1"></div>
+    <button class="nav-item" id="btnLogout">🚪 Keluar</button>
+  </aside>
+
+  <main class="admin-main">
+    <div class="admin-head">
+      <div><h1 id="pageTitle">Dashboard</h1><p id="pageSubtitle">Ringkasan pendaftaran SPMB 2026/2027</p></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-ghost btn-sm" id="btnRefresh">↻ Muat Ulang</button>
+        <button class="btn btn-primary btn-sm" id="btnExport">⬇ Export CSV</button>
+      </div>
+    </div>
+
+    <div class="stat-grid" id="statGrid">
+      <div class="stat-card"><div class="n" id="stTotal">0</div><div class="l">Total Pendaftar</div></div>
+      <div class="stat-card"><div class="n" id="stMenunggu">0</div><div class="l">Menunggu</div></div>
+      <div class="stat-card"><div class="n" id="stDiterima">0</div><div class="l">Diterima</div></div>
+      <div class="stat-card"><div class="n" id="stDitolak">0</div><div class="l">Ditolak</div></div>
+    </div>
+
+    <section class="card" id="dataSection" style="padding:0;overflow:hidden">
+      <div style="padding:18px 18px 0">
+        <div class="toolbar">
+          <input id="cari" type="text" placeholder="🔍 Cari nama, NISN, atau sekolah…">
+          <select id="filterStatus">
+            <option value="">Semua Status</option>
+            <option value="menunggu">Menunggu</option>
+            <option value="diterima">Diterima</option>
+            <option value="ditolak">Ditolak</option>
+          </select>
+        </div>
+      </div>
+      <div class="table-wrap" style="border:0;border-radius:0">
+        <table class="data-table admin-table">
+          <thead><tr>
+            <th>Kode</th><th>Nama</th><th>NISN</th><th>Asal Sekolah</th>
+            <th>Pilihan 1</th><th>Status</th><th>Waktu</th><th>Aksi</th>
+          </tr></thead>
+          <tbody id="dataBody">
+            <tr><td colspan="8" style="padding:30px;color:var(--muted)">Memuat data…</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div style="padding:14px 18px;display:flex;justify-content:space-between;align-items:center;gap:10px">
+        <span id="infoData" style="font-size:12px;color:var(--muted)"></span>
+        <button class="btn btn-ghost btn-sm" id="btnMore">Muat lebih banyak</button>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- ============== MODAL EDIT ============== -->
+<div class="overlay" id="overlayEdit">
+  <div class="modal wide">
+    <div class="modal-head">
+      <h3 id="editTitle">Edit Pendaftar</h3>
+      <button class="modal-close" id="editClose">×</button>
+    </div>
+    <div id="editBody"></div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" id="editBatal">Batal</button>
+      <button class="btn btn-primary" id="editSimpan">💾 Simpan Perubahan</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script type="module" src="assets/js/admin.js"></script>
+</body>
+</html>
