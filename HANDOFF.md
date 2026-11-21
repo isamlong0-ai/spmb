@@ -43,6 +43,7 @@ Apps Script Web App sudah aktif & teruji (GET + POST upload ke Drive berhasil), 
 - Form: menu "Area Admin" dihapus.
 - Admin: tombol Excel/CSV pindah ke toolbar Data Pendaftar; tombol Simpan tahun & pemilih tahun hanya di Dashboard; tombol Muat Ulang dihapus.
 - Dashboard kini hanya grafik + 4 kartu atas (Total + top 3 jurusan); tabel tidak tampil di Dashboard.
+- Statistik dashboard scoped per tahun lewat dropdown `#statTahun` (default tahun aktif + opsi Semua Tahun). Sudah diuji: 2026/2027 → 0, 2027/2028 → 1, Semua Tahun → 1. Grafik per tahun tetap memakai semuaData.
 
 ## Perubahan terakhir
 - Tabel admin: kolom "Pilihan Jurusan" menampilkan ke-3 jurusan; kolom status dihapus dari UI.

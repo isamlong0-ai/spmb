@@ -88,8 +88,8 @@ async function muatData(reset = true) {
   }
   semuaData = reset ? (data || []) : [...semuaData, ...(data || [])];
   offset += data?.length || 0;
-  updateDashboard();
   kumpulkanTahun();
+  updateDashboard();
   terapkanFilter();
   $("#btnMore").style.display = (data?.length || 0) < PAGE_SIZE ? "none" : "";
 }
@@ -113,6 +113,13 @@ function kumpulkanTahun() {
     `<option value="__auto__">Otomatis (${tahunPelajaran()})</option>` +
     opsiAktif.map((t) => `<option value="${escapeHtml(t)}">${escapeHtml(t)}</option>`).join("");
   sel.value = modeTahun === "auto" ? "__auto__" : tahunAktif;
+
+  // Pemilih tahun untuk statistik dashboard (terpisah dari tahun form)
+  const stat = $("#statTahun");
+  const statSebelumnya = stat.value || tahunAktif;
+  stat.innerHTML = `<option value="">Semua Tahun</option>` +
+    daftarTahun.map((t) => `<option value="${escapeHtml(t)}">${escapeHtml(t)}</option>`).join("");
+  stat.value = daftarTahun.includes(statSebelumnya) ? statSebelumnya : tahunAktif;
 }
 
 function barisChart(label, jumlah, maks, kelas = "") {
@@ -125,31 +132,40 @@ function barisChart(label, jumlah, maks, kelas = "") {
 }
 
 function updateDashboard() {
-  $("#stTotal").textContent = semuaData.length;
+  const tahunStat = $("#statTahun")?.value || "";
+  const data = tahunStat ? semuaData.filter((d) => d.tahun_pelajaran === tahunStat) : semuaData;
+  $("#dashboardSubtitle").textContent = tahunStat
+    ? `Statistik Tahun Pelajaran ${tahunStat}`
+    : "Statistik seluruh tahun pelajaran";
 
-  // Hitung jurusan dari ketiga pilihan setiap pendaftar
+  $("#stTotal").textContent = data.length;
+
+  // Hitung jurusan dari ketiga pilihan setiap pendaftar pada tahun terpilih
   const hitung = {};
   CONFIG.JURUSAN.forEach((j) => { hitung[j] = 0; });
-  semuaData.forEach((d) => [d.jurusan1, d.jurusan2, d.jurusan3].forEach((j) => {
+  data.forEach((d) => [d.jurusan1, d.jurusan2, d.jurusan3].forEach((j) => {
     if (j) hitung[j] = (hitung[j] || 0) + 1;
   }));
   const urut = Object.entries(hitung).sort((a, b) => b[1] - a[1]);
   [1, 2, 3].forEach((i) => {
     const [nama, jumlah] = urut[i - 1] || ["-", 0];
-    $("#stJ" + i).textContent = nama;
+    $("#stJ" + i).textContent = jumlah > 0 ? nama : "-";
     $("#stJ" + i + "n").textContent = jumlah + " pendaftar";
   });
   const maksJ = urut[0]?.[1] || 1;
-  $("#chartJurusan").innerHTML = urut.map(([n, v]) => barisChart(n, v, maksJ)).join("") || "-";
+  $("#chartJurusan").innerHTML = data.length
+    ? urut.map(([n, v]) => barisChart(n, v, maksJ)).join("")
+    : '<div class="hint">Belum ada pendaftar pada tahun ini.</div>';
 
-  const kip = semuaData.filter((d) => d.punya_kip).length;
-  const foto = semuaData.filter((d) => d.foto_siswa).length;
-  const maksLain = Math.max(semuaData.length, 1);
+  const kip = data.filter((d) => d.punya_kip).length;
+  const foto = data.filter((d) => d.foto_siswa).length;
+  const maksLain = Math.max(data.length, 1);
   $("#chartLain").innerHTML =
     barisChart("Memiliki KIP", kip, maksLain, "warn") +
-    barisChart("Tanpa KIP", semuaData.length - kip, maksLain, "info") +
+    barisChart("Tanpa KIP", data.length - kip, maksLain, "info") +
     barisChart("Sudah upload foto", foto, maksLain, "info");
 
+  // Grafik per tahun tetap menampilkan semua tahun (untuk perbandingan)
   const perTahun = {};
   semuaData.forEach((d) => { const k = d.tahun_pelajaran || "-"; perTahun[k] = (perTahun[k] || 0) + 1; });
   const urutTh = Object.entries(perTahun).sort((a, b) => b[0].localeCompare(a[0]));
@@ -465,6 +481,7 @@ async function muatTahun() {
   }
   perbaruiSubtitle();
   kumpulkanTahun();
+  updateDashboard();
 }
 
 function perbaruiSubtitle() {
@@ -490,6 +507,7 @@ async function simpanTahunAktif() {
   $("#filterTahun").value = tahun;
   perbaruiSubtitle();
   kumpulkanTahun();
+  updateDashboard();
   terapkanFilter();
   toast(otomatis
     ? `Tahun pelajaran otomatis: ${tahun}. Berganti sendiri setiap tahun.`
@@ -606,6 +624,7 @@ async function gantiPassword() {
 function bindEvents() {
   $("#cari").addEventListener("input", terapkanFilter);
   $("#filterTahun").addEventListener("change", terapkanFilter);
+  $("#statTahun").addEventListener("change", updateDashboard);
   $("#btnSimpanTahun").addEventListener("click", simpanTahunAktif);
   $("#btnMore").addEventListener("click", () => muatData(false));
   $("#btnExport").addEventListener("click", exportExcel);

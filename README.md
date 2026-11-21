@@ -74,6 +74,7 @@ Aplikasi pendaftaran siswa baru berbasis **HTML + CSS + JavaScript (ES modules)*
 ### Panel admin (`admin.html`)
 - Login dengan Supabase Auth
 - **Dashboard khusus grafik**: total pendaftar, 3 jurusan paling banyak dipilih, grafik jurusan/KIP/tahun — **tanpa tabel data**
+- Statistik dihitung **per tahun pelajaran** lewat dropdown **"Statistik tahun"** (default: tahun aktif; ada opsi **Semua Tahun**). Grafik "per tahun" tetap menampilkan semua tahun untuk perbandingan
 - Tabel data pendaftar hanya tampil di menu **Data Pendaftar**, lengkap dengan tombol Excel/CSV di toolbar
 - Pengatur tahun pelajaran & tombol Simpan hanya ada di Dashboard
 - Pencarian & filter tahun, pagination "muat lebih banyak"
