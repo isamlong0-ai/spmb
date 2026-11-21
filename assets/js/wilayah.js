@@ -1,22 +1,57 @@
 /**
- * Data wilayah administratif (sumber: https://wilayah.id, update 2025-07-04).
- * Disertakan lokal agar autocomplete tetap berfungsi tanpa koneksi internet.
- * Default: Provinsi Kalimantan Barat, Kabupaten Sambas.
+ * Data & autocomplete wilayah administratif Indonesia.
+ * Sumber: https://wilayah.id (update 2025-07-04).
+ *
+ * - Data Kalimantan Barat / Sambas disimpan lokal => tetap jalan offline.
+ * - Provinsi lain diambil otomatis dari wilayah.id saat online.
+ * - Semua field memakai <datalist>, jadi tetap bisa diketik manual.
  */
+
+const API = "https://wilayah.id/api/";
+
 export const PROVINSI = [
-  "Aceh", "Sumatera Utara", "Sumatera Barat", "Riau", "Jambi",
-  "Sumatera Selatan", "Bengkulu", "Lampung", "Kepulauan Bangka Belitung",
-  "Kepulauan Riau", "DKI Jakarta", "Jawa Barat", "Jawa Tengah",
-  "Daerah Istimewa Yogyakarta", "Jawa Timur", "Banten", "Bali",
-  "Nusa Tenggara Barat", "Nusa Tenggara Timur", "Kalimantan Barat",
-  "Kalimantan Tengah", "Kalimantan Selatan", "Kalimantan Timur",
-  "Kalimantan Utara", "Sulawesi Utara", "Sulawesi Tengah",
-  "Sulawesi Selatan", "Sulawesi Tenggara", "Gorontalo", "Sulawesi Barat",
-  "Maluku", "Maluku Utara", "Papua", "Papua Barat", "Papua Selatan",
-  "Papua Tengah", "Papua Pegunungan", "Papua Barat Daya",
+  { code: "11", name: "Aceh" },
+  { code: "12", name: "Sumatera Utara" },
+  { code: "13", name: "Sumatera Barat" },
+  { code: "14", name: "Riau" },
+  { code: "15", name: "Jambi" },
+  { code: "16", name: "Sumatera Selatan" },
+  { code: "17", name: "Bengkulu" },
+  { code: "18", name: "Lampung" },
+  { code: "19", name: "Kepulauan Bangka Belitung" },
+  { code: "21", name: "Kepulauan Riau" },
+  { code: "31", name: "DKI Jakarta" },
+  { code: "32", name: "Jawa Barat" },
+  { code: "33", name: "Jawa Tengah" },
+  { code: "34", name: "Daerah Istimewa Yogyakarta" },
+  { code: "35", name: "Jawa Timur" },
+  { code: "36", name: "Banten" },
+  { code: "51", name: "Bali" },
+  { code: "52", name: "Nusa Tenggara Barat" },
+  { code: "53", name: "Nusa Tenggara Timur" },
+  { code: "61", name: "Kalimantan Barat" },
+  { code: "62", name: "Kalimantan Tengah" },
+  { code: "63", name: "Kalimantan Selatan" },
+  { code: "64", name: "Kalimantan Timur" },
+  { code: "65", name: "Kalimantan Utara" },
+  { code: "71", name: "Sulawesi Utara" },
+  { code: "72", name: "Sulawesi Tengah" },
+  { code: "73", name: "Sulawesi Selatan" },
+  { code: "74", name: "Sulawesi Tenggara" },
+  { code: "75", name: "Gorontalo" },
+  { code: "76", name: "Sulawesi Barat" },
+  { code: "81", name: "Maluku" },
+  { code: "82", name: "Maluku Utara" },
+  { code: "91", name: "Papua" },
+  { code: "92", name: "Papua Barat" },
+  { code: "93", name: "Papua Selatan" },
+  { code: "94", name: "Papua Tengah" },
+  { code: "95", name: "Papua Pegunungan" },
+  { code: "96", name: "Papua Barat Daya" },
 ];
 
-/** Kabupaten/kota per provinsi. Yang lengkap tersedia untuk Kalimantan Barat. */
+const KODE_PROVINSI = Object.fromEntries(PROVINSI.map((p) => [p.name, p.code]));
+
 export const KABUPATEN = {
   "Kalimantan Barat": [
     "Kabupaten Sambas", "Kabupaten Mempawah", "Kabupaten Sanggau",
@@ -27,7 +62,6 @@ export const KABUPATEN = {
   ],
 };
 
-/** Kecamatan per kabupaten (lokal untuk Kalimantan Barat). */
 export const KECAMATAN = {
   "Kabupaten Sambas": [
     "Sambas", "Teluk Keramat", "Jawai", "Tebas", "Pemangkat", "Sejangkung",
@@ -50,7 +84,6 @@ export const KECAMATAN = {
   "Kota Singkawang": ["Singkawang Tengah", "Singkawang Barat", "Singkawang Timur", "Singkawang Utara", "Singkawang Selatan"],
 };
 
-/** Desa/kelurahan per kecamatan di Kabupaten Sambas (default). */
 export const DESA_SAMBAS = {
   "Sambas": ["Dalam Kaum", "Lubuk Dagang", "Tanjung Bugis", "Pendawan", "Pasar Melayu", "Durian", "Lorong", "Jagur", "Tumuk Manggis", "Tanjung Mekar", "Sebayan", "Kartiasa", "Saing Rambi", "Lumbang", "Sungai Rambah", "Gapura", "Sumber Harapan", "Semangau"],
   "Teluk Keramat": ["Sungai Kumpai", "Sekura", "Tri Mandayan", "Pedada", "Lela", "Puringan", "Berlimang", "Sungai Baru", "Sengawang", "Teluk Kaseh", "Sepadu", "Tambatan", "Kubangga", "Sungai Serabek", "Sayang Sedayu", "Pipit Teja", "Matang Segantar", "Mulia", "Teluk Kembang", "Samustida", "Tanjung Keracut", "Sebagu", "Mekar Sekuntum", "Kuala Pangkalan Keramat", "Sabing"],
@@ -73,8 +106,7 @@ export const DESA_SAMBAS = {
   "Selakau Timur": ["Gelik", "Seranggam", "Selakau Tua", "Buduk Sempadang"],
 };
 
-/** Kode wilayah untuk fallback fetch desa di luar Sambas. */
-const KODE_KABUPATEN = {
+const KODE_KABUPATEN_KALBAR = {
   "Kabupaten Sambas": "61.01", "Kabupaten Mempawah": "61.02",
   "Kabupaten Sanggau": "61.03", "Kabupaten Ketapang": "61.04",
   "Kabupaten Sintang": "61.05", "Kabupaten Kapuas Hulu": "61.06",
@@ -84,7 +116,23 @@ const KODE_KABUPATEN = {
   "Kota Pontianak": "61.71", "Kota Singkawang": "61.72",
 };
 
+const cacheKab = new Map();
+const cacheKodeKab = new Map();
+const cacheKodeKec = new Map();
 const cacheDesa = new Map();
+let provinsiAktif = "Kalimantan Barat";
+let kodeProvinsiAktif = "61";
+
+async function ambilAPI(path) {
+  try {
+    const r = await fetch(API + path);
+    if (!r.ok) return [];
+    const j = await r.json();
+    return j.data || [];
+  } catch (e) {
+    return [];
+  }
+}
 
 /** Isi <datalist> dengan daftar pilihan. */
 export function isiDatalist(id, daftar) {
@@ -98,78 +146,114 @@ export function isiDatalist(id, daftar) {
   });
 }
 
-/** Kembalikan daftar kabupaten untuk sebuah provinsi. */
-export function daftarKabupaten(provinsi) {
-  return KABUPATEN[provinsi] || [];
+/** Daftar kabupaten/kota (lokal untuk Kalbar, API untuk provinsi lain). */
+export async function daftarKabupaten(provinsi) {
+  const nama = String(provinsi || "").trim();
+  const kode = KODE_PROVINSI[nama];
+  if (kode) { provinsiAktif = nama; kodeProvinsiAktif = kode; }
+  if (KABUPATEN[nama]) return KABUPATEN[nama];
+  if (!kode) return [];
+  if (cacheKab.has(kode)) return cacheKab.get(kode);
+  const data = await ambilAPI(`regencies/${kode}.json`);
+  const hasil = data.map((d) => d.name);
+  cacheKodeKab.set(kode, data.map((d) => ({ name: d.name, code: d.code })));
+  cacheKab.set(kode, hasil);
+  return hasil;
 }
 
-/** Kembalikan daftar kecamatan untuk sebuah kabupaten. */
-export function daftarKecamatan(kabupaten) {
-  return KECAMATAN[kabupaten] || [];
-}
-
-/**
- * Ambil daftar desa. Data Sambas tersedia lokal; kabupaten lain diambil
- * dari wilayah.id bila online, dengan graceful fallback ke input bebas.
- */
-export async function daftarDesa(kabupaten, kecamatan) {
-  if (kabupaten === "Kabupaten Sambas" && DESA_SAMBAS[kecamatan]) {
-    return DESA_SAMBAS[kecamatan];
+async function cariKodeKab(namaKab) {
+  if (KODE_KABUPATEN_KALBAR[namaKab]) return KODE_KABUPATEN_KALBAR[namaKab];
+  let list = cacheKodeKab.get(kodeProvinsiAktif);
+  if (!list) {
+    await daftarKabupaten(provinsiAktif);
+    list = cacheKodeKab.get(kodeProvinsiAktif) || [];
   }
-  const kodeKab = KODE_KABUPATEN[kabupaten];
+  return list.find((x) => x.name === namaKab)?.code || null;
+}
+
+async function kodeKecamatanAPI(kodeKab) {
+  if (cacheKodeKec.has(kodeKab)) return cacheKodeKec.get(kodeKab);
+  const data = await ambilAPI(`districts/${kodeKab}.json`);
+  const list = data.map((d) => ({ name: d.name, code: d.code }));
+  cacheKodeKec.set(kodeKab, list);
+  return list;
+}
+
+/** Daftar kecamatan (semua kabupaten, via API dengan fallback lokal). */
+export async function daftarKecamatan(kabupaten) {
+  const nama = String(kabupaten || "").trim();
+  if (KECAMATAN[nama]) return KECAMATAN[nama];
+  const kodeKab = await cariKodeKab(nama);
   if (!kodeKab) return [];
-  const daftarKec = daftarKecamatan(kabupaten);
-  const index = daftarKec.indexOf(kecamatan);
-  if (index < 0) return [];
-  const kodeKec = `${kodeKab}.${String(index + 1).padStart(2, "0")}`;
-  if (cacheDesa.has(kodeKec)) return cacheDesa.get(kodeKec);
-  try {
-    const res = await fetch(`https://wilayah.id/api/villages/${kodeKec}.json`);
-    const json = await res.json();
-    const hasil = (json.data || []).map((v) => v.name);
-    cacheDesa.set(kodeKec, hasil);
-    return hasil;
-  } catch (e) {
-    return [];
-  }
+  const list = await kodeKecamatanAPI(kodeKab);
+  return list.map((x) => x.name);
 }
 
-/** Inisialisasi semua datalist wilayah + event perubahan berantai. */
+/** Daftar desa/kelurahan. Sambas tersedia offline, lainnya via API. */
+export async function daftarDesa(kabupaten, kecamatan) {
+  const kab = String(kabupaten || "").trim();
+  const kec = String(kecamatan || "").trim();
+  if (kab === "Kabupaten Sambas" && DESA_SAMBAS[kec]) return DESA_SAMBAS[kec];
+
+  const kodeKab = await cariKodeKab(kab);
+  if (!kodeKab) return [];
+  const kecList = await kodeKecamatanAPI(kodeKab);
+  const found = kecList.find((x) => x.name === kec);
+  if (!found) return [];
+  if (cacheDesa.has(found.code)) return cacheDesa.get(found.code);
+  const data = await ambilAPI(`villages/${found.code}.json`);
+  const hasil = data.map((v) => v.name);
+  cacheDesa.set(found.code, hasil);
+  return hasil;
+}
+
+/** Inisialisasi datalist + event perubahan berantai. */
 export function initWilayah() {
   isiDatalist("dl-provinsi", PROVINSI);
-  isiDatalist("dl-kabupaten", daftarKabupaten("Kalimantan Barat"));
-  isiDatalist("dl-kecamatan", daftarKecamatan("Kabupaten Sambas"));
+  isiDatalist("dl-kabupaten", KABUPATEN["Kalimantan Barat"]);
+  isiDatalist("dl-kecamatan", KECAMATAN["Kabupaten Sambas"]);
   isiDatalist("dl-desa", DESA_SAMBAS["Teluk Keramat"] || []);
 
   const prov = document.getElementById("f_provinsi");
   const kab = document.getElementById("f_kabupaten");
   const kec = document.getElementById("f_kecamatan");
   const des = document.getElementById("f_desa");
+  let tokenKab = 0, tokenKec = 0;
 
-  prov?.addEventListener("input", () => {
-    isiDatalist("dl-kabupaten", daftarKabupaten(prov.value.trim()));
-  });
-  prov?.addEventListener("change", () => {
-    if (prov.value.trim() !== "Kalimantan Barat") {
-      kab.value = "";
-      isiDatalist("dl-kecamatan", []);
-      kec.value = "";
-      isiDatalist("dl-desa", []);
-      des.value = "";
-    } else {
-      kab.value = "Kabupaten Sambas";
-      isiDatalist("dl-kecamatan", daftarKecamatan(kab.value));
-    }
+  prov?.addEventListener("input", async () => {
+    const t = ++tokenKab;
+    const daftar = await daftarKabupaten(prov.value.trim());
+    if (t === tokenKab) isiDatalist("dl-kabupaten", daftar);
   });
 
-  kab?.addEventListener("input", () => {
-    isiDatalist("dl-kecamatan", daftarKecamatan(kab.value.trim()));
-  });
-  kab?.addEventListener("change", async () => {
-    isiDatalist("dl-kecamatan", daftarKecamatan(kab.value.trim()));
+  prov?.addEventListener("change", async () => {
+    const t = ++tokenKab;
+    provinsiAktif = prov.value.trim();
+    kodeProvinsiAktif = KODE_PROVINSI[provinsiAktif] || "61";
+    const daftar = await daftarKabupaten(provinsiAktif);
+    if (t !== tokenKab) return;
+    isiDatalist("dl-kabupaten", daftar);
+    kab.value = provinsiAktif === "Kalimantan Barat" ? "Kabupaten Sambas" : "";
+    isiDatalist("dl-kecamatan", []);
     kec.value = "";
     isiDatalist("dl-desa", []);
     des.value = "";
+  });
+
+  kab?.addEventListener("input", async () => {
+    const t = ++tokenKec;
+    const daftar = await daftarKecamatan(kab.value.trim());
+    if (t === tokenKec) isiDatalist("dl-kecamatan", daftar);
+  });
+
+  kab?.addEventListener("change", async () => {
+    const t = ++tokenKec;
+    isiDatalist("dl-kecamatan", []);
+    kec.value = "";
+    isiDatalist("dl-desa", []);
+    des.value = "";
+    const daftar = await daftarKecamatan(kab.value.trim());
+    if (t === tokenKec) isiDatalist("dl-kecamatan", daftar);
   });
 
   kec?.addEventListener("change", async () => {

@@ -19,14 +19,16 @@ Aplikasi pendaftaran siswa baru berbasis **HTML + CSS + JavaScript (ES modules)*
 │   ├── css/styles.css            # Design system & responsive layout
 │   └── js/
 │       ├── config.js             # Konfigurasi Supabase, Drive, jurusan
-│       ├── wilayah.js            # Data provinsi/kabupaten/kecamatan/desa + autocomplete
+│       ├── tahun.js              # Tahun pelajaran otomatis (sekarang + depan)
+│       ├── wilayah.js            # Autocomplete wilayah nasional (kalbar offline)
 │       ├── landing.js            # Render konten beranda & status/hitung mundur
 │       ├── form.js               # Logika wizard, validasi, upload, submit
 │       └── admin.js              # Logika CRUD panel admin
 ├── supabase/migrations/
 │   ├── 0001_init.sql             # Skema tabel, RLS, RPC, akun admin
 │   ├── 0002_tahun_pelajaran.sql  # Pemisahan data per tahun pelajaran
-│   └── 0003_landing.sql          # Tabel konten beranda
+│   ├── 0003_landing.sql          # Tabel konten beranda
+│   └── 0004_auto_tahun.sql       # Mode tahun pelajaran otomatis
 ├── apps-script/
 │   ├── Code.gs                   # Web App upload foto ke Google Drive
 │   └── PANDUAN.md                # Cara deploy Apps Script
@@ -93,7 +95,7 @@ Project yang sudah dibuat:
 Jika project dibuat ulang dari nol, langkahnya:
 
 1. Buka Supabase SQL Editor untuk project tersebut.
-2. Jalankan berurutan: `0001_init.sql`, `0002_tahun_pelajaran.sql`, `0003_landing.sql`.
+2. Jalankan berurutan: `0001_init.sql`, `0002_tahun_pelajaran.sql`, `0003_landing.sql`, `0004_auto_tahun.sql`.
 3. Di **Project Settings → API**, salin **anon / publishable key**.
 4. Isi ke `assets/js/config.js`:
 
@@ -138,22 +140,23 @@ Untuk produksi, host sebagai static site (GitHub Pages, Netlify, Vercel, atau se
 
 ## Kontinuitas Tahun Pelajaran
 
-Setiap tahun pelajaran baru **tidak perlu mengubah kode**:
+Tahun pelajaran dihitung **otomatis dari tanggal** (mulai bulan Juli):
+bulan Januari–Juni 2026 → `2025/2026`, bulan Juli–Desember 2026 → `2026/2027`.
 
-- Setiap pendaftar tersimpan dengan kolom `tahun_pelajaran` (mis. `2026/2027`, `2027/2028`).
-- Kode pendaftaran otomatis mengikuti tahun, mis. `SPMB-2026-2027-XXXXXXXX`.
-- Di **panel admin → Dashboard**, pilih tahun di dropdown **"Tahun pelajaran aktif (form)"** lalu klik **Simpan**.
-  - Form pendaftaran publik otomatis memakai tahun tersebut ( judul & data yang dikirim ikut berubah).
-  - Dropdown **"filterTahun"** di tabel data dipakai untuk melihat/mengekspor data per tahun tanpa mencampur tahun lama.
-- Data tahun lama tetap tersimpan dan bisa dilihat kapan saja lewat filter **Semua Tahun**.
-
-Cara menambah tahun baru: ketik langsung pada kolom **"Tahun pelajaran aktif (form)"**, misalnya `2027/2028`, lalu klik **Simpan**. Form publik langsung berpindah ke tahun tersebut — tidak perlu edit kode maupun SQL.
+- Form, beranda, dan admin semuanya memakai fungsi `tahunPelajaran()` di `assets/js/tahun.js`.
+- Setiap pendaftar tersimpan dengan kolom `tahun_pelajaran`; kode pendaftaran mengikuti tahun, mis. `SPMB-2026-2027-XXXXXXXX`.
+- Secara default mode = **Otomatis**, sehingga berganti tahun dengan sendirinya tanpa edit kode/SQL.
+- Di **panel admin → Dashboard**, dropdown tahun menyediakan:
+  - **Otomatis (tahun berjalan)** — kembali ke mode otomatis
+  - **Tahun sekarang** dan **tahun depan** — untuk membuka pendaftaran tahun depan lebih awal (mode manual)
+  - Tahun-tahun yang sudah ada di database
+- Dropdown **filter tahun** di tabel dipakai untuk melihat/mengekspor data per tahun. Data lama tetap tersimpan dan bisa dilihat lewat **Semua Tahun**.
 
 ## Catatan penting
 
 - Kunci **anon** aman untuk disimpan di frontend karena aksesnya dibatasi RLS. **Jangan pernah** menaruh `service_role key` di kode frontend.
 - Jika NIK/NISN sudah terdaftar, form akan menolak dengan pesan yang ramah (kunci unik di database).
-- Data wilayah bersumber dari [wilayah.id](https://wilayah.id) (update 2025-07-04) dan disimpan lokal agar tetap berfungsi offline untuk Kalimantan Barat.
+- Autocomplete wilayah (provinsi → kabupaten → kecamatan → desa) bekerja untuk **seluruh Indonesia** via [wilayah.id](https://wilayah.id). Data Kalimantan Barat/Sambas juga tersimpan lokal sebagai fallback saat offline.
 - Jika ingin mengubah daftar jurusan, edit `CONFIG.JURUSAN` di `assets/js/config.js` **dan** sesuaii constraint/opsi di database bila diperlukan.
 
 ---

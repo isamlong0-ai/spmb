@@ -1,5 +1,6 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { CONFIG } from "./config.js";
+import { ambilTahunAktif, tahunPelajaran } from "./tahun.js";
 
 const supabase = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
 const $ = (s) => document.querySelector(s);
@@ -48,15 +49,16 @@ function aturCountdown(target, caption) {
   setInterval(tick, 1000);
 }
 
-function render(data) {
+function render(data, tahunAktif) {
   const d = { ...DEFAULT, ...(data || {}) };
+  const tahunDitampilkan = tahunAktif || d.tahun_pelajaran || tahunPelajaran();
   document.title = `${d.judul} — SMKN 1 Teluk Keramat`;
   $("#lpJudul").textContent = d.judul;
   $("#lpTagline").textContent = d.tagline;
   $("#lpSambutan").textContent = d.sambutan;
-  $("#lpTahun").textContent = d.tahun_pelajaran;
+  $("#lpTahun").textContent = tahunDitampilkan;
   $("#lpWaktu").textContent = d.waktu_pendaftaran;
-  document.querySelectorAll(".tahun-inline").forEach((el) => { el.textContent = d.tahun_pelajaran; });
+  document.querySelectorAll(".tahun-inline").forEach((el) => { el.textContent = tahunDitampilkan; });
   $("#lpTahunPoros").textContent = new Date().getFullYear();
 
   const mulai = parseTanggal(d.tanggal_mulai);
@@ -85,11 +87,12 @@ function render(data) {
 }
 
 async function muat() {
+  const tahun = await ambilTahunAktif(supabase);
   try {
     const { data } = await supabase.from("landing").select("*").eq("id", 1).maybeSingle();
-    render(data);
+    render(data, tahun);
   } catch (e) {
-    render(null);
+    render(null, tahun);
   }
 }
 

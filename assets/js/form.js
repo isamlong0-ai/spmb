@@ -1,6 +1,7 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { CONFIG, MAPEL, SEMESTER, FOTO_FIELDS } from "./config.js";
 import { initWilayah } from "./wilayah.js";
+import { ambilTahunAktif, tahunAwal } from "./tahun.js";
 
 const supabase = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
 const form = document.getElementById("formPendaftaran");
@@ -473,22 +474,13 @@ function unduhPDF() {
 
 /* --------------------------- Tahun pelajaran ---------------------------- */
 async function muatTahunAktif() {
-  try {
-    const { data } = await supabase
-      .from("pengaturan")
-      .select("value")
-      .eq("key", "tahun_pelajaran_aktif")
-      .maybeSingle();
-    if (data?.value) tahunAktif = data.value;
-  } catch (e) {
-    // Fallback ke nilai di config.js
-  }
+  tahunAktif = await ambilTahunAktif(supabase);
   $("#tahun_pelajaran").value = tahunAktif;
   $("#tahunTopbar").textContent = `Tahun Pelajaran ${tahunAktif}`;
   $("#tahunBukti").textContent = `Tahun Pelajaran ${tahunAktif}`;
 
   // Tahun lulus mengikuti tahun pertama pada tahun pelajaran aktif
-  const tahunLulusAwal = parseInt(String(tahunAktif).slice(0, 4), 10) || 2026;
+  const tahunLulusAwal = tahunAwal(tahunAktif);
   const sel = $("#tahun_lulus");
   sel.innerHTML = '<option value="">-- Pilih --</option>' +
     Array.from({ length: 5 }, (_, i) => {

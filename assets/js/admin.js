@@ -1,5 +1,6 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { CONFIG, MAPEL, SEMESTER } from "./config.js";
+import { ambilTahunAktif, pilihanTahunAktif, pilihanTahunData, tahunPelajaran } from "./tahun.js";
 
 const supabase = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
 const $ = (s, r = document) => r.querySelector(s);
@@ -12,6 +13,8 @@ let dataTerfilter = [];
 let editId = null;
 let tahunAktif = CONFIG.TAHUN_PELAJARAN;
 let daftarTahun = [];
+let modeTahun = "auto";
+let emailAdmin = "";
 
 /* -------------------------------- Util -------------------------------- */
 function toast(pesan, tipe = "") {
@@ -64,7 +67,7 @@ async function initAuth() {
 function tampilkanAdmin(user) {
   $("#loginView").classList.add("hidden");
   $("#adminView").classList.remove("hidden");
-  $("#pageSubtitle").textContent = `Login sebagai ${user.email} · Tahun Pelajaran ${tahunAktif}`;
+  emailAdmin = user.email;
   muatTahun();
   muatData();
 }
@@ -92,16 +95,23 @@ async function muatData(reset = true) {
 
 function kumpulkanTahun() {
   const dariData = semuaData.map((d) => d.tahun_pelajaran).filter(Boolean);
-  daftarTahun = Array.from(new Set([tahunAktif, ...dariData])).sort().reverse();
+  daftarTahun = Array.from(new Set([
+    ...pilihanTahunData(), tahunAktif, ...dariData,
+  ])).sort().reverse();
+
   const filter = $("#filterTahun");
   const nilaiSebelumnya = filter.value || tahunAktif;
   filter.innerHTML = `<option value="">Semua Tahun</option>` +
     daftarTahun.map((t) => `<option value="${escapeHtml(t)}">${escapeHtml(t)}</option>`).join("");
   filter.value = daftarTahun.includes(nilaiSebelumnya) ? nilaiSebelumnya : tahunAktif;
 
-  $("#dl-tahun").innerHTML = daftarTahun
-    .map((t) => `<option value="${escapeHtml(t)}"></option>`).join("");
-  $("#tahunAktifSelect").value = tahunAktif;
+  // Opsi tahun aktif: otomatis + tahun sekarang + tahun depan (+ data lama)
+  const opsiAktif = Array.from(new Set([...pilihanTahunAktif(), ...dariData, tahunAktif])).sort().reverse();
+  const sel = $("#tahunAktifSelect");
+  sel.innerHTML =
+    `<option value="__auto__">Otomatis (${tahunPelajaran()})</option>` +
+    opsiAktif.map((t) => `<option value="${escapeHtml(t)}">${escapeHtml(t)}</option>`).join("");
+  sel.value = modeTahun === "auto" ? "__auto__" : tahunAktif;
 }
 
 function updateStat() {
@@ -335,34 +345,48 @@ async function muatTahun() {
   try {
     const { data } = await supabase
       .from("pengaturan")
-      .select("value")
-      .eq("key", "tahun_pelajaran_aktif")
-      .maybeSingle();
-    if (data?.value) tahunAktif = data.value;
+      .select("key, value")
+      .in("key", ["tahun_pelajaran_aktif", "mode_tahun_aktif"]);
+    const peta = Object.fromEntries((data || []).map((r) => [r.key, r.value]));
+    modeTahun = peta.mode_tahun_aktif === "manual" ? "manual" : "auto";
+    tahunAktif = modeTahun === "manual" && peta.tahun_pelajaran_aktif
+      ? peta.tahun_pelajaran_aktif
+      : tahunPelajaran();
   } catch (e) {
-    // Fallback ke config.js
+    modeTahun = "auto";
+    tahunAktif = tahunPelajaran();
   }
-  $("#pageSubtitle").textContent = `Tahun Pelajaran aktif: ${tahunAktif}`;
+  perbaruiSubtitle();
   kumpulkanTahun();
 }
 
+function perbaruiSubtitle() {
+  const keterangan = modeTahun === "auto" ? "otomatis" : "manual";
+  $("#pageSubtitle").textContent = `${emailAdmin} · Tahun Pelajaran ${tahunAktif} (${keterangan})`;
+}
+
 async function simpanTahunAktif() {
-  const tahun = $("#tahunAktifSelect").value.trim();
+  const pilihan = $("#tahunAktifSelect").value;
+  const otomatis = pilihan === "__auto__";
+  const tahun = otomatis ? tahunPelajaran() : pilihan.trim();
   if (!/^\d{4}\/\d{4}$/.test(tahun)) {
     toast("Format tahun pelajaran harus seperti 2027/2028.", "error");
     return;
   }
-  const { error } = await supabase
-    .from("pengaturan")
-    .update({ value: tahun, updated_at: new Date().toISOString() })
-    .eq("key", "tahun_pelajaran_aktif");
+  const { error } = await supabase.from("pengaturan").upsert([
+    { key: "tahun_pelajaran_aktif", value: tahun, updated_at: new Date().toISOString() },
+    { key: "mode_tahun_aktif", value: otomatis ? "auto" : "manual", updated_at: new Date().toISOString() },
+  ], { onConflict: "key" });
   if (error) { toast("Gagal menyimpan tahun: " + error.message, "error"); return; }
+  modeTahun = otomatis ? "auto" : "manual";
   tahunAktif = tahun;
   $("#filterTahun").value = tahun;
-  $("#pageSubtitle").textContent = `Tahun Pelajaran aktif: ${tahunAktif}`;
+  perbaruiSubtitle();
   kumpulkanTahun();
   terapkanFilter();
-  toast(`Tahun pelajaran aktif sekarang ${tahun}. Form pendaftaran ikut berubah.`);
+  toast(otomatis
+    ? `Tahun pelajaran otomatis: ${tahun}. Berganti sendiri setiap tahun.`
+    : `Tahun pelajaran aktif sekarang ${tahun}. Form pendaftaran ikut berubah.`);
 }
 
 /* --------------------------- Konten beranda ---------------------------- */
@@ -370,7 +394,7 @@ function gantiMenu(id, judul) {
   ["navDashboard", "navPendaftar", "navLanding"].forEach((n) =>
     $("#" + n).classList.toggle("active", n === id));
   $("#pageTitle").textContent = judul;
-  $("#pageSubtitle").textContent = `Tahun Pelajaran aktif: ${tahunAktif}`;
+  perbaruiSubtitle();
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
@@ -382,7 +406,7 @@ async function muatLanding() {
       $("#lp_edit_judul").value = data.judul || "";
       $("#lp_edit_tagline").value = data.tagline || "";
       $("#lp_edit_sambutan").value = data.sambutan || "";
-      $("#lp_edit_tahun").value = data.tahun_pelajaran || "";
+      $("#lp_edit_tahun").value = tahunAktif;
       $("#lp_edit_waktu").value = data.waktu_pendaftaran || "";
       $("#lp_edit_mulai").value = data.tanggal_mulai || "";
       $("#lp_edit_selesai").value = data.tanggal_selesai || "";
