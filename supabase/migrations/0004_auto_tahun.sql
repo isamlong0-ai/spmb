@@ -3,6 +3,12 @@
 -- Jalankan di Supabase SQL Editor setelah 0003_landing.sql
 -- =============================================================================
 
+-- Form publik perlu membaca kedua kunci agar mode manual ikut berlaku.
+drop policy if exists "publik_baca_tahun_aktif" on public.pengaturan;
+create policy "publik_baca_tahun_aktif"
+  on public.pengaturan for select to anon
+  using (key in ('tahun_pelajaran_aktif', 'mode_tahun_aktif'));
+
 -- Mode 'auto' = tahun dihitung dari tanggal saat ini (berganti sendiri).
 -- Mode 'manual' = admin memilih tahun tertentu (mis. tahun depan lebih awal).
 insert into public.pengaturan (key, value)
