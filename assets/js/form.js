@@ -506,6 +506,10 @@ bindGlobalEvents();
 initWilayah();
 gotoStep(1);
 
+/* Jika dibuka dari beranda dengan #cek, langsung tampilkan popup pencarian */
+if (location.hash === "#cek") {
+  setTimeout(() => $("#overlayCari").classList.add("show"), 300);
+} else {
 /* Pengumuman awal */
 setTimeout(() => {
   bukaModal("Selamat Datang!", `
@@ -517,3 +521,4 @@ setTimeout(() => {
     </ul>
     <p style="margin-bottom:0">Pastikan seluruh data diisi dengan benar dan jujur.</p>`);
 }, 700);
+}

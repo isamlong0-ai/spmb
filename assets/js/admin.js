@@ -365,6 +365,63 @@ async function simpanTahunAktif() {
   toast(`Tahun pelajaran aktif sekarang ${tahun}. Form pendaftaran ikut berubah.`);
 }
 
+/* --------------------------- Konten beranda ---------------------------- */
+function gantiMenu(id, judul) {
+  ["navDashboard", "navPendaftar", "navLanding"].forEach((n) =>
+    $("#" + n).classList.toggle("active", n === id));
+  $("#pageTitle").textContent = judul;
+  $("#pageSubtitle").textContent = `Tahun Pelajaran aktif: ${tahunAktif}`;
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+async function muatLanding() {
+  $("#lpSimpanStatus").textContent = "Memuat…";
+  try {
+    const { data } = await supabase.from("landing").select("*").eq("id", 1).maybeSingle();
+    if (data) {
+      $("#lp_edit_judul").value = data.judul || "";
+      $("#lp_edit_tagline").value = data.tagline || "";
+      $("#lp_edit_sambutan").value = data.sambutan || "";
+      $("#lp_edit_tahun").value = data.tahun_pelajaran || "";
+      $("#lp_edit_waktu").value = data.waktu_pendaftaran || "";
+      $("#lp_edit_mulai").value = data.tanggal_mulai || "";
+      $("#lp_edit_selesai").value = data.tanggal_selesai || "";
+    }
+    $("#lpSimpanStatus").textContent = data ? "Konten terakhir diperbarui: " + tgl(data.updated_at) : "Belum ada data.";
+  } catch (e) {
+    $("#lpSimpanStatus").textContent = "Gagal memuat: " + e.message;
+  }
+}
+
+async function simpanLanding() {
+  const btn = $("#btnSimpanLanding");
+  btn.disabled = true;
+  btn.textContent = "Menyimpan…";
+  const payload = {
+    id: 1,
+    judul: $("#lp_edit_judul").value.trim() || "Selamat Datang",
+    tagline: $("#lp_edit_tagline").value.trim() || "-",
+    sambutan: $("#lp_edit_sambutan").value.trim() || "-",
+    tahun_pelajaran: $("#lp_edit_tahun").value.trim() || tahunAktif,
+    waktu_pendaftaran: $("#lp_edit_waktu").value.trim() || "-",
+    tanggal_mulai: $("#lp_edit_mulai").value || null,
+    tanggal_selesai: $("#lp_edit_selesai").value || null,
+    updated_at: new Date().toISOString(),
+  };
+  try {
+    const { error } = await supabase.from("landing").upsert(payload, { onConflict: "id" });
+    if (error) throw error;
+    $("#lpSimpanStatus").textContent = "✓ Tersimpan: " + tgl(new Date());
+    toast("Konten beranda berhasil disimpan.");
+  } catch (e) {
+    $("#lpSimpanStatus").textContent = "Gagal: " + e.message;
+    toast("Gagal menyimpan: " + e.message, "error");
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "💾 Simpan Konten Beranda";
+  }
+}
+
 /* ------------------------------- Events -------------------------------- */
 function bindEvents() {
   $("#cari").addEventListener("input", terapkanFilter);
@@ -381,18 +438,26 @@ function bindEvents() {
   $("#editSimpan").addEventListener("click", simpanEdit);
 
   $("#navDashboard").addEventListener("click", () => {
-    $("#navDashboard").classList.add("active");
-    $("#navPendaftar").classList.remove("active");
-    $("#pageTitle").textContent = "Dashboard";
+    gantiMenu("navDashboard", "Dashboard");
     $("#statGrid").classList.remove("hidden");
+    $("#dataSection").classList.remove("hidden");
+    $("#landingSection").classList.add("hidden");
   });
   $("#navPendaftar").addEventListener("click", () => {
-    $("#navPendaftar").classList.add("active");
-    $("#navDashboard").classList.remove("active");
-    $("#pageTitle").textContent = "Data Pendaftar";
+    gantiMenu("navPendaftar", "Data Pendaftar");
     $("#statGrid").classList.add("hidden");
+    $("#dataSection").classList.remove("hidden");
+    $("#landingSection").classList.add("hidden");
     $("#dataSection").scrollIntoView({ behavior: "smooth" });
   });
+  $("#navLanding").addEventListener("click", () => {
+    gantiMenu("navLanding", "Konten Beranda");
+    $("#statGrid").classList.add("hidden");
+    $("#dataSection").classList.add("hidden");
+    $("#landingSection").classList.remove("hidden");
+    muatLanding();
+  });
+  $("#btnSimpanLanding").addEventListener("click", simpanLanding);
 }
 
 bindEvents();

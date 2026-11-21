@@ -12,17 +12,21 @@ Aplikasi pendaftaran siswa baru berbasis **HTML + CSS + JavaScript (ES modules)*
 
 ```
 .
-├── index.html                    # Form pendaftaran (wizard 6 langkah)
-├── admin.html                    # Panel admin (login + CRUD)
+├── index.html                    # BERANDA / landing page (konten bisa diatur di admin)
+├── pendaftaran.html              # Form pendaftaran (wizard 6 langkah)
+├── admin.html                    # Panel admin (login + CRUD + editor beranda)
 ├── assets/
 │   ├── css/styles.css            # Design system & responsive layout
 │   └── js/
 │       ├── config.js             # Konfigurasi Supabase, Drive, jurusan
 │       ├── wilayah.js            # Data provinsi/kabupaten/kecamatan/desa + autocomplete
+│       ├── landing.js            # Render konten beranda & status/hitung mundur
 │       ├── form.js               # Logika wizard, validasi, upload, submit
 │       └── admin.js              # Logika CRUD panel admin
 ├── supabase/migrations/
-│   └── 0001_init.sql             # Skema tabel, RLS, RPC, akun admin
+│   ├── 0001_init.sql             # Skema tabel, RLS, RPC, akun admin
+│   ├── 0002_tahun_pelajaran.sql  # Pemisahan data per tahun pelajaran
+│   └── 0003_landing.sql          # Tabel konten beranda
 ├── apps-script/
 │   ├── Code.gs                   # Web App upload foto ke Google Drive
 │   └── PANDUAN.md                # Cara deploy Apps Script
@@ -33,7 +37,13 @@ Aplikasi pendaftaran siswa baru berbasis **HTML + CSS + JavaScript (ES modules)*
 
 ## Fitur utama
 
-### Form pendaftar (`index.html`)
+### Beranda (`index.html`)
+- Halaman utama yang menarik: hero, kartu informasi, kata sambutan, alur pendaftaran, dan panduan
+- **Seluruh teks utama bisa diatur dari panel admin** (judul, tagline, sambutan, tahun pelajaran, waktu pendaftaran, tanggal mulai/selesai)
+- Status pendaftaran (**Akan Datang / Dibuka / Ditutup**) dan hitung mundur dihitung otomatis dari tanggal
+- Tombol menuju formulir dan pencarian data
+
+### Form pendaftar (`pendaftaran.html`)
 - Wizard **6 langkah** dengan progress bar dan navigasi bebas ke langkah sebelumnya
 - **Alamat terpisah per wilayah**: provinsi → kabupaten → kecamatan → desa → RT → RW → kode pos → patokan → alamat lengkap
 - **Autocomplete provinsi & kabupaten**, dengan default **Kalimantan Barat / Kabupaten Sambas**
@@ -51,6 +61,8 @@ Aplikasi pendaftaran siswa baru berbasis **HTML + CSS + JavaScript (ES modules)*
 - Pencarian & filter status, pagination "muat lebih banyak"
 - **CRUD lengkap**: lihat, edit seluruh field + nilai rapor, ubah status, hapus data
 - Export CSV
+- **Editor Konten Beranda**: mengatur judul, tagline, sambutan, tahun pelajaran, waktu & tanggal pendaftaran
+- Pengatur tahun pelajaran aktif untuk form publik
 
 ### Keamanan
 - RLS: `anon` hanya bisa **INSERT**; tidak bisa membaca data pendaftar
@@ -76,10 +88,12 @@ Project yang sudah dibuat:
 
 ✅ **Sudah aktif:** migration `supabase/migrations/0002_tahun_pelajaran.sql` juga sudah dijalankan (kolom tahun, tabel pengaturan, RPC terbaru).
 
+⚠️ **Perlu dijalankan:** `supabase/migrations/0003_landing.sql` — menambah tabel `landing` untuk konten beranda.
+
 Jika project dibuat ulang dari nol, langkahnya:
 
 1. Buka Supabase SQL Editor untuk project tersebut.
-2. Jalankan `supabase/migrations/0001_init.sql`, lalu `0002_tahun_pelajaran.sql`.
+2. Jalankan berurutan: `0001_init.sql`, `0002_tahun_pelajaran.sql`, `0003_landing.sql`.
 3. Di **Project Settings → API**, salin **anon / publishable key**.
 4. Isi ke `assets/js/config.js`:
 
@@ -113,7 +127,10 @@ python -m http.server 8000
 npx serve .
 ```
 
-Lalu buka `http://localhost:8000/index.html` dan `http://localhost:8000/admin.html`.
+Lalu buka:
+- Beranda: `http://localhost:8000/index.html`
+- Form: `http://localhost:8000/pendaftaran.html`
+- Admin: `http://localhost:8000/admin.html`
 
 Untuk produksi, host sebagai static site (GitHub Pages, Netlify, Vercel, atau server sekolah). Pastikan `index.html` dan `admin.html` berada di root yang sama dengan folder `assets/`.
 

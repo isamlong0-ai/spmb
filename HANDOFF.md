@@ -7,13 +7,14 @@
 - ✅ Anon/publishable key sudah terisi di `assets/js/config.js`.
 - ✅ Tes end-to-end berhasil: insert via RPC → cek NISN → hapus data dummy (DB bersih).
 - ✅ Login admin Supabase Auth berhasil.
-- Aplikasi: `index.html` (wizard 6 langkah), `admin.html` (CRUD), CSS/JS responsif.
+- Aplikasi: `index.html` (beranda/landing, konten bisa diatur admin), `pendaftaran.html` (wizard 6 langkah), `admin.html` (CRUD + editor beranda), CSS/JS responsif.
 - Alamat terstruktur + autocomplete wilayah (default Kalimantan Barat / Kabupaten Sambas).
 - Apps Script proxy upload Drive: `apps-script/Code.gs` + `PANDUAN.md`.
 - ✅ Sudah di-push ke https://github.com/isamlong0-ai/spmb.git (branch `main`).
 - Konfigurasi MCP Supabase ditulis ke `~/.config/opencode/opencode.json` (opsional, tidak dipakai).
 
 ## Yang masih perlu
+- ⚠️ **Jalankan `supabase/migrations/0003_landing.sql`** di SQL Editor (tabel `landing` + RLS + seed konten).
 - Hapus 2 file uji (1x1 pixel) dari folder Drive: `foto_test_koneksi.jpg` dan `foto_test_cors_browser.jpg` — dibuat saat tes koneksi & CORS.
 - Ganti password admin default `AdminSPMB2026!` setelah login pertama.
 

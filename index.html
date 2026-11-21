@@ -2,570 +2,194 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="theme-color" content="#047857">
-  <meta name="description" content="Formulir pendaftaran SPMB SMK Negeri 1 Teluk Keramat Tahun Pelajaran 2026/2027">
-  <title>Pendaftaran SPMB — SMKN 1 Teluk Keramat</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#065f46">
+  <meta name="description" content="Beranda resmi SPMB SMK Negeri 1 Teluk Keramat Tahun Pelajaran 2026/2027. Informasi pendaftaran, sambutan, dan cara mendaftar.">
+  <title>Beranda SPMB — SMKN 1 Teluk Keramat</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/css/styles.css">
 </head>
 <body>
-<div class="app-shell">
-  <header class="topbar">
-    <div class="wrap">
-      <div class="brand">
-        <img src="https://lh3.googleusercontent.com/d/1zArv6yZsZ-YZCSTtEbTBUQp4C0kv325f" alt="Logo Sekolah">
-        <div>
-          <strong>SPMB SMKN 1 TELUK KERAMAT</strong>
-          <span id="tahunTopbar">Tahun Pelajaran 2026/2027</span>
-        </div>
-      </div>
-      <a class="topbar-link" href="admin.html">Area Admin</a>
+
+<!-- ===================== NAVBAR ===================== -->
+<nav class="lp-nav">
+  <div class="wrap">
+    <a class="lp-brand" href="index.html">
+      <img src="https://lh3.googleusercontent.com/d/1zArv6yZsZ-YZCSTtEbTBUQp4C0kv325f" alt="Logo Sekolah">
+      <div><strong>SMKN 1 TELUK KERAMAT</strong><span>Penerimaan Murid Baru</span></div>
+    </a>
+    <div class="lp-links">
+      <a href="index.html">Beranda</a>
+      <a href="#sambutan">Sambutan</a>
+      <a href="#alur">Alur Pendaftaran</a>
+      <a href="#informasi">Informasi</a>
+      <a href="pendaftaran.html#cek">Cek Data</a>
+      <a href="admin.html">Admin</a>
+      <a class="cta" href="pendaftaran.html">Daftar Sekarang →</a>
     </div>
-  </header>
-
-  <main class="wrap">
-    <div class="hero">
-      <h1>Formulir Pendaftaran Siswa Baru</h1>
-      <p>Lengkapi data dengan benar. Proses ini kurang lebih 5–10 menit.</p>
-    </div>
-
-    <!-- STEPPER -->
-    <div class="stepper" id="stepper">
-      <div class="stepper-fill" id="stepperFill"></div>
-      <div class="step active" data-step="1"><div class="step-dot">1</div><div class="step-label">Data Diri</div></div>
-      <div class="step" data-step="2"><div class="step-dot">2</div><div class="step-label">Alamat</div></div>
-      <div class="step" data-step="3"><div class="step-dot">3</div><div class="step-label">Ortu &amp; Wali</div></div>
-      <div class="step" data-step="4"><div class="step-dot">4</div><div class="step-label">Sekolah &amp; Foto</div></div>
-      <div class="step" data-step="5"><div class="step-dot">5</div><div class="step-label">Nilai Rapor</div></div>
-      <div class="step" data-step="6"><div class="step-dot">6</div><div class="step-label">Jurusan</div></div>
-    </div>
-
-    <form id="formPendaftaran" novalidate>
-      <input type="hidden" name="tahun_pelajaran" id="tahun_pelajaran" value="2026/2027">
-      <!-- ============ STEP 1 ============ -->
-      <section class="card step-page" data-page="1">
-        <div class="card-head">
-          <div><h2>Data Diri Calon Siswa</h2><p>Isi sesuai data pada Kartu Keluarga dan Akta Kelahiran.</p></div>
-          <span class="badge-step">Langkah 1 / 6</span>
-        </div>
-        <div class="grid">
-          <div class="field full">
-            <label for="nama">Nama Lengkap <span class="req">*</span></label>
-            <input id="nama" name="nama" type="text" autocomplete="name" placeholder="Sesuai Akta Kelahiran" required>
-            <span class="error-msg">Nama lengkap wajib diisi.</span>
-          </div>
-          <div class="field">
-            <label for="nik">NIK (16 digit) <span class="req">*</span></label>
-            <input id="nik" name="nik" type="text" inputmode="numeric" maxlength="16" pattern="[0-9]{16}" placeholder="16 digit angka" required>
-            <span class="error-msg">NIK harus 16 digit angka.</span>
-          </div>
-          <div class="field">
-            <label for="kk">Nomor Kartu Keluarga (16 digit) <span class="req">*</span></label>
-            <input id="kk" name="kk" type="text" inputmode="numeric" maxlength="16" pattern="[0-9]{16}" placeholder="16 digit angka" required>
-            <span class="error-msg">Nomor KK harus 16 digit angka.</span>
-          </div>
-          <div class="field">
-            <label for="akta">Nomor Akta Kelahiran <span class="req">*</span></label>
-            <input id="akta" name="akta" type="text" placeholder="Contoh: 1234/KLT/2010" required>
-            <span class="error-msg">Nomor akta wajib diisi.</span>
-          </div>
-          <div class="field">
-            <label for="tempat_lahir">Tempat Lahir <span class="req">*</span></label>
-            <input id="tempat_lahir" name="tempat_lahir" type="text" placeholder="Contoh: Sambas" required>
-            <span class="error-msg">Tempat lahir wajib diisi.</span>
-          </div>
-          <div class="field">
-            <label for="tanggal_lahir">Tanggal Lahir <span class="req">*</span></label>
-            <input id="tanggal_lahir" name="tanggal_lahir" type="date" required>
-            <span class="error-msg">Tanggal lahir wajib diisi.</span>
-          </div>
-          <div class="field">
-            <label>Jenis Kelamin <span class="req">*</span></label>
-            <div class="radio-row" data-radio="jenis_kelamin">
-              <label class="radio-pill"><input type="radio" name="jenis_kelamin" value="Laki-laki" required> Laki-laki</label>
-              <label class="radio-pill"><input type="radio" name="jenis_kelamin" value="Perempuan"> Perempuan</label>
-            </div>
-            <span class="error-msg">Pilih jenis kelamin.</span>
-          </div>
-          <div class="field">
-            <label for="agama">Agama <span class="req">*</span></label>
-            <select id="agama" name="agama" required>
-              <option value="">-- Pilih Agama --</option>
-              <option>Islam</option><option>Kristen</option><option>Katolik</option>
-              <option>Hindu</option><option>Buddha</option><option>Khonghucu</option>
-            </select>
-            <span class="error-msg">Pilih agama.</span>
-          </div>
-          <div class="field">
-            <label for="anak_ke">Anak Ke- <span class="req">*</span></label>
-            <input id="anak_ke" name="anak_ke" type="number" min="1" max="30" placeholder="Misal: 2" required>
-            <span class="error-msg">Isi angka 1–30.</span>
-          </div>
-          <div class="field">
-            <label for="jumlah_saudara">Jumlah Saudara Kandung <span class="req">*</span></label>
-            <input id="jumlah_saudara" name="jumlah_saudara" type="number" min="0" max="30" placeholder="Misal: 3" required>
-            <span class="error-msg">Isi angka 0–30.</span>
-          </div>
-          <div class="field">
-            <label for="tinggi_badan">Tinggi Badan (cm) <span class="req">*</span></label>
-            <input id="tinggi_badan" name="tinggi_badan" type="number" min="50" max="250" placeholder="Misal: 158" required>
-            <span class="error-msg">Isi tinggi badan 50–250 cm.</span>
-          </div>
-          <div class="field">
-            <label for="berat_badan">Berat Badan (kg) <span class="req">*</span></label>
-            <input id="berat_badan" name="berat_badan" type="number" min="10" max="200" placeholder="Misal: 45" required>
-            <span class="error-msg">Isi berat badan 10–200 kg.</span>
-          </div>
-          <div class="field">
-            <label for="jenis_tempat_tinggal">Jenis Tempat Tinggal <span class="req">*</span></label>
-            <select id="jenis_tempat_tinggal" name="jenis_tempat_tinggal" onchange="toggleLain(this,' tinggal_lain')" required>
-              <option value="">-- Pilih --</option>
-              <option value="Bersama Orang Tua / Wali">Bersama Orang Tua / Wali</option>
-              <option value="Kost">Kost</option>
-              <option value="Asrama">Asrama</option>
-              <option value="Lainnya">Lainnya</option>
-            </select>
-            <span class="error-msg">Pilih jenis tempat tinggal.</span>
-          </div>
-          <div class="field hidden" id="tinggal_lain">
-            <label for="tempat_tinggal_lain">Sebutkan Tempat Tinggal Lainnya</label>
-            <input id="tempat_tinggal_lain" name="tempat_tinggal_lain" type="text">
-          </div>
-          <div class="field">
-            <label for="moda_transportasi">Moda Transportasi ke Sekolah <span class="req">*</span></label>
-            <select id="moda_transportasi" name="moda_transportasi" onchange="toggleLain(this,' transport_lain')" required>
-              <option value="">-- Pilih --</option>
-              <option>Jalan Kaki</option><option>Sepeda</option><option>Sepeda Motor</option>
-              <option>Mobil</option><option>Menumpang</option><option>Lainnya</option>
-            </select>
-            <span class="error-msg">Pilih moda transportasi.</span>
-          </div>
-          <div class="field hidden" id="transport_lain">
-            <label for="transportasi_lain">Sebutkan Transportasi Lainnya</label>
-            <input id="transportasi_lain" name="transportasi_lain" type="text">
-          </div>
-          <div class="field full">
-            <label for="no_hp_siswa">Nomor HP / WhatsApp Siswa <span class="req">*</span></label>
-            <input id="no_hp_siswa" name="no_hp_siswa" type="tel" inputmode="numeric" placeholder="Contoh: 081234567890" required>
-            <span class="error-msg">Nomor HP wajib diisi.</span>
-          </div>
-        </div>
-        <div class="form-nav"><span></span><button type="button" class="btn btn-primary" data-next="2">Lanjut ke Alamat →</button></div>
-      </section>
-
-      <!-- ============ STEP 2 ============ -->
-      <section class="card step-page hidden" data-page="2">
-        <div class="card-head">
-          <div><h2>Alamat Tempat Tinggal</h2><p>Diadakan terpisah per wilayah agar data lebih rapi dan mudah dianalisis.</p></div>
-          <span class="badge-step">Langkah 2 / 6</span>
-        </div>
-        <div class="grid">
-          <div class="callout">ℹ️ Provinsi dan Kabupaten sudah terisi otomatis sesuai defaults sekolah. Anda tetap bisa mengubahnya; daftar kabupaten akan menyesuaikan.</div>
-          <div class="field">
-            <label for="f_provinsi">Provinsi <span class="req">*</span></label>
-            <input id="f_provinsi" name="provinsi" type="text" list="dl-provinsi" value="Kalimantan Barat" required>
-            <datalist id="dl-provinsi"></datalist>
-            <span class="error-msg">Provinsi wajib diisi.</span>
-          </div>
-          <div class="field">
-            <label for="f_kabupaten">Kabupaten / Kota <span class="req">*</span></label>
-            <input id="f_kabupaten" name="kabupaten" type="text" list="dl-kabupaten" value="Kabupaten Sambas" required>
-            <datalist id="dl-kabupaten"></datalist>
-            <span class="error-msg">Kabupaten wajib diisi.</span>
-          </div>
-          <div class="field">
-            <label for="f_kecamatan">Kecamatan <span class="req">*</span></label>
-            <input id="f_kecamatan" name="kecamatan" type="text" list="dl-kecamatan" placeholder="Ketik atau pilih kecamatan" required>
-            <datalist id="dl-kecamatan"></datalist>
-            <span class="error-msg">Kecamatan wajib diisi.</span>
-          </div>
-          <div class="field">
-            <label for="f_desa">Desa / Kelurahan <span class="req">*</span></label>
-            <input id="f_desa" name="desa" type="text" list="dl-desa" placeholder="Ketik atau pilih desa" required>
-            <datalist id="dl-desa"></datalist>
-            <span class="error-msg">Desa wajib diisi.</span>
-          </div>
-          <div class="field">
-            <label for="rt">RT <span class="req">*</span></label>
-            <input id="rt" name="rt" type="text" inputmode="numeric" placeholder="Contoh: 01" required>
-            <span class="error-msg">RT wajib diisi (boleh 01, 02, dst).</span>
-          </div>
-          <div class="field">
-            <label for="rw">RW <span class="req">*</span></label>
-            <input id="rw" name="rw" type="text" inputmode="numeric" placeholder="Contoh: 03" required>
-            <span class="error-msg">RW wajib diisi.</span>
-          </div>
-          <div class="field">
-            <label for="kode_pos">Kode Pos <span class="hint">(opsional)</span></label>
-            <input id="kode_pos" name="kode_pos" type="text" inputmode="numeric" maxlength="5" placeholder="Contoh: 79461">
-          </div>
-          <div class="field">
-            <label for="alamat_keterangan">Patokan / Keterangan <span class="hint">(opsional)</span></label>
-            <input id="alamat_keterangan" name="alamat_keterangan" type="text" placeholder="Contoh: dekat pasar, simpang tiga">
-          </div>
-          <div class="field full">
-            <label for="alamat_lengkap">Alamat Lengkap (Jalan / Gang / Nomor Rumah) <span class="req">*</span></label>
-            <textarea id="alamat_lengkap" name="alamat_lengkap" rows="2" placeholder="Contoh: Jl. Ahmad Yani Gang Melati No. 12" required></textarea>
-            <span class="error-msg">Alamat lengkap wajib diisi.</span>
-          </div>
-        </div>
-        <div class="form-nav"><button type="button" class="btn btn-ghost" data-prev="1">← Kembali</button><button type="button" class="btn btn-primary" data-next="3">Lanjut ke Orang Tua →</button></div>
-      </section>
-
-      <!-- ============ STEP 3 ============ -->
-      <section class="card step-page hidden" data-page="3">
-        <div class="card-head">
-          <div><h2>Data Orang Tua &amp; Wali</h2><p>Isi data ayah dan ibu kandung. Data wali opsional, diisi jika siswa tinggal bersama wali.</p></div>
-          <span class="badge-step">Langkah 3 / 6</span>
-        </div>
-        <div class="grid">
-          <div class="section-title">Data Ayah</div>
-          <div class="field full">
-            <label for="nama_ayah">Nama Ayah <span class="req">*</span></label>
-            <input id="nama_ayah" name="nama_ayah" type="text" required>
-            <span class="error-msg">Nama ayah wajib diisi.</span>
-          </div>
-          <div class="field">
-            <label>Status Ayah <span class="req">*</span></label>
-            <div class="radio-row" data-radio="status_ayah">
-              <label class="radio-pill"><input type="radio" name="status_ayah" value="Hidup" required onchange="toggleDetail('detail_ayah',false)"> Hidup</label>
-              <label class="radio-pill"><input type="radio" name="status_ayah" value="Meninggal" onchange="toggleDetail('detail_ayah',true)"> Meninggal</label>
-            </div>
-            <span class="error-msg">Pilih status ayah.</span>
-          </div>
-          <div class="field">
-            <label for="nik_ayah">NIK Ayah <span class="hint">(opsional)</span></label>
-            <input id="nik_ayah" name="nik_ayah" type="text" inputmode="numeric" maxlength="16" placeholder="16 digit">
-          </div>
-          <div class="field">
-            <label for="tempat_lahir_ayah">Tempat Lahir Ayah <span class="req">*</span></label>
-            <input id="tempat_lahir_ayah" name="tempat_lahir_ayah" type="text" required>
-            <span class="error-msg">Wajib diisi.</span>
-          </div>
-          <div class="field">
-            <label for="tanggal_lahir_ayah">Tanggal Lahir Ayah <span class="req">*</span></label>
-            <input id="tanggal_lahir_ayah" name="tanggal_lahir_ayah" type="date" required>
-            <span class="error-msg">Wajib diisi.</span>
-          </div>
-          <div class="field" id="detail_ayah">
-            <label for="pendidikan_ayah">Pendidikan Terakhir Ayah</label>
-            <select id="pendidikan_ayah" name="pendidikan_ayah">
-              <option value="">-- Pilih --</option>
-              <option>SD / Sederajat</option><option>SMP / Sederajat</option>
-              <option>SMA / SMK / Sederajat</option><option>Diploma (D1-D4)</option>
-              <option>Perguruan Tinggi (S1)</option><option>Pascasarjana (S2-S3)</option>
-            </select>
-          </div>
-          <div class="field" id="pekerjaan_ayah_wrap">
-            <label for="pekerjaan_ayah">Pekerjaan Ayah</label>
-            <select id="pekerjaan_ayah" name="pekerjaan_ayah" onchange="toggleLain(this,' pekerjaan_ayah_lain_wrap')">
-              <option value="">-- Pilih --</option>
-              <option>Tidak Bekerja</option><option>Petani / Pekebun</option><option>ASN / POLRI / TNI</option>
-              <option>Swasta</option><option>Wirausaha</option><option>Nelayan</option><option>Buruh</option><option>Lainnya</option>
-            </select>
-          </div>
-          <div class="field hidden" id="pekerjaan_ayah_lain_wrap">
-            <label for="pekerjaan_ayah_lain">Sebutkan Pekerjaan Lainnya</label>
-            <input id="pekerjaan_ayah_lain" name="pekerjaan_ayah_lain" type="text">
-          </div>
-          <div class="field">
-            <label for="penghasilan_ayah">Penghasilan Per Bulan Ayah</label>
-            <select id="penghasilan_ayah" name="penghasilan_ayah">
-              <option value="">-- Pilih Rentang --</option>
-              <option value="0">0</option><option value="1 - 500.000">1 - 500.000</option>
-              <option value="500.000 - 1.000.000">500.000 - 1.000.000</option>
-              <option value="1.000.000 - 2.000.000">1.000.000 - 2.000.000</option>
-              <option value="2.000.000 - 4.000.000">2.000.000 - 4.000.000</option>
-              <option value="> 4.000.000">&gt; 4.000.000</option>
-            </select>
-          </div>
-
-          <div class="section-title">Data Ibu</div>
-          <div class="field full">
-            <label for="nama_ibu">Nama Ibu <span class="req">*</span></label>
-            <input id="nama_ibu" name="nama_ibu" type="text" required>
-            <span class="error-msg">Nama ibu wajib diisi.</span>
-          </div>
-          <div class="field">
-            <label>Status Ibu <span class="req">*</span></label>
-            <div class="radio-row" data-radio="status_ibu">
-              <label class="radio-pill"><input type="radio" name="status_ibu" value="Hidup" required onchange="toggleDetail('detail_ibu',false)"> Hidup</label>
-              <label class="radio-pill"><input type="radio" name="status_ibu" value="Meninggal" onchange="toggleDetail('detail_ibu',true)"> Meninggal</label>
-            </div>
-            <span class="error-msg">Pilih status ibu.</span>
-          </div>
-          <div class="field">
-            <label for="nik_ibu">NIK Ibu <span class="hint">(opsional)</span></label>
-            <input id="nik_ibu" name="nik_ibu" type="text" inputmode="numeric" maxlength="16" placeholder="16 digit">
-          </div>
-          <div class="field">
-            <label for="tempat_lahir_ibu">Tempat Lahir Ibu <span class="req">*</span></label>
-            <input id="tempat_lahir_ibu" name="tempat_lahir_ibu" type="text" required>
-            <span class="error-msg">Wajib diisi.</span>
-          </div>
-          <div class="field">
-            <label for="tanggal_lahir_ibu">Tanggal Lahir Ibu <span class="req">*</span></label>
-            <input id="tanggal_lahir_ibu" name="tanggal_lahir_ibu" type="date" required>
-            <span class="error-msg">Wajib diisi.</span>
-          </div>
-          <div class="field" id="detail_ibu">
-            <label for="pendidikan_ibu">Pendidikan Terakhir Ibu</label>
-            <select id="pendidikan_ibu" name="pendidikan_ibu">
-              <option value="">-- Pilih --</option>
-              <option>SD / Sederajat</option><option>SMP / Sederajat</option>
-              <option>SMA / SMK / Sederajat</option><option>Diploma (D1-D4)</option>
-              <option>Perguruan Tinggi (S1)</option><option>Pascasarjana (S2-S3)</option>
-            </select>
-          </div>
-          <div class="field" id="pekerjaan_ibu_wrap">
-            <label for="pekerjaan_ibu">Pekerjaan Ibu</label>
-            <select id="pekerjaan_ibu" name="pekerjaan_ibu" onchange="toggleLain(this,' pekerjaan_ibu_lain_wrap')">
-              <option value="">-- Pilih --</option>
-              <option>Tidak Bekerja</option><option>Petani / Pekebun</option><option>ASN / POLRI / TNI</option>
-              <option>Swasta</option><option>Wirausaha</option><option>Nelayan</option><option>Buruh</option><option>Lainnya</option>
-            </select>
-          </div>
-          <div class="field hidden" id="pekerjaan_ibu_lain_wrap">
-            <label for="pekerjaan_ibu_lain">Sebutkan Pekerjaan Lainnya</label>
-            <input id="pekerjaan_ibu_lain" name="pekerjaan_ibu_lain" type="text">
-          </div>
-          <div class="field">
-            <label for="penghasilan_ibu">Penghasilan Per Bulan Ibu</label>
-            <select id="penghasilan_ibu" name="penghasilan_ibu">
-              <option value="">-- Pilih Rentang --</option>
-              <option value="0">0</option><option value="1 - 500.000">1 - 500.000</option>
-              <option value="500.000 - 1.000.000">500.000 - 1.000.000</option>
-              <option value="1.000.000 - 2.000.000">1.000.000 - 2.000.000</option>
-              <option value="2.000.000 - 4.000.000">2.000.000 - 4.000.000</option>
-              <option value="> 4.000.000">&gt; 4.000.000</option>
-            </select>
-          </div>
-
-          <div class="section-title">Kontak &amp; Alamat Orang Tua</div>
-          <div class="field">
-            <label for="alamat_orang_tua">Alamat Orang Tua</label>
-            <textarea id="alamat_orang_tua" name="alamat_orang_tua" rows="2" placeholder="Sesuai KTP / domisili"></textarea>
-          </div>
-          <div class="field">
-            <label for="no_hp_orang_tua">Nomor HP Orang Tua</label>
-            <input id="no_hp_orang_tua" name="no_hp_orang_tua" type="tel" inputmode="numeric" placeholder="Contoh: 081234567890">
-          </div>
-
-          <div class="section-title">Data Wali <span class="hint" style="font-weight:500;text-transform:none;letter-spacing:0">(opsional)</span></div>
-          <div class="callout">Kosongkan bagian ini jika siswa tinggal bersama orang tua.</div>
-          <div class="field">
-            <label for="nama_wali">Nama Wali</label>
-            <input id="nama_wali" name="nama_wali" type="text">
-          </div>
-          <div class="field">
-            <label for="pekerjaan_wali">Pekerjaan Wali</label>
-            <select id="pekerjaan_wali" name="pekerjaan_wali" onchange="toggleLain(this,' pekerjaan_wali_lain_wrap')">
-              <option value="">-- Pilih --</option>
-              <option>Tidak Bekerja</option><option>Petani / Pekebun</option><option>ASN / POLRI / TNI</option>
-              <option>Swasta</option><option>Wirausaha</option><option>Nelayan</option><option>Buruh</option><option>Lainnya</option>
-            </select>
-          </div>
-          <div class="field hidden" id="pekerjaan_wali_lain_wrap">
-            <label for="pekerjaan_wali_lain">Sebutkan Pekerjaan Lainnya</label>
-            <input id="pekerjaan_wali_lain" name="pekerjaan_wali_lain" type="text">
-          </div>
-          <div class="field">
-            <label for="no_hp_wali">Nomor HP Wali</label>
-            <input id="no_hp_wali" name="no_hp_wali" type="tel" inputmode="numeric">
-          </div>
-          <div class="field full">
-            <label for="alamat_wali">Alamat Wali</label>
-            <textarea id="alamat_wali" name="alamat_wali" rows="2"></textarea>
-          </div>
-        </div>
-        <div class="form-nav"><button type="button" class="btn btn-ghost" data-prev="2">← Kembali</button><button type="button" class="btn btn-primary" data-next="4">Lanjut ke Sekolah →</button></div>
-      </section>
-
-      <!-- ============ STEP 4 ============ -->
-      <section class="card step-page hidden" data-page="4">
-        <div class="card-head">
-          <div><h2>Riwayat Sekolah &amp; Dokumen</h2><p>Data sekolah asal dan unggahan foto pendukung.</p></div>
-          <span class="badge-step">Langkah 4 / 6</span>
-        </div>
-        <div class="grid">
-          <div class="field full">
-            <label for="nisn">NISN (Nomor Induk Siswa Nasional) <span class="req">*</span></label>
-            <input id="nisn" name="nisn" type="text" inputmode="numeric" pattern="[0-9]+" placeholder="Contoh: 0071234567" required>
-            <span class="error-msg">NISN wajib berupa angka.</span>
-          </div>
-          <div class="field">
-            <label for="bentuk_sekolah">Bentuk Sekolah <span class="req">*</span></label>
-            <select id="bentuk_sekolah" name="bentuk_sekolah" required>
-              <option value="">-- Pilih --</option><option>SMP</option><option>MTs.</option><option>Paket B</option>
-            </select>
-            <span class="error-msg">Pilih bentuk sekolah.</span>
-          </div>
-          <div class="field">
-            <label for="tahun_lulus">Tahun Lulus <span class="req">*</span></label>
-            <select id="tahun_lulus" name="tahun_lulus" required>
-              <option value="">-- Pilih --</option>
-              <option>2026</option><option>2025</option><option>2024</option><option>2023</option><option>2022</option>
-            </select>
-            <span class="error-msg">Pilih tahun lulus.</span>
-          </div>
-          <div class="field full">
-            <label for="nama_sekolah">Nama Asal Sekolah <span class="req">*</span></label>
-            <input id="nama_sekolah" name="nama_sekolah" type="text" placeholder="Contoh: SMPN 2 Teluk Keramat" required>
-            <span class="error-msg">Nama sekolah wajib diisi.</span>
-          </div>
-          <div class="field full">
-            <label for="alamat_sekolah">Alamat Sekolah <span class="req">*</span></label>
-            <textarea id="alamat_sekolah" name="alamat_sekolah" rows="2" required></textarea>
-            <span class="error-msg">Alamat sekolah wajib diisi.</span>
-          </div>
-          <div class="field">
-            <label>Kartu Indonesia Pintar (KIP) <span class="req">*</span></label>
-            <div class="radio-row" data-radio="punya_kip">
-              <label class="radio-pill"><input type="radio" name="punya_kip" value="Ya" required onchange="toggleKip(true)"> Ya</label>
-              <label class="radio-pill"><input type="radio" name="punya_kip" value="Tidak" onchange="toggleKip(false)"> Tidak</label>
-            </div>
-            <span class="error-msg">Pilih status KIP.</span>
-          </div>
-          <div class="field hidden" id="kip_wrap">
-            <label for="no_kip">Nomor KIP <span class="req">*</span></label>
-            <input id="no_kip" name="no_kip" type="text" inputmode="numeric">
-            <span class="error-msg">Nomor KIP wajib diisi.</span>
-          </div>
-          <div class="section-title">Unggah Foto / Scan Dokumen</div>
-          <div class="callout">Foto akan disimpan ke Google Drive panitia. Format JPG/PNG, maksimal 5 MB per file. Foto siswa wajib diunggah.</div>
-          <div class="foto-grid full" id="fotoGrid" style="grid-column:1/-1"></div>
-        </div>
-        <div class="form-nav"><button type="button" class="btn btn-ghost" data-prev="3">← Kembali</button><button type="button" class="btn btn-primary" data-next="5">Lanjut ke Nilai →</button></div>
-      </section>
-
-      <!-- ============ STEP 5 ============ -->
-      <section class="card step-page hidden" data-page="5">
-        <div class="card-head">
-          <div><h2>Nilai Rapor SMP / MTs</h2><p>Isi nilai 5 mata pelajaran untuk semester 1–5. Boleh menggunakan angka desimal (titik).</p></div>
-          <span class="badge-step">Langkah 5 / 6</span>
-        </div>
-        <div class="grid">
-          <div class="field full">
-            <div class="table-wrap">
-              <table class="data-table">
-                <thead><tr><th>Mata Pelajaran</th><th>Smt 1</th><th>Smt 2</th><th>Smt 3</th><th>Smt 4</th><th>Smt 5</th></tr></thead>
-                <tbody id="nilaiBody"></tbody>
-              </table>
-            </div>
-          </div>
-          <div class="field">
-            <label for="peringkat_5">Peringkat Kelas Semester 5 <span class="req">*</span></label>
-            <input id="peringkat_5" name="peringkat_5" type="number" min="1" max="200" placeholder="Misal: 3" required>
-            <span class="error-msg">Isi peringkat kelas (angka).</span>
-          </div>
-          <div class="field">
-            <label>Rata-rata Nilai (otomatis)</label>
-            <input id="rata_rata" type="text" readonly placeholder="Akan dihitung otomatis">
-          </div>
-        </div>
-        <div class="form-nav"><button type="button" class="btn btn-ghost" data-prev="4">← Kembali</button><button type="button" class="btn btn-primary" data-next="6">Lanjut ke Jurusan →</button></div>
-      </section>
-
-      <!-- ============ STEP 6 ============ -->
-      <section class="card step-page hidden" data-page="6">
-        <div class="card-head">
-          <div><h2>Pilihan Jurusan</h2><p>Pilih 3 kompetensi keahlian yang berbeda. Urutan menunjukkan prioritas.</p></div>
-          <span class="badge-step">Langkah 6 / 6</span>
-        </div>
-        <div class="grid">
-          <div class="field full">
-            <label for="jurusan1">Pilihan Jurusan Ke-1 <span class="req">*</span></label>
-            <select id="jurusan1" name="jurusan1" required onchange="cekJurusan()"><option value="">-- Pilih Jurusan 1 --</option></select>
-            <span class="error-msg">Pilih jurusan pertama.</span>
-          </div>
-          <div class="field full">
-            <label for="jurusan2">Pilihan Jurusan Ke-2 <span class="req">*</span></label>
-            <select id="jurusan2" name="jurusan2" required onchange="cekJurusan()"><option value="">-- Pilih Jurusan 2 --</option></select>
-            <span class="error-msg">Pilih jurusan kedua.</span>
-          </div>
-          <div class="field full">
-            <label for="jurusan3">Pilihan Jurusan Ke-3 <span class="req">*</span></label>
-            <select id="jurusan3" name="jurusan3" required onchange="cekJurusan()"><option value="">-- Pilih Jurusan 3 --</option></select>
-            <span class="error-msg">Pilih jurusan ketiga.</span>
-          </div>
-          <div class="callout" id="jurusanWarning" style="display:none;background:var(--danger-50);border-color:#fecaca;color:#991b1b">⚠️ Ketiga pilihan jurusan harus berbeda.</div>
-          <div class="field full">
-            <label style="font-weight:500;color:var(--muted)"><input id="setuju" type="checkbox" style="width:auto;margin-right:6px" required> Saya menyatakan data yang diisi sudah benar dan jujur.</label>
-            <span class="error-msg">Centang pernyataan untuk melanjutkan.</span>
-          </div>
-        </div>
-        <div class="form-nav"><button type="button" class="btn btn-ghost" data-prev="5">← Kembali</button><button type="submit" class="btn btn-primary" id="btnKirim">Kirim Pendaftaran ✓</button></div>
-      </section>
-
-      <!-- STATUS -->
-      <div id="status" class="callout hidden" style="margin-top:14px"></div>
-    </form>
-
-    <!-- BUKTI -->
-    <section class="bukti-box hidden" id="buktiBox">
-      <div class="bukti-success">✓ Data berhasil tersimpan. Silakan unduh bukti pendaftaran Anda.</div>
-      <div class="bukti-paper" id="notaCetak">
-        <div class="bukti-kop">
-          <img src="https://lh3.googleusercontent.com/d/1zArv6yZsZ-YZCSTtEbTBUQp4C0kv325f" alt="Logo">
-          <h3>Panitia Penerimaan Murid Baru (SPMB)<br>SMK Negeri 1 Teluk Keramat</h3>
-          <p id="tahunBukti">Tahun Pelajaran 2026/2027</p>
-        </div>
-        <h4>Bukti Penerimaan Pengiriman Data</h4>
-        <table class="bukti-table">
-          <tr><td class="k">Tahun Pelajaran</td><td>:</td><td id="p_tahun"></td></tr>
-          <tr><td class="k">Kode Pendaftaran</td><td>:</td><td id="p_kode"></td></tr>
-          <tr><td class="k">Nama</td><td>:</td><td id="p_nama"></td></tr>
-          <tr><td class="k">NISN</td><td>:</td><td id="p_nisn"></td></tr>
-          <tr><td class="k">Asal Sekolah</td><td>:</td><td id="p_sekolah"></td></tr>
-          <tr><td class="k">Pilihan 1</td><td>:</td><td id="p_j1"></td></tr>
-          <tr><td class="k">Pilihan 2</td><td>:</td><td id="p_j2"></td></tr>
-          <tr><td class="k">Pilihan 3</td><td>:</td><td id="p_j3"></td></tr>
-        </table>
-        <div class="bukti-note"><b>CATATAN PENTING:</b><br>Setelah mengisi formulir ini, peserta <b>WAJIB</b> mengisi pendaftaran SPMB dengan pilihan sekolah dan 3 jurusan yang sama pada portal Dinas Pendidikan Provinsi Kalimantan Barat: <a href="https://spmb-dikbud.kalbarprov.go.id/">https://spmb-dikbud.kalbarprov.go.id/</a></div>
-        <div class="bukti-foot">Waktu Cetak: <span id="p_waktu"></span></div>
-      </div>
-      <div class="no-print" style="display:flex;gap:10px;justify-content:center;margin-top:18px">
-        <button class="btn btn-info" type="button" onclick="window.print()">🖨 Cetak</button>
-        <button class="btn btn-primary" type="button" id="btnPdf">⬇ Unduh PDF</button>
-      </div>
-    </section>
-  </main>
-</div>
-
-<!-- FAB -->
-<div class="fab-group no-print">
-  <button type="button" class="fab cari" id="btnCari" title="Cek data pendaftaran">🔍</button>
-  <button type="button" class="fab bantuan" id="btnBantuan" title="Bantuan">💬</button>
-</div>
-
-<!-- MODAL UMUM -->
-<div class="overlay" id="overlay">
-  <div class="modal">
-    <div class="modal-head"><h3 id="modalTitle">Informasi</h3><button class="modal-close" id="modalClose">×</button></div>
-    <div id="modalBody" style="font-size:14px;color:var(--ink-2)"></div>
-    <div class="modal-foot"><button class="btn btn-primary" id="modalOk">Mengerti</button></div>
   </div>
-</div>
+</nav>
 
-<!-- MODAL CARI -->
-<div class="overlay" id="overlayCari">
-  <div class="modal">
-    <div class="modal-head"><h3>Cek Data Pendaftar</h3><button class="modal-close" id="cariClose">×</button></div>
-    <div class="field">
-      <label for="cariNisn">Masukkan NISN</label>
-      <input id="cariNisn" type="text" inputmode="numeric" placeholder="Ketik NISN...">
+<!-- ===================== HERO ===================== -->
+<header class="lp-hero">
+  <div class="wrap">
+    <div>
+      <span class="lp-eyebrow"><span class="dot"></span> Penerimaan Murid Baru</span>
+      <h1 id="lpJudul">Selamat Datang di Penerimaan Murid Baru</h1>
+      <p class="lp-tagline" id="lpTagline">Raih masa depanmu bersama keluarga besar SMK Negeri 1 Teluk Keramat.</p>
+      <div class="lp-cta">
+        <a class="btn btn-light" href="pendaftaran.html">📝 Daftar Sekarang</a>
+        <a class="btn btn-outline-light" href="pendaftaran.html#cek">🔍 Cek Data Pendaftaran</a>
+      </div>
     </div>
-    <button class="btn btn-info btn-block" id="cariGo" style="margin-top:12px">Cari Data</button>
-    <div id="cariHasil" style="margin-top:14px;font-size:13px;display:none;padding:12px;border:1px solid var(--line);border-radius:10px;background:#f8fafc"></div>
+
+    <aside class="lp-hero-card">
+      <h3>Informasi Pendaftaran</h3>
+      <div class="lp-info-row">
+        <div class="lp-info-icon">🎓</div>
+        <div><small>Tahun Pelajaran</small><strong id="lpTahun">2026/2027</strong></div>
+      </div>
+      <div class="lp-info-row">
+        <div class="lp-info-icon">📅</div>
+        <div><small>Waktu Pendaftaran</small><strong id="lpWaktu">01 November – 31 Desember 2026</strong></div>
+      </div>
+      <div class="lp-info-row">
+        <div class="lp-info-icon">📢</div>
+        <div><small>Status</small><span class="lp-status dibuka" id="lpStatus">Dibuka</span></div>
+      </div>
+      <p id="cdCaption" style="font-size:11px;color:#a7f3d0;margin:18px 0 0">Menuju penutupan pendaftaran:</p>
+      <div class="lp-countdown" id="lpCountdown">
+        <div class="lp-count"><b id="cdHari">–</b><span id="cdLabelHari">Hari</span></div>
+        <div class="lp-count"><b id="cdJam">–</b><span>Jam</span></div>
+        <div class="lp-count"><b id="cdMenit">–</b><span>Menit</span></div>
+        <div class="lp-count"><b id="cdDetik">–</b><span>Detik</span></div>
+      </div>
+    </aside>
   </div>
-</div>
+</header>
 
-<div class="toast-wrap" id="toastWrap"></div>
+<!-- ===================== SAMBUTAN ===================== -->
+<section class="lp-section" id="sambutan">
+  <div class="wrap">
+    <div class="lp-head">
+      <div class="kicker">Sambutan</div>
+      <h2>Kata Sambutan Kepala Sekolah</h2>
+      <p>Sepatah kata dari kami untuk calon siswa dan orang tua/wali.</p>
+    </div>
+    <div class="lp-sambutan">
+      <div class="lp-quote">“</div>
+      <div>
+        <div class="isi" id="lpSambutan">Memuat sambutan…</div>
+        <div class="ttd">Kepala SMK Negeri 1 Teluk Keramat<small>Tahun Pelajaran <span class="tahun-inline">2026/2027</span></small></div>
+      </div>
+    </div>
+  </div>
+</section>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-<script type="module" src="assets/js/form.js"></script>
+<!-- ===================== ALUR ===================== -->
+<section class="lp-section alt" id="alur">
+  <div class="wrap">
+    <div class="lp-head">
+      <div class="kicker">Panduan</div>
+      <h2>Alur Pendaftaran</h2>
+      <p>Empat langkah mudah untuk menjadi bagian dari keluarga besar kami.</p>
+    </div>
+    <div class="lp-steps">
+      <div class="lp-step"><div class="n">1</div><h4>Isi Formulir Online</h4><p>Lengkapi data diri, alamat, orang tua, nilai rapor, dan pilihan jurusan di formulir pendaftaran.</p></div>
+      <div class="lp-step"><div class="n">2</div><h4>Unggah Dokumen</h4><p>Siapkan foto siswa, KK, akta kelahiran, dan rapor. Foto tersimpan aman di server panitia.</p></div>
+      <div class="lp-step"><div class="n">3</div><h4>Simpan Bukti</h4><p>Setelah data terkirim, unduh/cetak bukti pendaftaran sebagai tanda bukti pengiriman.</p></div>
+      <div class="lp-step"><div class="n">4</div><h4>Daftar di Portal Dinas</h4><p>Isi juga pendaftaran di portal Dinas Pendidikan Kalimantan Barat dengan sekolah &amp; jurusan yang sama.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== INFORMASI ===================== -->
+<section class="lp-section" id="informasi">
+  <div class="wrap">
+    <div class="lp-head">
+      <div class="kicker">Informasi</div>
+      <h2>Yang Perlu Disiapkan</h2>
+      <p>Siapkan berkas berikut sebelum mengisi formulir agar proses lebih lancar.</p>
+    </div>
+    <div class="lp-grid-info">
+      <div class="lp-card">
+        <h4>📂 Dokumen Pendukung</h4>
+        <ul>
+          <li>Kartu Keluarga (KK)</li>
+          <li>Akta Kelahiran</li>
+          <li>Rapor SMP / Sederajat (nilai semester 1–5)</li>
+          <li>Kartu Indonesia Pintar (jika ada)</li>
+          <li>Foto siswa terbaru</li>
+        </ul>
+      </div>
+      <div class="lp-card">
+        <h4>🎯 Pilihan Jurusan</h4>
+        <ul>
+          <li>Teknik Komputer dan Jaringan</li>
+          <li>Agribisnis Tanaman</li>
+          <li>Desain Komunikasi Visual</li>
+          <li>Teknik Kendaraan Ringan</li>
+          <li>Bisnis Retail</li>
+          <li>Manajemen Perkantoran &amp; Akuntansi</li>
+        </ul>
+      </div>
+      <div class="lp-card">
+        <h4>🌐 Portal Pendaftaran Dinas</h4>
+        <p style="font-size:13.5px;color:var(--ink-2);line-height:1.7;margin:0 0 10px">Setelah mengisi formulir ini, peserta wajib mendaftar juga pada portal resmi Dinas Pendidikan Provinsi Kalimantan Barat.</p>
+        <a href="https://spmb-dikbud.kalbarprov.go.id/" target="_blank" rel="noopener">https://spmb-dikbud.kalbarprov.go.id/</a>
+      </div>
+      <div class="lp-card">
+        <h4>💬 Butuh Bantuan?</h4>
+        <p style="font-size:13.5px;color:var(--ink-2);line-height:1.7;margin:0 0 10px">Hubungi panitia SPMB melalui WhatsApp:</p>
+        <div style="font-size:13px;line-height:2">
+          <a href="https://wa.me/6281345497178" target="_blank"> Randika</a> ·
+          <a href="https://wa.me/6285174399784" target="_blank"> Luffi</a> ·
+          <a href="https://wa.me/6289694213072" target="_blank"> Reza</a> ·
+          <a href="https://wa.me/6289694108488" target="_blank"> Aldino</a> ·
+          <a href="https://wa.me/6289693332583" target="_blank"> Jumbadi</a> ·
+          <a href="https://wa.me/6285142816705" target="_blank"> Wawan</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== CTA ===================== -->
+<section class="lp-section alt" style="padding-top:0">
+  <div class="wrap">
+    <div class="lp-cta-band">
+      <h2>Siap Bergabung Bersama Kami?</h2>
+      <p>Jangan sampai kehabisan waktu. Isi formulir pendaftaran sekarang juga.</p>
+      <div class="lp-cta">
+        <a class="btn btn-light" href="pendaftaran.html">📝 Isi Formulir Pendaftaran</a>
+        <a class="btn btn-outline-light" href="pendaftaran.html#cek">🔍 Cek Status Pendaftaran</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== FOOTER ===================== -->
+<footer class="lp-footer">
+  <div class="wrap">
+    <div>
+      <h5>SMK Negeri 1 Teluk Keramat</h5>
+      <p>Panitia Penerimaan Murid Baru<br>Kabupaten Sambas, Kalimantan Barat</p>
+    </div>
+    <div>
+      <h5>Tautan Cepat</h5>
+      <p><a href="index.html">Beranda</a><br><a href="pendaftaran.html">Formulir Pendaftaran</a><br><a href="pendaftaran.html#cek">Cek Data</a><br><a href="admin.html">Panel Admin</a></p>
+    </div>
+    <div>
+      <h5>Informasi</h5>
+      <p>Tahun Pelajaran: <span class="tahun-inline">2026/2027</span><br>
+      <a href="https://spmb-dikbud.kalbarprov.go.id/" target="_blank">Portal SPMB Dinas</a></p>
+    </div>
+  </div>
+  <div class="wrap bottom">© <span id="lpTahunPoros">2026</span> SMKN 1 Teluk Keramat · Dibuat untuk keperluan SPMB.</div>
+</footer>
+
+<script type="module" src="assets/js/landing.js"></script>
 </body>
 </html>
