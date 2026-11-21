@@ -14,7 +14,7 @@
 - Konfigurasi MCP Supabase ditulis ke `~/.config/opencode/opencode.json` (opsional, tidak dipakai).
 
 ## Yang masih perlu
-- Hapus 1 file uji `foto_test_koneksi.jpg` (1x1 pixel) dari folder Drive — dibuat saat tes koneksi.
+- Hapus 2 file uji (1x1 pixel) dari folder Drive: `foto_test_koneksi.jpg` dan `foto_test_cors_browser.jpg` — dibuat saat tes koneksi & CORS.
 - Ganti password admin default `AdminSPMB2026!` setelah login pertama.
 
 Apps Script Web App sudah aktif & teruji (GET + POST upload ke Drive berhasil), URL terisi di config.
