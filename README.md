@@ -97,7 +97,7 @@ Project yang sudah dibuat:
 
 ✅ **Sudah aktif:** migration `supabase/migrations/0004_auto_tahun.sql` (mode tahun otomatis + RLS publik untuk kedua kunci pengaturan).
 
-⚠️ **Perlu dijalankan:** `supabase/migrations/0005_wali_kip_upload.sql` (field wali tambahan).
+✅ **Sudah aktif:** migration `supabase/migrations/0005_wali_kip_upload.sql` (field wali tambahan).
 
 Jika project dibuat ulang dari nol, langkahnya:
 
@@ -120,7 +120,7 @@ Password : AdminSPMB2026!
 > **Segera ganti password admin** setelah login pertama (Supabase → Authentication → Users).
 
 ### 2. Google Apps Script
-✅ **Sudah aktif:** Web App Apps Script sudah di-deploy, diuji (GET + POST upload berhasil), dan `DRIVE_UPLOAD_URL` sudah terisi di `assets/js/config.js`.
+✅ **Sudah aktif:** Web App Apps Script sudah di-deploy dengan versi terbaru, diuji (GET + POST upload berhasil), dan `DRIVE_UPLOAD_URL` sudah terisi di `assets/js/config.js`. Foto otomatis masuk subfolder sesuai tahun pelajaran (mis. `2026-2027`).
 
 Jika perlu deploy ulang, ikuti `apps-script/PANDUAN.md`.
 

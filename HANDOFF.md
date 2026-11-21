@@ -14,9 +14,8 @@
 - Konfigurasi MCP Supabase ditulis ke `~/.config/opencode/opencode.json` (opsional, tidak dipakai).
 
 ## Yang masih perlu
-- ⚠️ **Jalankan `supabase/migrations/0005_wali_kip_upload.sql`** di SQL Editor (field wali tambahan).
-- ⚠️ **Perbarui kode Apps Script `Code.gs` lalu redeploy sebagai New version** agar foto masuk subfolder otomatis per tahun pelajaran (URL tidak berubah). Panduan: `apps-script/PANDUAN.md` bagian 4b.
-- Hapus 2 file uji (1x1 pixel) dari folder Drive: `foto_test_koneksi.jpg` dan `foto_test_cors_browser.jpg` — dibuat saat tes koneksi & CORS.
+- Hapus 4 file uji (1x1 pixel) dari Drive: `foto_test_koneksi.jpg`, `foto_test_cors_browser.jpg`, `foto_test_folder_tahun.jpg` (folder utama), dan `foto_test_folder_final.jpg` (dalam subfolder `2026-2027`).
+- Opsional: hapus 1 data dummy `asdfghjk` (NISN `347689054`, kode `SPMB-2027-2028-507682B3`) — bukan dibuat oleh agent, kemungkinan uji manual.
 - Ganti password admin default `AdminSPMB2026!` setelah login pertama.
 
 Apps Script Web App sudah aktif & teruji (GET + POST upload ke Drive berhasil), URL terisi di config.
@@ -29,12 +28,13 @@ Apps Script Web App sudah aktif & teruji (GET + POST upload ke Drive berhasil), 
 ## Otomatisasi terbaru
 - Tahun pelajaran dihitung dari tanggal (mulai Juli) via `assets/js/tahun.js`.
 - Opsi admin: Otomatis / tahun sekarang / tahun depan + tahun dari database.
-- Autocomplete wilayah sekarang nasional via API wilayah.id; Kalbar/Sambas fallback offline.
+- Autocomplete wilayah nasional dari data lokal `wilayah-data.js` (generate via `scripts/generate-wilayah.ps1`); Kalbar/Sambas juga fallback offline. Tidak bergantung CORS.
 
 ## Fitur tahun pelajaran
 - Kolom `tahun_pelajaran` di `pendaftar`; kode pendaftaran mengikuti tahun.
 - Tabel `pengaturan` menyimpan `tahun_pelajaran_aktif` untuk form publik.
-- Admin: ubah tahun aktif lewat kolom di Dashboard + filter tahun di tabel & export CSV.
+- Admin: ubah tahun aktif lewat dropdown di Dashboard + filter tahun di tabel & export Excel/CSV.
+- Export Excel: 2 sheet (Pendaftar, Nilai Rapor) via SheetJS; sudah diuji menghasilkan `.xlsx`.
 - `cek_nisn` mengembalikan `tahun_pelajaran`.
 
 ## Kredensial
