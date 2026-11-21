@@ -612,7 +612,9 @@ function isiDraftDinas(d) {
   $("#dinas_minat_persen").value = data.minat_persen || "";
   $("#dinas_minat_pendaftar").value = data.minat_pendaftar ?? "";
   $("#dinas_minat_kuota").value = data.minat_kuota ?? "";
-  $("#dinas_minat_validasi").value = data.minat_validasi ?? "";
+  // Validasi tidak bisa di-scrape (halaman statsekolah butuh POST+CSRF),
+  // jadi jangan hapus nilai yang sudah diisi admin.
+  if (data.minat_validasi != null) $("#dinas_minat_validasi").value = data.minat_validasi;
   $("#dinas_sumber_update").value = data.sumber_update || "";
   const info = $("#jadwalDraftInfo");
   if (info) {

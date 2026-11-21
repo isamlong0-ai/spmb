@@ -130,7 +130,7 @@ Project yang sudah dibuat:
 
 ✅ **Sudah aktif:** migration `supabase/migrations/0009_dinas_info.sql` (tabel `dinas_info` + RPC `statistik_minat_jurusan`).
 
-⚠️ **Perlu dijalankan:** `supabase/migrations/0010_jadwal_validasi.sql` (kolom `jadwal_data` & `minat_validasi` + data awal).
+✅ **Sudah aktif:** migration `supabase/migrations/0010_jadwal_validasi.sql` (kolom `jadwal_data` & `minat_validasi` + data awal).
 
 Jika project dibuat ulang dari nol, langkahnya:
 
