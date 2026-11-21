@@ -533,6 +533,7 @@ async function muatLanding() {
       $("#lp_edit_sambutan").value = data.sambutan || "";
       $("#lp_edit_tahun").value = tahunAktif;
       $("#lp_edit_waktu").value = data.waktu_pendaftaran || "";
+      $("#lp_edit_status").value = data.status_pendaftaran || "dibuka";
       $("#lp_edit_mulai").value = data.tanggal_mulai || "";
       $("#lp_edit_selesai").value = data.tanggal_selesai || "";
     }
@@ -553,6 +554,7 @@ async function simpanLanding() {
     sambutan: $("#lp_edit_sambutan").value.trim() || "-",
     tahun_pelajaran: $("#lp_edit_tahun").value.trim() || tahunAktif,
     waktu_pendaftaran: $("#lp_edit_waktu").value.trim() || "-",
+    status_pendaftaran: $("#lp_edit_status").value || "dibuka",
     tanggal_mulai: $("#lp_edit_mulai").value || null,
     tanggal_selesai: $("#lp_edit_selesai").value || null,
     updated_at: new Date().toISOString(),

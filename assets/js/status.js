@@ -1,8 +1,11 @@
 /**
  * Status pendaftaran: Akan Datang / Dibuka / Ditutup.
- * Dihitung dari tanggal mulai & selesai pada tabel `landing`.
+ * Diatur manual dari panel admin (kolom `status_pendaftaran`).
+ * Tanggal mulai/selesai hanya dipakai sebagai fallback bila kolom belum ada.
  * Dipakai beranda dan halaman form agar aturannya identik.
  */
+
+const STATUS_VALID = ["dibuka", "akan-datang", "ditutup"];
 
 function parseTanggal(s) {
   if (!s) return null;
@@ -11,6 +14,11 @@ function parseTanggal(s) {
 }
 
 export function hitungStatus(data) {
+  // Mode manual (utama): nilai dari panel admin
+  if (STATUS_VALID.includes(data?.status_pendaftaran)) {
+    return data.status_pendaftaran;
+  }
+  // Fallback lama: hitung dari tanggal
   const mulai = parseTanggal(data?.tanggal_mulai);
   const selesai = parseTanggal(data?.tanggal_selesai);
   if (!mulai || !selesai) return "dibuka";
@@ -33,7 +41,7 @@ export async function ambilStatus(supabase) {
   try {
     const { data } = await supabase
       .from("landing")
-      .select("tanggal_mulai, tanggal_selesai, waktu_pendaftaran")
+      .select("status_pendaftaran, tanggal_mulai, tanggal_selesai, waktu_pendaftaran")
       .eq("id", 1)
       .maybeSingle();
     return { status: hitungStatus(data), ...(data || {}) };

@@ -78,7 +78,14 @@ function render(data, tahunAktif, statusInfo) {
 
   const mulai = parseTanggal(d.tanggal_mulai);
   const selesai = parseTanggal(d.tanggal_selesai);
-  if (status === "akan-datang") {
+  const modeManual = !!d.status_pendaftaran;
+
+  if (modeManual) {
+    // Mode manual: status dikontrol admin, hitung mundur dinonaktifkan
+    aturCountdown(null, status === "dibuka"
+      ? "Pendaftaran sedang dibuka."
+      : "Status pendaftaran diatur oleh panitia.");
+  } else if (status === "akan-datang") {
     aturCountdown(mulai, "Menuju pembukaan pendaftaran:");
   } else if (status === "ditutup") {
     aturCountdown(null, "Pendaftaran telah berakhir.");

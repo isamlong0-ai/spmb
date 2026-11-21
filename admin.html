@@ -141,17 +141,22 @@
           <label for="lp_edit_waktu">Waktu Pendaftaran (teks)</label>
           <input id="lp_edit_waktu" type="text" placeholder="01 November – 31 Desember 2026">
         </div>
-        <div class="field">
-          <label for="lp_edit_mulai">Tanggal Mulai</label>
-          <input id="lp_edit_mulai" type="date">
-          <span class="hint">Untuk status otomatis &amp; hitung mundur.</span>
-        </div>
-        <div class="field">
-          <label for="lp_edit_selesai">Tanggal Selesai</label>
-          <input id="lp_edit_selesai" type="date">
-        </div>
         <div class="field full">
-          <div class="callout">Status di beranda dihitung otomatis: sebelum tanggal mulai = <b>Akan Datang</b>, di antara mulai–selesai = <b>Dibuka</b>, setelah selesai = <b>Ditutup</b>.</div>
+          <label for="lp_edit_status">Status Pendaftaran</label>
+          <select id="lp_edit_status">
+            <option value="dibuka">Dibuka — formulir &amp; cek data dapat diakses</option>
+            <option value="akan-datang">Akan Datang — formulir &amp; cek data dikunci</option>
+            <option value="ditutup">Ditutup — formulir &amp; cek data dikunci</option>
+          </select>
+          <span class="hint">Ini yang dipakai beranda &amp; halaman form. Ubah lalu klik Simpan — langsung berlaku tanpa menunggu tanggal.</span>
+        </div>
+        <div class="field">
+          <label for="lp_edit_mulai">Tanggal Mulai <span class="hint">(catatan)</span></label>
+          <input id="lp_edit_mulai" type="date">
+        </div>
+        <div class="field">
+          <label for="lp_edit_selesai">Tanggal Selesai <span class="hint">(catatan)</span></label>
+          <input id="lp_edit_selesai" type="date">
         </div>
       </div>
       <div class="form-nav">

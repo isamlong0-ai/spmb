@@ -1,9 +1,24 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { CONFIG } from "./config.js";
+import { ambilStatus, LABEL_STATUS } from "./status.js";
 
 const supabase = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
 const $ = (s) => document.querySelector(s);
 let dataTerakhir = null;
+
+const statusInfo = await ambilStatus(supabase);
+if (statusInfo.status !== "dibuka" && !new URLSearchParams(location.search).has("akses")) {
+  document.body.classList.add("lock-scroll");
+  const box = document.createElement("div");
+  box.style.cssText = "position:fixed;inset:0;z-index:500;background:rgba(15,23,42,.75);display:flex;align-items:center;justify-content:center;padding:18px;backdrop-filter:blur(4px)";
+  box.innerHTML = `<div style="background:#fff;border-radius:18px;padding:30px;max-width:420px;width:100%;text-align:center">
+    <div style="font-size:42px">${statusInfo.status === "akan-datang" ? "⏳" : "🔒"}</div>
+    <h2 style="margin:8px 0">Pendaftaran ${LABEL_STATUS[statusInfo.status]}</h2>
+    <p style="color:#64748b;font-size:14px;line-height:1.7;margin:0 0 18px">Pengecekan data tidak tersedia saat pendaftaran ${LABEL_STATUS[statusInfo.status].toLowerCase()}.</p>
+    <a class="btn btn-primary" href="index.html">← Kembali ke Beranda</a>
+  </div>`;
+  document.body.appendChild(box);
+}
 
 function escapeHtml(s) {
   return String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -101,7 +116,7 @@ $("#btnPdf").addEventListener("click", () => {
 });
 
 const params = new URLSearchParams(location.search);
-if (params.get("nisn")) {
+if (params.get("nisn") && statusInfo.status === "dibuka") {
   $("#nisn").value = params.get("nisn");
   cari();
 }

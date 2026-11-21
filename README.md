@@ -34,7 +34,8 @@ Aplikasi pendaftaran siswa baru berbasis **HTML + CSS + JavaScript (ES modules)*
 │   ├── 0003_landing.sql          # Tabel konten beranda
 │   ├── 0004_auto_tahun.sql       # Mode tahun pelajaran otomatis
 │   ├── 0005_wali_kip_upload.sql  # Field wali lengkap & penyesuaian form
-│   └── 0007_cek_nisn_kode.sql    # Kode pendaftaran pada hasil cek NISN
+│   ├── 0007_cek_nisn_kode.sql    # Kode pendaftaran pada hasil cek NISN
+│   └── 0008_status_manual.sql    # Buka/tutup pendaftaran diatur manual
 ├── apps-script/
 │   ├── Code.gs                   # Web App upload foto ke Google Drive
 │   └── PANDUAN.md                # Cara deploy Apps Script
@@ -48,8 +49,8 @@ Aplikasi pendaftaran siswa baru berbasis **HTML + CSS + JavaScript (ES modules)*
 ### Beranda (`index.html`)
 - Halaman utama yang menarik: hero, kartu informasi, kata sambutan, alur pendaftaran, dan panduan
 - **Seluruh teks utama bisa diatur dari panel admin** (judul, tagline, sambutan, tahun pelajaran, waktu pendaftaran, tanggal mulai/selesai)
-- Status jadwal (**Akan Datang / Dibuka / Ditutup**) dan hitung mundur dihitung otomatis dari tanggal
-- Saat **belum dibuka / sudah ditutup**, semua tautan ke formulir & pengecekan otomatis terkunci (abu-abu + gembok) dan halaman form menampilkan layar pengunci
+- Status pendaftaran (**Dibuka / Akan Datang / Ditutup**) diatur **manual** dari panel admin → menu Konten Beranda (tidak bergantung tanggal)
+- Saat **belum dibuka / sudah ditutup**, semua tautan ke formulir & pengecekan otomatis terkunci (abu-abu + gembok), dan halaman form maupun cek data menampilkan layar pengunci
 - Tombol menuju formulir dan pencarian data
 
 ### Cek data (`cek.html`)
@@ -81,7 +82,7 @@ Aplikasi pendaftaran siswa baru berbasis **HTML + CSS + JavaScript (ES modules)*
 - Tabel menampilkan **ketiga pilihan jurusan** dalam satu kolom
 - **CRUD lengkap**: lihat, edit seluruh field + nilai rapor, hapus data
 - Export **Excel (.xlsx)** dengan 2 sheet: Pendaftar & Nilai Rapor (tetap tersedia CSV)
-- **Editor Konten Beranda**: mengatur judul, tagline, sambutan, tahun pelajaran, waktu & tanggal pendaftaran
+- **Editor Konten Beranda**: mengatur judul, tagline, sambutan, tahun pelajaran, waktu, **status buka/tutup pendaftaran**, dan tanggal sebagai catatan
 - Pengatur tahun pelajaran aktif untuk form publik
 - **Ganti password** akun admin langsung dari panel (menu 🔑 Ganti Password)
 
@@ -120,7 +121,7 @@ Project yang sudah dibuat:
 Jika project dibuat ulang dari nol, langkahnya:
 
 1. Buka Supabase SQL Editor untuk project tersebut.
-2. Jalankan berurutan: `0001_init.sql`, `0002_tahun_pelajaran.sql`, `0003_landing.sql`, `0004_auto_tahun.sql`, `0005_wali_kip_upload.sql`, `0007_cek_nisn_kode.sql`.
+2. Jalankan berurutan: `0001_init.sql`, `0002_tahun_pelajaran.sql`, `0003_landing.sql`, `0004_auto_tahun.sql`, `0005_wali_kip_upload.sql`, `0007_cek_nisn_kode.sql`, `0008_status_manual.sql`.
 3. Di **Project Settings → API**, salin **anon / publishable key**.
 4. Isi ke `assets/js/config.js`:
 
