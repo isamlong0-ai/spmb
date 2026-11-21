@@ -72,13 +72,17 @@ Project yang sudah dibuat:
 | URL | `https://eyugtyqppolmynhxccot.supabase.co` |
 | DB password | `SpMb2026#TkSambas!Kbr` |
 
+✅ **Sudah aktif:** migration `supabase/migrations/0001_init.sql` telah dijalankan dan tabel/RLS/RPC/akun admin sudah terbentuk. ✅ **Anon key juga sudah terisi** di `assets/js/config.js`.
+
+Jika project dibuat ulang dari nol, langkahnya:
+
 1. Buka Supabase SQL Editor untuk project tersebut.
 2. Jalankan seluruh isi `supabase/migrations/0001_init.sql`.
 3. Di **Project Settings → API**, salin **anon / publishable key**.
 4. Isi ke `assets/js/config.js`:
 
 ```js
-SUPABASE_ANON_KEY: "KUNCI_ANON_DISINI",
+SUPABASE_ANON_KEY: "sb_publishable_...",
 ```
 
 Migration juga membuat akun admin:

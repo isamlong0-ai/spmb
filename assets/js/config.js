@@ -5,7 +5,7 @@
 export const CONFIG = {
   // Supabase -> Project Settings -> API
   SUPABASE_URL: "https://eyugtyqppolmynhxccot.supabase.co",
-  SUPABASE_ANON_KEY: "__SUPABASE_ANON_KEY__",
+  SUPABASE_ANON_KEY: "sb_publishable_XBST_lVhiVHsq6FpFAmx-A_ddN0JB1K",
 
   // Google Apps Script Web App (deployment) untuk upload foto ke Google Drive
   // Kosongkan jika ingin sementara menyimpan foto sebagai data URL / belum aktif.
