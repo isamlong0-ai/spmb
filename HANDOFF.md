@@ -14,6 +14,8 @@
 - Konfigurasi MCP Supabase ditulis ke `~/.config/opencode/opencode.json` (opsional, tidak dipakai).
 
 ## Yang masih perlu
+- ⚠️ **Jalankan `supabase/migrations/0005_wali_kip_upload.sql`** di SQL Editor (field wali tambahan).
+- ⚠️ **Perbarui kode Apps Script `Code.gs` lalu redeploy sebagai New version** agar foto masuk subfolder otomatis per tahun pelajaran (URL tidak berubah). Panduan: `apps-script/PANDUAN.md` bagian 4b.
 - Hapus 2 file uji (1x1 pixel) dari folder Drive: `foto_test_koneksi.jpg` dan `foto_test_cors_browser.jpg` — dibuat saat tes koneksi & CORS.
 - Ganti password admin default `AdminSPMB2026!` setelah login pertama.
 

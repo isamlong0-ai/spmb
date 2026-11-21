@@ -234,11 +234,12 @@
           <div class="field">
             <label>Status Ayah <span class="req">*</span></label>
             <div class="radio-row" data-radio="status_ayah">
-              <label class="radio-pill"><input type="radio" name="status_ayah" value="Hidup" required onchange="toggleDetail('detail_ayah',false)"> Hidup</label>
-              <label class="radio-pill"><input type="radio" name="status_ayah" value="Meninggal" onchange="toggleDetail('detail_ayah',true)"> Meninggal</label>
+              <label class="radio-pill"><input type="radio" name="status_ayah" value="Hidup" required onchange="toggleMeninggal('data_ayah',false)"> Hidup</label>
+              <label class="radio-pill"><input type="radio" name="status_ayah" value="Meninggal" onchange="toggleMeninggal('data_ayah',true)"> Meninggal</label>
             </div>
             <span class="error-msg">Pilih status ayah.</span>
           </div>
+          <div id="data_ayah" style="display:contents">
           <div class="field">
             <label for="nik_ayah">NIK Ayah <span class="hint">(opsional)</span></label>
             <input id="nik_ayah" name="nik_ayah" type="text" inputmode="numeric" maxlength="16" placeholder="16 digit">
@@ -285,6 +286,7 @@
               <option value="> 4.000.000">&gt; 4.000.000</option>
             </select>
           </div>
+          </div>
 
           <div class="section-title">Data Ibu</div>
           <div class="field full">
@@ -295,11 +297,12 @@
           <div class="field">
             <label>Status Ibu <span class="req">*</span></label>
             <div class="radio-row" data-radio="status_ibu">
-              <label class="radio-pill"><input type="radio" name="status_ibu" value="Hidup" required onchange="toggleDetail('detail_ibu',false)"> Hidup</label>
-              <label class="radio-pill"><input type="radio" name="status_ibu" value="Meninggal" onchange="toggleDetail('detail_ibu',true)"> Meninggal</label>
+              <label class="radio-pill"><input type="radio" name="status_ibu" value="Hidup" required onchange="toggleMeninggal('data_ibu',false)"> Hidup</label>
+              <label class="radio-pill"><input type="radio" name="status_ibu" value="Meninggal" onchange="toggleMeninggal('data_ibu',true)"> Meninggal</label>
             </div>
             <span class="error-msg">Pilih status ibu.</span>
           </div>
+          <div id="data_ibu" style="display:contents">
           <div class="field">
             <label for="nik_ibu">NIK Ibu <span class="hint">(opsional)</span></label>
             <input id="nik_ibu" name="nik_ibu" type="text" inputmode="numeric" maxlength="16" placeholder="16 digit">
@@ -346,6 +349,7 @@
               <option value="> 4.000.000">&gt; 4.000.000</option>
             </select>
           </div>
+          </div>
 
           <div class="section-title">Kontak &amp; Alamat Orang Tua</div>
           <div class="field">
@@ -357,11 +361,40 @@
             <input id="no_hp_orang_tua" name="no_hp_orang_tua" type="tel" inputmode="numeric" placeholder="Contoh: 081234567890">
           </div>
 
-          <div class="section-title">Data Wali <span class="hint" style="font-weight:500;text-transform:none;letter-spacing:0">(opsional)</span></div>
-          <div class="callout">Kosongkan bagian ini jika siswa tinggal bersama orang tua.</div>
-          <div class="field">
+          <div class="section-title">Data Wali <span class="hint" style="font-weight:500;text-transform:none;letter-spacing:0">(opsional — isi jika siswa tinggal bersama wali)</span></div>
+          <div class="callout">Kosongkan seluruh bagian ini jika siswa tinggal bersama orang tua.</div>
+          <div class="field full">
             <label for="nama_wali">Nama Wali</label>
             <input id="nama_wali" name="nama_wali" type="text">
+          </div>
+          <div class="field">
+            <label>Status Wali <span class="hint">(jika diisi)</span></label>
+            <div class="radio-row" data-radio="status_wali">
+              <label class="radio-pill"><input type="radio" name="status_wali" value="Hidup" onchange="toggleMeninggal('data_wali',false)"> Hidup</label>
+              <label class="radio-pill"><input type="radio" name="status_wali" value="Meninggal" onchange="toggleMeninggal('data_wali',true)"> Meninggal</label>
+            </div>
+          </div>
+          <div id="data_wali" style="display:contents">
+          <div class="field">
+            <label for="nik_wali">NIK Wali <span class="hint">(opsional)</span></label>
+            <input id="nik_wali" name="nik_wali" type="text" inputmode="numeric" maxlength="16" placeholder="16 digit">
+          </div>
+          <div class="field">
+            <label for="tempat_lahir_wali">Tempat Lahir Wali</label>
+            <input id="tempat_lahir_wali" name="tempat_lahir_wali" type="text">
+          </div>
+          <div class="field">
+            <label for="tanggal_lahir_wali">Tanggal Lahir Wali</label>
+            <input id="tanggal_lahir_wali" name="tanggal_lahir_wali" type="date">
+          </div>
+          <div class="field">
+            <label for="pendidikan_wali">Pendidikan Terakhir Wali</label>
+            <select id="pendidikan_wali" name="pendidikan_wali">
+              <option value="">-- Pilih --</option>
+              <option>SD / Sederajat</option><option>SMP / Sederajat</option>
+              <option>SMA / SMK / Sederajat</option><option>Diploma (D1-D4)</option>
+              <option>Perguruan Tinggi (S1)</option><option>Pascasarjana (S2-S3)</option>
+            </select>
           </div>
           <div class="field">
             <label for="pekerjaan_wali">Pekerjaan Wali</label>
@@ -376,12 +409,24 @@
             <input id="pekerjaan_wali_lain" name="pekerjaan_wali_lain" type="text">
           </div>
           <div class="field">
+            <label for="penghasilan_wali">Penghasilan Per Bulan Wali</label>
+            <select id="penghasilan_wali" name="penghasilan_wali">
+              <option value="">-- Pilih Rentang --</option>
+              <option value="0">0</option><option value="1 - 500.000">1 - 500.000</option>
+              <option value="500.000 - 1.000.000">500.000 - 1.000.000</option>
+              <option value="1.000.000 - 2.000.000">1.000.000 - 2.000.000</option>
+              <option value="2.000.000 - 4.000.000">2.000.000 - 4.000.000</option>
+              <option value="> 4.000.000">&gt; 4.000.000</option>
+            </select>
+          </div>
+          <div class="field">
             <label for="no_hp_wali">Nomor HP Wali</label>
             <input id="no_hp_wali" name="no_hp_wali" type="tel" inputmode="numeric">
           </div>
           <div class="field full">
             <label for="alamat_wali">Alamat Wali</label>
             <textarea id="alamat_wali" name="alamat_wali" rows="2"></textarea>
+          </div>
           </div>
         </div>
         <div class="form-nav"><button type="button" class="btn btn-ghost" data-prev="2">← Kembali</button><button type="button" class="btn btn-primary" data-next="4">Lanjut ke Sekolah →</button></div>
@@ -434,11 +479,12 @@
           </div>
           <div class="field hidden" id="kip_wrap">
             <label for="no_kip">Nomor KIP <span class="req">*</span></label>
-            <input id="no_kip" name="no_kip" type="text" inputmode="numeric">
+            <input id="no_kip" name="no_kip" type="text" placeholder="Boleh huruf, angka, dan tanda baca">
+            <span class="hint">Sesuai kartu (mis. 1234/KIP/2026 atau KIP-A-00123).</span>
             <span class="error-msg">Nomor KIP wajib diisi.</span>
           </div>
-          <div class="section-title">Unggah Foto / Scan Dokumen</div>
-          <div class="callout">Foto akan disimpan ke Google Drive panitia. Format JPG/PNG, maksimal 5 MB per file. Foto siswa wajib diunggah.</div>
+          <div class="section-title">Unggah Foto 3x4</div>
+          <div class="callout">Cukup unggah satu foto siswa ukuran 3x4 (tersimpan otomatis di folder Google Drive sesuai tahun pelajaran). Bersifat opsional — bagian ini boleh dikosongkan. Format JPG/PNG, maksimal 5 MB.</div>
           <div class="foto-grid full" id="fotoGrid" style="grid-column:1/-1"></div>
         </div>
         <div class="form-nav"><button type="button" class="btn btn-ghost" data-prev="3">← Kembali</button><button type="button" class="btn btn-primary" data-next="5">Lanjut ke Nilai →</button></div>

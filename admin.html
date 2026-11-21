@@ -50,7 +50,8 @@
         <select id="tahunAktifSelect" style="width:auto;padding:7px 9px;font-size:12px"></select>
         <button class="btn btn-primary btn-sm" id="btnSimpanTahun">Simpan</button>
         <button class="btn btn-ghost btn-sm" id="btnRefresh">↻ Muat Ulang</button>
-        <button class="btn btn-primary btn-sm" id="btnExport">⬇ Export CSV</button>
+        <button class="btn btn-ghost btn-sm" id="btnExportCsv">⬇ CSV</button>
+        <button class="btn btn-primary btn-sm" id="btnExport">⬇ Excel</button>
       </div>
     </div>
 
@@ -158,6 +159,7 @@
 
 <div class="toast-wrap" id="toastWrap"></div>
 
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script type="module" src="assets/js/admin.js"></script>
 </body>
 </html>

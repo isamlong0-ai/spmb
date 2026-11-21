@@ -36,12 +36,9 @@ export const CONFIG = {
   ],
 };
 
-/** Daftar field foto yang dikirim ke Drive. */
+/** Form hanya mengunggah satu foto (3x4) dan bersifat opsional. */
 export const FOTO_FIELDS = [
-  { key: "foto_siswa", label: "Foto Siswa (3x4 / terbaru)", required: true },
-  { key: "foto_kk", label: "Foto / Scan Kartu Keluarga", required: false },
-  { key: "foto_akta", label: "Foto / Scan Akta Kelahiran", required: false },
-  { key: "foto_rapor", label: "Foto / Scan Rapor (halaman nilai)", required: false },
+  { key: "foto_siswa", label: "Foto 3x4 Siswa (terbaru)", required: false },
 ];
 
 /** Daftar mata pelajaran dan semester untuk tabel nilai. */

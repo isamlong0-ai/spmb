@@ -28,7 +28,8 @@ Aplikasi pendaftaran siswa baru berbasis **HTML + CSS + JavaScript (ES modules)*
 │   ├── 0001_init.sql             # Skema tabel, RLS, RPC, akun admin
 │   ├── 0002_tahun_pelajaran.sql  # Pemisahan data per tahun pelajaran
 │   ├── 0003_landing.sql          # Tabel konten beranda
-│   └── 0004_auto_tahun.sql       # Mode tahun pelajaran otomatis
+│   ├── 0004_auto_tahun.sql       # Mode tahun pelajaran otomatis
+│   └── 0005_wali_kip_upload.sql  # Field wali lengkap & penyesuaian form
 ├── apps-script/
 │   ├── Code.gs                   # Web App upload foto ke Google Drive
 │   └── PANDUAN.md                # Cara deploy Apps Script
@@ -52,7 +53,9 @@ Aplikasi pendaftaran siswa baru berbasis **HTML + CSS + JavaScript (ES modules)*
 - Daftar kecamatan & desa (Sambas tersedia offline; kabupaten lain diambil dari `wilayah.id` saat online)
 - Validasi per langkah, pesan error inline, dan pencegahan duplikat jurusan
 - Tabel nilai rapor 5 mapel × 5 semester dengan kalkulasi rata-rata otomatis
-- Upload 4 foto (siswa wajib, KK/Akta/Rapor opsional) dengan kompresi sisi klien
+- Upload satu foto 3x4 siswa dengan kompresi sisi klien, **opsional**, tersimpan di subfolder Google Drive sesuai tahun pelajaran
+- Nomor KIP bebas huruf/angka/tanda baca; orang tua meninggal otomatis menyembunyikan isian rinciannya
+- Data wali lengkap seperti ayah/ibu (satu set), ikut tersembunyi bila status meninggal
 - Cek status pendaftaran berdasarkan NISN (hanya menampilkan field terbatas)
 - Bukti pendaftaran bisa dicetak / diunduh sebagai PDF
 - Tombol bantuan WhatsApp panitia
@@ -62,7 +65,7 @@ Aplikasi pendaftaran siswa baru berbasis **HTML + CSS + JavaScript (ES modules)*
 - Dashboard statistik (total, menunggu, diterima, ditolak)
 - Pencarian & filter status, pagination "muat lebih banyak"
 - **CRUD lengkap**: lihat, edit seluruh field + nilai rapor, ubah status, hapus data
-- Export CSV
+- Export **Excel (.xlsx)** dengan 2 sheet: Pendaftar & Nilai Rapor (tetap tersedia CSV)
 - **Editor Konten Beranda**: mengatur judul, tagline, sambutan, tahun pelajaran, waktu & tanggal pendaftaran
 - Pengatur tahun pelajaran aktif untuk form publik
 
@@ -94,10 +97,12 @@ Project yang sudah dibuat:
 
 ✅ **Sudah aktif:** migration `supabase/migrations/0004_auto_tahun.sql` (mode tahun otomatis + RLS publik untuk kedua kunci pengaturan).
 
+⚠️ **Perlu dijalankan:** `supabase/migrations/0005_wali_kip_upload.sql` (field wali tambahan).
+
 Jika project dibuat ulang dari nol, langkahnya:
 
 1. Buka Supabase SQL Editor untuk project tersebut.
-2. Jalankan berurutan: `0001_init.sql`, `0002_tahun_pelajaran.sql`, `0003_landing.sql`, `0004_auto_tahun.sql`.
+2. Jalankan berurutan: `0001_init.sql`, `0002_tahun_pelajaran.sql`, `0003_landing.sql`, `0004_auto_tahun.sql`, `0005_wali_kip_upload.sql`.
 3. Di **Project Settings → API**, salin **anon / publishable key**.
 4. Isi ke `assets/js/config.js`:
 

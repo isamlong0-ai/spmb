@@ -59,6 +59,22 @@ window.toggleDetail = function (id, meninggal) {
   box.classList.toggle("hidden", meninggal);
   $$("input, select", box).forEach((el) => { el.value = ""; });
 };
+
+/* Orang tua/wali meninggal: sembunyikan seluruh isian, sisakan nama & status */
+window.toggleMeninggal = function (id, meninggal) {
+  const box = $("#" + id);
+  if (!box) return;
+  box.classList.toggle("hidden", meninggal);
+  $$("input, select, textarea", box).forEach((el) => {
+    if (meninggal) {
+      el.dataset.wajib = el.required ? "1" : "0";
+      el.required = false;
+      el.value = "";
+    } else {
+      el.required = el.dataset.wajib === "1";
+    }
+  });
+};
 window.toggleKip = function (ya) {
   const wrap = $("#kip_wrap");
   const input = $("#no_kip");
@@ -192,7 +208,7 @@ function bindGlobalEvents() {
   });
 
   /* Batasi input angka pada field tertentu */
-  const angka = ["nik", "kk", "nik_ayah", "nik_ibu", "no_hp_siswa", "no_hp_orang_tua", "no_hp_wali", "nisn", "no_kip", "kode_pos", "rt", "rw"];
+  const angka = ["nik", "kk", "nik_ayah", "nik_ibu", "nik_wali", "no_hp_siswa", "no_hp_orang_tua", "no_hp_wali", "nisn", "kode_pos", "rt", "rw"];
   angka.forEach((name) => {
     const el = form.elements[name];
     if (el) el.addEventListener("input", () => { el.value = el.value.replace(/\D/g, ""); });
@@ -229,15 +245,6 @@ function validateStep(n) {
     if (!ok) valid = false;
   });
 
-  if (n === 4) {
-    if (!fotoState.foto_siswa) {
-      const item = $("#foto_foto_siswa_item");
-      item.classList.add("is-invalid");
-      $("#st_foto_siswa").textContent = "Foto siswa wajib diunggah.";
-      toast("Foto siswa wajib diunggah.", "error");
-      valid = false;
-    }
-  }
   if (n === 6 && !window.cekJurusan()) valid = false;
   return valid;
 }
@@ -288,14 +295,19 @@ function compressImage(file) {
   });
 }
 
-async function uploadFoto(base64, filename) {
+async function uploadFoto(base64, filename, tahun) {
   if (!CONFIG.DRIVE_UPLOAD_URL || CONFIG.DRIVE_UPLOAD_URL.startsWith("__")) {
     throw new Error("URL Web App Google Apps Script belum diisi di assets/js/config.js");
   }
   const res = await fetch(CONFIG.DRIVE_UPLOAD_URL, {
     method: "POST",
     headers: { "Content-Type": "text/plain;charset=utf-8" },
-    body: JSON.stringify({ base64, filename, folderId: CONFIG.DRIVE_FOLDER_ID }),
+    body: JSON.stringify({
+      base64,
+      filename,
+      folderId: CONFIG.DRIVE_FOLDER_ID,
+      tahun: tahun || tahunAktif,
+    }),
   });
   const teks = await res.text();
   let json;
@@ -330,7 +342,7 @@ async function submitAkhir(e) {
     for (const f of FOTO_FIELDS) {
       if (!fotoState[f.key]) continue;
       setStatus(`Mengunggah ${f.label}…`, "var(--info)");
-      urls[f.key] = await uploadFoto(fotoState[f.key].dataUrl, fotoState[f.key].filename);
+      urls[f.key] = await uploadFoto(fotoState[f.key].dataUrl, fotoState[f.key].filename, tahunAktif);
       fotoState[f.key].url = urls[f.key];
     }
 

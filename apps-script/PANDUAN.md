@@ -34,6 +34,16 @@ DRIVE_UPLOAD_URL: "https://script.google.com/macros/s/AKfycby.../exec",
 
 > Catatan: setiap kali melakukan **New deployment**, URL akan berubah. GunakanDeployment yang sudah ada → **Manage deployments** → edit untuk mempertahankan URL yang sama.
 
+## 4b. Perbaruan kode (subfolder per tahun pelajaran)
+Versi `Code.gs` terbaru otomatis membuat subfolder bernama tahun pelajaran
+(mis. `2026-2027`) di dalam folder utama Drive. Jika Anda sudah pernah deploy:
+
+1. Buka project Apps Script yang lama.
+2. Timpa `Code.gs` dengan isi file terbaru, simpan.
+3. **Deploy → Manage deployments** → pilih deployment aktif → ikon pensil →
+   **Version: New version** → Deploy.
+   (URL Web App tetap sama, jadi tidak perlu mengubah `config.js`.)
+
 ## 5. Uji coba
 Buka URL Web App di browser. Jika muncul JSON seperti:
 

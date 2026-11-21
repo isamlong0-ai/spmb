@@ -42,7 +42,10 @@ function doPost(e) {
     }
 
     const blob = Utilities.newBlob(bytes, 'image/jpeg', filename);
-    const folder = DriveApp.getFolderById(folderId);
+
+    // Buat/pakai subfolder sesuai tahun pelajaran pendaftaran
+    const tahun = String(req.tahun || req.tahunPelajaran || '').trim();
+    const folder = tahun ? ambilFolderTahun(folderId, tahun) : DriveApp.getFolderById(folderId);
     const file = folder.createFile(blob);
 
     // Biarkan panitia bisa membuka gambar tanpa login (link langsung).
@@ -56,12 +59,22 @@ function doPost(e) {
       ok: true,
       id: file.getId(),
       name: file.getName(),
+      folder: folder.getName(),
       url: 'https://drive.google.com/uc?export=view&id=' + file.getId(),
       webViewLink: file.getUrl()
     });
   } catch (err) {
     return balasan({ ok: false, error: err.message });
   }
+}
+
+/** Ambil (atau buat) subfolder tahun pelajaran di dalam folder utama. */
+function ambilFolderTahun(folderId, tahun) {
+  const induk = DriveApp.getFolderById(folderId);
+  const nama = String(tahun).replace(/[\\/:*?"<>|]/g, '-');
+  const sudahAda = induk.getFoldersByName(nama);
+  if (sudahAda.hasNext()) return sudahAda.next();
+  return induk.createFolder(nama);
 }
 
 function balasan(obj) {

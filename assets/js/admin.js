@@ -200,8 +200,11 @@ const GRUP = [
     ["alamat_orang_tua", "Alamat Orang Tua", "textarea"], ["no_hp_orang_tua", "No. HP Orang Tua", "text"],
   ]},
   { judul: "Wali (opsional)", field: [
-    ["nama_wali", "Nama Wali", "text"], ["pekerjaan_wali", "Pekerjaan Wali", "text"],
-    ["pekerjaan_wali_lain", "Pekerjaan Wali Lain", "text"],
+    ["nama_wali", "Nama Wali", "text"], ["status_wali", "Status Wali", "select", ["Hidup", "Meninggal"]],
+    ["nik_wali", "NIK Wali", "text"], ["tempat_lahir_wali", "Tempat Lahir Wali", "text"],
+    ["tanggal_lahir_wali", "Tanggal Lahir Wali", "date"], ["pendidikan_wali", "Pendidikan Wali", "text"],
+    ["pekerjaan_wali", "Pekerjaan Wali", "text"], ["pekerjaan_wali_lain", "Pekerjaan Wali Lain", "text"],
+    ["penghasilan_wali", "Penghasilan Wali", "text"],
     ["no_hp_wali", "No. HP Wali", "text"], ["alamat_wali", "Alamat Wali", "textarea"],
   ]},
   { judul: "Sekolah & Jurusan", field: [
@@ -340,6 +343,74 @@ function exportCSV() {
   URL.revokeObjectURL(a.href);
 }
 
+const KOLOM_EXCEL = [
+  ["tahun_pelajaran", "Tahun Pelajaran"], ["kode_pendaftaran", "Kode Pendaftaran"],
+  ["nama", "Nama"], ["nik", "NIK"], ["kk", "No. KK"], ["nisn", "NISN"],
+  ["tempat_lahir", "Tempat Lahir"], ["tanggal_lahir", "Tanggal Lahir"],
+  ["jenis_kelamin", "Jenis Kelamin"], ["agama", "Agama"],
+  ["provinsi", "Provinsi"], ["kabupaten", "Kabupaten/Kota"],
+  ["kecamatan", "Kecamatan"], ["desa", "Desa"], ["rt", "RT"], ["rw", "RW"],
+  ["alamat_lengkap", "Alamat Lengkap"], ["no_hp_siswa", "HP Siswa"],
+  ["nama_ayah", "Nama Ayah"], ["status_ayah", "Status Ayah"],
+  ["nama_ibu", "Nama Ibu"], ["status_ibu", "Status Ibu"],
+  ["nama_wali", "Nama Wali"], ["status_wali", "Status Wali"],
+  ["bentuk_sekolah", "Bentuk Sekolah"], ["nama_sekolah", "Asal Sekolah"],
+  ["tahun_lulus", "Tahun Lulus"], ["punya_kip", "Punya KIP"], ["no_kip", "No. KIP"],
+  ["jurusan1", "Pilihan 1"], ["jurusan2", "Pilihan 2"], ["jurusan3", "Pilihan 3"],
+  ["peringkat_5", "Peringkat"], ["rata_rata", "Rata-rata"],
+  ["foto_siswa", "URL Foto 3x4"], ["status", "Status"], ["created_at", "Waktu Daftar"],
+];
+
+async function exportExcel() {
+  if (!dataTerfilter.length) { toast("Belum ada data untuk diekspor.", "warn"); return; }
+  if (typeof XLSX === "undefined") { toast("Library Excel belum termuat. Periksa koneksi internet.", "error"); return; }
+  const btn = $("#btnExport");
+  btn.disabled = true;
+  btn.textContent = "⏳ Membuat Excel…";
+  try {
+    const baris = dataTerfilter.map((d) => {
+      const o = {};
+      KOLOM_EXCEL.forEach(([k, label]) => {
+        let v = d[k];
+        if (k === "punya_kip") v = v ? "Ya" : "Tidak";
+        o[label] = v ?? "";
+      });
+      return o;
+    });
+
+    const ws1 = XLSX.utils.json_to_sheet(baris);
+    ws1["!cols"] = KOLOM_EXCEL.map(([, label]) => ({ wch: Math.min(Math.max(label.length + 4, 12), 30) }));
+
+    const ids = dataTerfilter.map((d) => d.id);
+    const { data: nilai } = await supabase
+      .from("nilai_rapor").select("pendaftar_id,mapel,semester,nilai").in("pendaftar_id", ids);
+    const peta = new Map(dataTerfilter.map((d) => [d.id, d]));
+    const pivot = new Map();
+    (nilai || []).forEach((n) => {
+      const kunci = n.pendaftar_id + "|" + n.mapel;
+      if (!pivot.has(kunci)) {
+        const s = peta.get(n.pendaftar_id) || {};
+        pivot.set(kunci, { NISN: s.nisn || "", Nama: s.nama || "", Tahun: s.tahun_pelajaran || "", Mapel: n.mapel });
+      }
+      pivot.get(kunci)["Smt " + n.semester] = Number(n.nilai);
+    });
+    const ws2 = XLSX.utils.json_to_sheet(Array.from(pivot.values()));
+    ws2["!cols"] = [{ wch: 16 }, { wch: 24 }, { wch: 13 }, { wch: 16 }, { wch: 8 }, { wch: 8 }, { wch: 8 }, { wch: 8 }, { wch: 8 }];
+
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws1, "Pendaftar");
+    XLSX.utils.book_append_sheet(wb, ws2, "Nilai Rapor");
+    const label = ($("#filterTahun").value || "semua-tahun").replace("/", "-");
+    XLSX.writeFile(wb, `SPMB_${label}_${new Date().toISOString().slice(0, 10)}.xlsx`);
+    toast(`Excel berhasil diunduh (${baris.length} pendaftar).`);
+  } catch (e) {
+    toast("Gagal membuat Excel: " + e.message, "error");
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "⬇ Excel";
+  }
+}
+
 /* ---------------------------- Tahun pelajaran --------------------------- */
 async function muatTahun() {
   try {
@@ -454,7 +525,8 @@ function bindEvents() {
   $("#btnSimpanTahun").addEventListener("click", simpanTahunAktif);
   $("#btnRefresh").addEventListener("click", () => { muatData(); toast("Data dimuat ulang."); });
   $("#btnMore").addEventListener("click", () => muatData(false));
-  $("#btnExport").addEventListener("click", exportCSV);
+  $("#btnExport").addEventListener("click", exportExcel);
+  $("#btnExportCsv").addEventListener("click", exportCSV);
 
   $("#editClose").addEventListener("click", tutupEdit);
   $("#editBatal").addEventListener("click", tutupEdit);
