@@ -14,7 +14,6 @@
 - Konfigurasi MCP Supabase ditulis ke `~/.config/opencode/opencode.json` (opsional, tidak dipakai).
 
 ## Yang masih perlu
-- ⚠️ **Jalankan `supabase/migrations/0004_auto_tahun.sql`** di SQL Editor (baris `mode_tahun_aktif` = auto).
 - Hapus 2 file uji (1x1 pixel) dari folder Drive: `foto_test_koneksi.jpg` dan `foto_test_cors_browser.jpg` — dibuat saat tes koneksi & CORS.
 - Ganti password admin default `AdminSPMB2026!` setelah login pertama.
 

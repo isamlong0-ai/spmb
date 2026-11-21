@@ -92,6 +92,8 @@ Project yang sudah dibuat:
 
 ✅ **Sudah aktif:** migration `supabase/migrations/0003_landing.sql` juga sudah dijalankan (tabel `landing` + RLS + konten awal).
 
+✅ **Sudah aktif:** migration `supabase/migrations/0004_auto_tahun.sql` (mode tahun otomatis + RLS publik untuk kedua kunci pengaturan).
+
 Jika project dibuat ulang dari nol, langkahnya:
 
 1. Buka Supabase SQL Editor untuk project tersebut.
