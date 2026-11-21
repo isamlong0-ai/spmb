@@ -19,7 +19,7 @@
         <img src="https://lh3.googleusercontent.com/d/1zArv6yZsZ-YZCSTtEbTBUQp4C0kv325f" alt="Logo Sekolah">
         <div>
           <strong>SPMB SMKN 1 TELUK KERAMAT</strong>
-          <span>Tahun Pelajaran 2026/2027</span>
+          <span id="tahunTopbar">Tahun Pelajaran 2026/2027</span>
         </div>
       </div>
       <a class="topbar-link" href="admin.html">Area Admin</a>
@@ -44,6 +44,7 @@
     </div>
 
     <form id="formPendaftaran" novalidate>
+      <input type="hidden" name="tahun_pelajaran" id="tahun_pelajaran" value="2026/2027">
       <!-- ============ STEP 1 ============ -->
       <section class="card step-page" data-page="1">
         <div class="card-head">
@@ -510,10 +511,11 @@
         <div class="bukti-kop">
           <img src="https://lh3.googleusercontent.com/d/1zArv6yZsZ-YZCSTtEbTBUQp4C0kv325f" alt="Logo">
           <h3>Panitia Penerimaan Murid Baru (SPMB)<br>SMK Negeri 1 Teluk Keramat</h3>
-          <p>Tahun Pelajaran 2026/2027</p>
+          <p id="tahunBukti">Tahun Pelajaran 2026/2027</p>
         </div>
         <h4>Bukti Penerimaan Pengiriman Data</h4>
         <table class="bukti-table">
+          <tr><td class="k">Tahun Pelajaran</td><td>:</td><td id="p_tahun"></td></tr>
           <tr><td class="k">Kode Pendaftaran</td><td>:</td><td id="p_kode"></td></tr>
           <tr><td class="k">Nama</td><td>:</td><td id="p_nama"></td></tr>
           <tr><td class="k">NISN</td><td>:</td><td id="p_nisn"></td></tr>

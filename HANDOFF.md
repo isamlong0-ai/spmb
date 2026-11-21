@@ -14,10 +14,19 @@
 - Konfigurasi MCP Supabase ditulis ke `~/.config/opencode/opencode.json` (opsional, tidak dipakai).
 
 ## Yang masih perlu
+- ⚠️ **Jalankan `supabase/migrations/0002_tahun_pelajaran.sql`** di Supabase SQL Editor.
+  (Menambah kolom `tahun_pelajaran`, tabel `pengaturan`, serta memperbarui RPC.
+   Sebelum ini dijalankan, filter tahun di admin belum berfungsi.)
 - Hapus 2 file uji (1x1 pixel) dari folder Drive: `foto_test_koneksi.jpg` dan `foto_test_cors_browser.jpg` — dibuat saat tes koneksi & CORS.
 - Ganti password admin default `AdminSPMB2026!` setelah login pertama.
 
 Apps Script Web App sudah aktif & teruji (GET + POST upload ke Drive berhasil), URL terisi di config.
+
+## Fitur tahun pelajaran (baru)
+- Kolom `tahun_pelajaran` di `pendaftar`; kode pendaftaran mengikuti tahun.
+- Tabel `pengaturan` menyimpan `tahun_pelajaran_aktif` untuk form publik.
+- Admin: ubah tahun aktif lewat kolom di Dashboard + filter tahun di tabel & export CSV.
+- `cek_nisn` mengembalikan `tahun_pelajaran`.
 
 ## Kredensial
 - Anon key: `sb_publishable_XBST_lVhiVHsq6FpFAmx-A_ddN0JB1K`

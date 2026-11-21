@@ -74,10 +74,12 @@ Project yang sudah dibuat:
 
 ✅ **Sudah aktif:** migration `supabase/migrations/0001_init.sql` telah dijalankan dan tabel/RLS/RPC/akun admin sudah terbentuk. ✅ **Anon key juga sudah terisi** di `assets/js/config.js`.
 
+⚠️ **Perlu dijalankan:** `supabase/migrations/0002_tahun_pelajaran.sql` (lihat bagian Kontinuitas Tahun Pelajaran di bawah).
+
 Jika project dibuat ulang dari nol, langkahnya:
 
 1. Buka Supabase SQL Editor untuk project tersebut.
-2. Jalankan seluruh isi `supabase/migrations/0001_init.sql`.
+2. Jalankan `supabase/migrations/0001_init.sql`, lalu `0002_tahun_pelajaran.sql`.
 3. Di **Project Settings → API**, salin **anon / publishable key**.
 4. Isi ke `assets/js/config.js`:
 
@@ -116,6 +118,19 @@ Lalu buka `http://localhost:8000/index.html` dan `http://localhost:8000/admin.ht
 Untuk produksi, host sebagai static site (GitHub Pages, Netlify, Vercel, atau server sekolah). Pastikan `index.html` dan `admin.html` berada di root yang sama dengan folder `assets/`.
 
 ---
+
+## Kontinuitas Tahun Pelajaran
+
+Setiap tahun pelajaran baru **tidak perlu mengubah kode**:
+
+- Setiap pendaftar tersimpan dengan kolom `tahun_pelajaran` (mis. `2026/2027`, `2027/2028`).
+- Kode pendaftaran otomatis mengikuti tahun, mis. `SPMB-2026-2027-XXXXXXXX`.
+- Di **panel admin → Dashboard**, pilih tahun di dropdown **"Tahun pelajaran aktif (form)"** lalu klik **Simpan**.
+  - Form pendaftaran publik otomatis memakai tahun tersebut ( judul & data yang dikirim ikut berubah).
+  - Dropdown **"filterTahun"** di tabel data dipakai untuk melihat/mengekspor data per tahun tanpa mencampur tahun lama.
+- Data tahun lama tetap tersimpan dan bisa dilihat kapan saja lewat filter **Semua Tahun**.
+
+Cara menambah tahun baru: ketik langsung pada kolom **"Tahun pelajaran aktif (form)"**, misalnya `2027/2028`, lalu klik **Simpan**. Form publik langsung berpindah ke tahun tersebut — tidak perlu edit kode maupun SQL.
 
 ## Catatan penting
 

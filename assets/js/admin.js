@@ -10,6 +10,8 @@ let offset = 0;
 let semuaData = [];
 let dataTerfilter = [];
 let editId = null;
+let tahunAktif = CONFIG.TAHUN_PELAJARAN;
+let daftarTahun = [];
 
 /* -------------------------------- Util -------------------------------- */
 function toast(pesan, tipe = "") {
@@ -62,7 +64,8 @@ async function initAuth() {
 function tampilkanAdmin(user) {
   $("#loginView").classList.add("hidden");
   $("#adminView").classList.remove("hidden");
-  $("#pageSubtitle").textContent = `Login sebagai ${user.email} · Tahun Pelajaran 2026/2027`;
+  $("#pageSubtitle").textContent = `Login sebagai ${user.email} · Tahun Pelajaran ${tahunAktif}`;
+  muatTahun();
   muatData();
 }
 
@@ -77,44 +80,62 @@ async function muatData(reset = true) {
 
   if (error) {
     toast("Gagal memuat data: " + error.message, "error");
-    $("#dataBody").innerHTML = `<tr><td colspan="8" style="padding:30px;color:var(--danger)">${escapeHtml(error.message)}</td></tr>`;
+    $("#dataBody").innerHTML = `<tr><td colspan="9" style="padding:30px;color:var(--danger)">${escapeHtml(error.message)}</td></tr>`;
     return;
   }
   semuaData = reset ? (data || []) : [...semuaData, ...(data || [])];
   offset += data?.length || 0;
-  updateStat();
+  kumpulkanTahun();
   terapkanFilter();
   $("#btnMore").style.display = (data?.length || 0) < PAGE_SIZE ? "none" : "";
 }
 
+function kumpulkanTahun() {
+  const dariData = semuaData.map((d) => d.tahun_pelajaran).filter(Boolean);
+  daftarTahun = Array.from(new Set([tahunAktif, ...dariData])).sort().reverse();
+  const filter = $("#filterTahun");
+  const nilaiSebelumnya = filter.value || tahunAktif;
+  filter.innerHTML = `<option value="">Semua Tahun</option>` +
+    daftarTahun.map((t) => `<option value="${escapeHtml(t)}">${escapeHtml(t)}</option>`).join("");
+  filter.value = daftarTahun.includes(nilaiSebelumnya) ? nilaiSebelumnya : tahunAktif;
+
+  $("#dl-tahun").innerHTML = daftarTahun
+    .map((t) => `<option value="${escapeHtml(t)}"></option>`).join("");
+  $("#tahunAktifSelect").value = tahunAktif;
+}
+
 function updateStat() {
-  $("#stTotal").textContent = semuaData.length;
-  $("#stMenunggu").textContent = semuaData.filter((d) => d.status === "menunggu").length;
-  $("#stDiterima").textContent = semuaData.filter((d) => d.status === "diterima").length;
-  $("#stDitolak").textContent = semuaData.filter((d) => d.status === "ditolak").length;
+  $("#stTotal").textContent = dataTerfilter.length;
+  $("#stMenunggu").textContent = dataTerfilter.filter((d) => d.status === "menunggu").length;
+  $("#stDiterima").textContent = dataTerfilter.filter((d) => d.status === "diterima").length;
+  $("#stDitolak").textContent = dataTerfilter.filter((d) => d.status === "ditolak").length;
 }
 
 function terapkanFilter() {
   const q = $("#cari").value.trim().toLowerCase();
   const st = $("#filterStatus").value;
+  const th = $("#filterTahun").value;
   dataTerfilter = semuaData.filter((d) => {
     const cocokTeks = !q || [d.nama, d.nisn, d.nama_sekolah, d.kode_pendaftaran]
       .some((v) => String(v || "").toLowerCase().includes(q));
-    return cocokTeks && (!st || d.status === st);
+    const cocokTahun = !th || d.tahun_pelajaran === th;
+    return cocokTeks && cocokTahun && (!st || d.status === st);
   });
+  updateStat();
   renderTabel();
 }
 
 function renderTabel() {
   const body = $("#dataBody");
   if (!dataTerfilter.length) {
-    body.innerHTML = `<tr><td colspan="8" style="padding:30px;color:var(--muted)">Belum ada data pendaftar.</td></tr>`;
+    body.innerHTML = `<tr><td colspan="9" style="padding:30px;color:var(--muted)">Belum ada data pendaftar untuk tahun ini.</td></tr>`;
     $("#infoData").textContent = "0 data";
     return;
   }
   body.innerHTML = dataTerfilter.map((d) => `
     <tr>
       <td style="font-size:11px;color:var(--muted)">${escapeHtml(d.kode_pendaftaran)}</td>
+      <td style="font-size:11px;white-space:nowrap">${escapeHtml(d.tahun_pelajaran || "-")}</td>
       <td><b>${escapeHtml(d.nama)}</b><br><span style="font-size:11px;color:var(--muted)">${escapeHtml(d.provinsi)} / ${escapeHtml(d.kabupaten)}</span></td>
       <td>${escapeHtml(d.nisn)}</td>
       <td>${escapeHtml(d.nama_sekolah)}</td>
@@ -128,7 +149,8 @@ function renderTabel() {
         </div>
       </td>
     </tr>`).join("");
-  $("#infoData").textContent = `Menampilkan ${dataTerfilter.length} dari ${semuaData.length} data`;
+  const labelTahun = $("#filterTahun").value || "semua tahun";
+  $("#infoData").textContent = `Menampilkan ${dataTerfilter.length} data (${labelTahun})`;
 
   $$("[data-edit]", body).forEach((b) => b.addEventListener("click", () => bukaEdit(b.dataset.edit)));
   $$("[data-hapus]", body).forEach((b) => b.addEventListener("click", () => hapusData(b.dataset.hapus)));
@@ -173,6 +195,7 @@ const GRUP = [
     ["no_hp_wali", "No. HP Wali", "text"], ["alamat_wali", "Alamat Wali", "textarea"],
   ]},
   { judul: "Sekolah & Jurusan", field: [
+    ["tahun_pelajaran", "Tahun Pelajaran", "tahun"],
     ["nisn", "NISN", "text"], ["bentuk_sekolah", "Bentuk Sekolah", "select", ["SMP", "MTs.", "Paket B"]],
     ["nama_sekolah", "Nama Asal Sekolah", "text"], ["alamat_sekolah", "Alamat Sekolah", "textarea"],
     ["tahun_lulus", "Tahun Lulus", "number"], ["punya_kip", "Memiliki KIP", "select", ["true", "false"]],
@@ -195,10 +218,11 @@ function inputEdit(field, val) {
   if (type === "textarea") {
     return `<div class="field"><label>${label}</label><textarea name="${name}" rows="2">${escapeHtml(v)}</textarea></div>`;
   }
-  if (type === "select") {
+  if (type === "select" || type === "tahun") {
+    const pilihan = type === "tahun" ? daftarTahun : (opsi || []);
     return `<div class="field"><label>${label}</label><select name="${name}">
-      <option value="">-- Kosong --</option>
-      ${(opsi || []).map((o) => `<option value="${escapeHtml(o)}" ${o === v ? "selected" : ""}>${escapeHtml(o)}</option>`).join("")}
+      ${type === "select" ? '<option value="">-- Kosong --</option>' : ""}
+      ${pilihan.map((o) => `<option value="${escapeHtml(o)}" ${o === v ? "selected" : ""}>${escapeHtml(o)}</option>`).join("")}
     </select></div>`;
   }
   return `<div class="field"><label>${label}</label><input name="${name}" type="${type}" value="${escapeHtml(v)}" ${type === "number" ? 'step="any"' : ""}></div>`;
@@ -292,23 +316,61 @@ async function hapusData(id) {
 
 /* -------------------------------- Export ------------------------------- */
 function exportCSV() {
-  if (!semuaData.length) { toast("Belum ada data untuk diekspor.", "warn"); return; }
-  const kolom = ["kode_pendaftaran", "nama", "nik", "nisn", "nama_sekolah", "provinsi", "kabupaten", "kecamatan", "desa", "jurusan1", "jurusan2", "jurusan3", "status", "created_at"];
-  const baris = [kolom.join(",")].concat(semuaData.map((d) =>
+  if (!dataTerfilter.length) { toast("Belum ada data untuk diekspor.", "warn"); return; }
+  const kolom = ["tahun_pelajaran", "kode_pendaftaran", "nama", "nik", "nisn", "nama_sekolah", "provinsi", "kabupaten", "kecamatan", "desa", "jurusan1", "jurusan2", "jurusan3", "status", "created_at"];
+  const baris = [kolom.join(",")].concat(dataTerfilter.map((d) =>
     kolom.map((k) => `"${String(d[k] ?? "").replace(/"/g, '""')}"`).join(",")
   ));
   const blob = new Blob(["\ufeff" + baris.join("\r\n")], { type: "text/csv;charset=utf-8" });
   const a = document.createElement("a");
   a.href = URL.createObjectURL(blob);
-  a.download = `pendaftar-spmb-${new Date().toISOString().slice(0, 10)}.csv`;
+  const label = ($("#filterTahun").value || "semua-tahun").replace("/", "-");
+  a.download = `pendaftar-spmb-${label}-${new Date().toISOString().slice(0, 10)}.csv`;
   a.click();
   URL.revokeObjectURL(a.href);
+}
+
+/* ---------------------------- Tahun pelajaran --------------------------- */
+async function muatTahun() {
+  try {
+    const { data } = await supabase
+      .from("pengaturan")
+      .select("value")
+      .eq("key", "tahun_pelajaran_aktif")
+      .maybeSingle();
+    if (data?.value) tahunAktif = data.value;
+  } catch (e) {
+    // Fallback ke config.js
+  }
+  $("#pageSubtitle").textContent = `Tahun Pelajaran aktif: ${tahunAktif}`;
+  kumpulkanTahun();
+}
+
+async function simpanTahunAktif() {
+  const tahun = $("#tahunAktifSelect").value.trim();
+  if (!/^\d{4}\/\d{4}$/.test(tahun)) {
+    toast("Format tahun pelajaran harus seperti 2027/2028.", "error");
+    return;
+  }
+  const { error } = await supabase
+    .from("pengaturan")
+    .update({ value: tahun, updated_at: new Date().toISOString() })
+    .eq("key", "tahun_pelajaran_aktif");
+  if (error) { toast("Gagal menyimpan tahun: " + error.message, "error"); return; }
+  tahunAktif = tahun;
+  $("#filterTahun").value = tahun;
+  $("#pageSubtitle").textContent = `Tahun Pelajaran aktif: ${tahunAktif}`;
+  kumpulkanTahun();
+  terapkanFilter();
+  toast(`Tahun pelajaran aktif sekarang ${tahun}. Form pendaftaran ikut berubah.`);
 }
 
 /* ------------------------------- Events -------------------------------- */
 function bindEvents() {
   $("#cari").addEventListener("input", terapkanFilter);
   $("#filterStatus").addEventListener("change", terapkanFilter);
+  $("#filterTahun").addEventListener("change", terapkanFilter);
+  $("#btnSimpanTahun").addEventListener("click", simpanTahunAktif);
   $("#btnRefresh").addEventListener("click", () => { muatData(); toast("Data dimuat ulang."); });
   $("#btnMore").addEventListener("click", () => muatData(false));
   $("#btnExport").addEventListener("click", exportCSV);

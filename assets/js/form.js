@@ -7,6 +7,7 @@ const form = document.getElementById("formPendaftaran");
 const statusBox = document.getElementById("status");
 let currentStep = 1;
 let totalSteps = 6;
+let tahunAktif = CONFIG.TAHUN_PELAJARAN;
 const fotoState = {};
 
 /* ------------------------------ Utilitas ------------------------------ */
@@ -366,6 +367,7 @@ async function submitAkhir(e) {
       hour: "2-digit", minute: "2-digit", second: "2-digit",
     }).replace(/\./g, ":");
 
+    $("#p_tahun").textContent = raw.tahun_pelajaran || tahunAktif;
     $("#p_kode").textContent = row?.kode_pendaftaran || "-";
     $("#p_nama").textContent = (raw.nama || "").toUpperCase();
     $("#p_nisn").textContent = raw.nisn || "";
@@ -420,6 +422,7 @@ async function cariData() {
         <div><b>Pilihan 2:</b> ${escapeHtml(r.jurusan2)}</div>
         <div><b>Pilihan 3:</b> ${escapeHtml(r.jurusan3)}</div>
         <div><b>Status:</b> <span class="badge ${String(r.status).toLowerCase()}">${escapeHtml(r.status)}</span></div>
+        <div><b>Tahun Pelajaran:</b> ${escapeHtml(r.tahun_pelajaran || "-")}</div>
         <div style="color:var(--muted);font-size:11px;margin-top:6px">Waktu daftar: ${escapeHtml(r.waktu_daftar)} WIB</div>`;
     } else {
       box.innerHTML = `<span style="color:var(--danger)">Data dengan NISN <b>${escapeHtml(nisn)}</b> belum terdaftar.</span>`;
@@ -468,7 +471,34 @@ function unduhPDF() {
   });
 }
 
+/* --------------------------- Tahun pelajaran ---------------------------- */
+async function muatTahunAktif() {
+  try {
+    const { data } = await supabase
+      .from("pengaturan")
+      .select("value")
+      .eq("key", "tahun_pelajaran_aktif")
+      .maybeSingle();
+    if (data?.value) tahunAktif = data.value;
+  } catch (e) {
+    // Fallback ke nilai di config.js
+  }
+  $("#tahun_pelajaran").value = tahunAktif;
+  $("#tahunTopbar").textContent = `Tahun Pelajaran ${tahunAktif}`;
+  $("#tahunBukti").textContent = `Tahun Pelajaran ${tahunAktif}`;
+
+  // Tahun lulus mengikuti tahun pertama pada tahun pelajaran aktif
+  const tahunLulusAwal = parseInt(String(tahunAktif).slice(0, 4), 10) || 2026;
+  const sel = $("#tahun_lulus");
+  sel.innerHTML = '<option value="">-- Pilih --</option>' +
+    Array.from({ length: 5 }, (_, i) => {
+      const t = tahunLulusAwal - i;
+      return `<option value="${t}">${t}</option>`;
+    }).join("");
+}
+
 /* ------------------------------- Start --------------------------------- */
+muatTahunAktif();
 buildNilaiTable();
 buildFotoGrid();
 buildJurusanOptions();

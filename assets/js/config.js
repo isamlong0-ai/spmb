@@ -19,6 +19,8 @@ export const CONFIG = {
   FOTO_MAX_DIMENSION: 1600,
   FOTO_QUALITY: 0.82,
 
+  // Fallback jika tabel pengaturan belum bisa diakses.
+  // Nilai sebenarnya diambil dari Supabase (bisa diubah di panel admin).
   TAHUN_PELAJARAN: "2026/2027",
   NAMA_SEKOLAH: "SMK Negeri 1 Teluk Keramat",
   PORTAL_DIKNAS: "https://spmb-dikbud.kalbarprov.go.id/",
