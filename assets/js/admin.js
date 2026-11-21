@@ -612,9 +612,6 @@ function isiDraftDinas(d) {
   $("#dinas_minat_persen").value = data.minat_persen || "";
   $("#dinas_minat_pendaftar").value = data.minat_pendaftar ?? "";
   $("#dinas_minat_kuota").value = data.minat_kuota ?? "";
-  // Validasi tidak bisa di-scrape (halaman statsekolah butuh POST+CSRF),
-  // jadi jangan hapus nilai yang sudah diisi admin.
-  if (data.minat_validasi != null) $("#dinas_minat_validasi").value = data.minat_validasi;
   $("#dinas_sumber_update").value = data.sumber_update || "";
   const info = $("#jadwalDraftInfo");
   if (info) {
@@ -686,7 +683,6 @@ async function tarikInfoDinas() {
           minat_pendaftar: Number(baris.total_pendaftar) || 0,
           minat_kuota: Number(baris.total_kuota) || 0,
           minat_persen: String(baris.persen || ""),
-          minat_validasi: null,
         };
       }
     } catch (e) {
@@ -740,7 +736,6 @@ async function simpanInfoDinas() {
     minat_persen: $("#dinas_minat_persen").value.trim() || null,
     minat_pendaftar: $("#dinas_minat_pendaftar").value ? Number($("#dinas_minat_pendaftar").value) : null,
     minat_kuota: $("#dinas_minat_kuota").value ? Number($("#dinas_minat_kuota").value) : null,
-    minat_validasi: $("#dinas_minat_validasi").value ? Number($("#dinas_minat_validasi").value) : null,
     jadwal_data: draftJadwal,
     sumber_update: $("#dinas_sumber_update").value.trim() || null,
     published_at: new Date().toISOString(),

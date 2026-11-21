@@ -52,8 +52,8 @@ Aplikasi **pengumpulan data calon siswa** untuk SPMB berbasis **HTML + CSS + Jav
 
 ### Beranda (`index.html`)
 - Halaman utama: hero/selamat datang, kata sambutan, **Info dari Portal Dinas**, informasi & panduan, CTA
-- **Info dari Portal Dinas** (pengumuman, **jadwal lengkap per jalur dengan timeline**, SPTJM, video SMK, **diagram jumlah daftar/kuota/validasi** sekolah, distribusi jurusan) diambil semi-otomatis lewat tombol di admin (browser → proxy baca-saja `r.jina.ai`), lalu ditinjau sebelum tayang
-- Diagram jumlah daftar / kuota / validasi memakai angka SMKN 1 Teluk Keramat dari halaman statistik sekolah dinas (508 / 392 / 503)
+- **Info dari Portal Dinas** (pengumuman, **jadwal lengkap per jalur dengan timeline**, SPTJM, video SMK, **persentase minat & diagram jumlah daftar/kuota**) diambil semi-otomatis lewat tombol di admin (browser → proxy baca-saja `r.jina.ai`), lalu ditinjau sebelum tayang
+- Persentase minat & diagram memakai angka SMKN 1 Teluk Keramat dari portal dinas (508 pendaftar / 392 kuota = **129,59%**)
 - **Tautan resmi dinas** ditampilkan langsung di bawah waktu pengisian formulir
 - **Seluruh teks utama bisa diatur dari panel admin** (judul, tagline, sambutan, tahun pelajaran, waktu pengisian, status formulir, tanggal catatan)
 - Status formulir (**Dibuka / Akan Datang / Ditutup**) diatur **manual** dari panel admin → menu Konten Beranda (tidak bergantung tanggal)
@@ -130,7 +130,7 @@ Project yang sudah dibuat:
 
 ✅ **Sudah aktif:** migration `supabase/migrations/0009_dinas_info.sql` (tabel `dinas_info` + RPC `statistik_minat_jurusan`).
 
-✅ **Sudah aktif:** migration `supabase/migrations/0010_jadwal_validasi.sql` (kolom `jadwal_data` & `minat_validasi` + data awal).
+✅ **Sudah aktif:** migration `supabase/migrations/0010_jadwal_validasi.sql` (kolom `jadwal_data` & data jadwal awal). Kolom `minat_validasi` sudah tidak dipakai di UI.
 
 Jika project dibuat ulang dari nol, langkahnya:
 

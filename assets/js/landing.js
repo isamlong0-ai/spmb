@@ -63,15 +63,6 @@ function escapeHtml(s) {
   return String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 }
 
-function barJurusan(label, jumlah, persen, maks) {
-  const lebar = maks ? Math.max(3, Math.round((jumlah / maks) * 100)) : 0;
-  return `<div class="chart-row">
-    <div class="chart-label" title="${escapeHtml(label)}">${escapeHtml(label)}</div>
-    <div class="chart-track"><div class="chart-fill" style="width:${lebar}%"></div></div>
-    <div class="chart-nilai">${persen}%</div>
-  </div>`;
-}
-
 function barAngka(label, jumlah, maks, kelas = "") {
   const lebar = maks ? Math.max(3, Math.round((jumlah / maks) * 100)) : 0;
   return `<div class="chart-row">
@@ -116,7 +107,7 @@ function renderJadwal(data) {
   tampilkan(0);
 }
 
-function renderInfoDinas(info, jurusan, tahun) {
+function renderInfoDinas(info) {
   const portal = "https://spmb-dikbud.kalbarprov.go.id/";
   const sumber = info?.sumber_update || "";
 
@@ -146,42 +137,30 @@ function renderInfoDinas(info, jurusan, tahun) {
   const chartMinat = $("#minatChart");
   if (minat) {
     minat.innerHTML = info?.minat_pendaftar != null
-      ? `Peminat <b>${Number(info.minat_pendaftar).toLocaleString("id-ID")}</b> untuk <b>${Number(info.minat_kuota || 0).toLocaleString("id-ID")}</b> kuota (${escapeHtml(info.minat_persen || "0")}%).`
+      ? `<div style="font-size:34px;font-weight:800;color:var(--primary);line-height:1.1">${escapeHtml(info.minat_persen || "0")}%</div>
+         <div style="margin-top:6px"><b>${escapeHtml(info.minat_nama_sekolah || "SMKN 1 Teluk Keramat")}</b></div>
+         <div style="margin-top:2px">${Number(info.minat_pendaftar).toLocaleString("id-ID")} pendaftar / ${Number(info.minat_kuota || 0).toLocaleString("id-ID")} kuota</div>`
       : "Data belum tersedia.";
   }
   if (chartMinat) {
     const daftar = Number(info?.minat_pendaftar || 0);
     const kuota = Number(info?.minat_kuota || 0);
-    const validasi = Number(info?.minat_validasi || 0);
-    const maks = Math.max(daftar, kuota, validasi, 1);
-    chartMinat.innerHTML = (daftar || kuota || validasi)
+    const maks = Math.max(daftar, kuota, 1);
+    chartMinat.innerHTML = (daftar || kuota)
       ? barAngka("Jumlah Daftar", daftar, maks) +
-        barAngka("Jumlah Kuota", kuota, maks) +
-        barAngka("Jumlah Validasi", validasi, maks, "info")
+        barAngka("Jumlah Kuota", kuota, maks, "info")
       : '<div class="hint">Data belum tersedia.</div>';
   }
 
   renderJadwal(info?.jadwal_data);
-
-  $("#jurusanTahun").textContent = tahun;
-  const chart = $("#jurusanChart");
-  if (chart) {
-    const maks = jurusan.length ? Number(jurusan[0].jumlah) : 0;
-    chart.innerHTML = jurusan.length
-      ? jurusan.slice(0, 7).map((j) => barJurusan(j.jurusan, Number(j.jumlah), j.persen, maks)).join("")
-      : '<div class="hint">Belum ada data formulir pada tahun ini.</div>';
-  }
 }
 
-async function muatInfoDinas(tahun) {
+async function muatInfoDinas() {
   try {
-    const [r1, r2] = await Promise.all([
-      supabase.from("dinas_info").select("*").eq("id", 1).maybeSingle(),
-      supabase.rpc("statistik_minat_jurusan", { p_tahun: tahun }),
-    ]);
-    renderInfoDinas(r1.data, r2.data || [], tahun);
+    const { data } = await supabase.from("dinas_info").select("*").eq("id", 1).maybeSingle();
+    renderInfoDinas(data);
   } catch (e) {
-    renderInfoDinas(null, [], tahun);
+    renderInfoDinas(null);
   }
 }
 
@@ -196,7 +175,7 @@ async function muat() {
   } catch (e) {
     render(null, tahun, statusInfo);
   }
-  muatInfoDinas(tahun);
+  muatInfoDinas();
 }
 
 muat();

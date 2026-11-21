@@ -38,6 +38,12 @@ Apps Script Web App sudah aktif & teruji (GET + POST upload ke Drive berhasil), 
 - Export Excel: 2 sheet (Calon Siswa, Nilai Rapor) via SheetJS; sudah diuji menghasilkan `.xlsx`.
 - `cek_nisn` mengembalikan `tahun_pelajaran`.
 
+## Perubahan terakhir 8 — Pembersihan beranda
+- Kartu "Distribusi Pilihan Jurusan" dihapus dari beranda (RPC `statistik_minat_jurusan` tidak lagi dipanggil).
+- Seksi CTA "Siap Mengisi Data Calon Siswa?" dihapus.
+- "Jumlah Validasi" dihapus total dari UI (field admin & bar diagram) karena tidak bisa diambil otomatis. Kolom DB `minat_validasi` dibiarkan tapi tidak dipakai.
+- Persentase minat dikembalikan ke angka besar (129,59%) + nama sekolah + 508/392.
+
 ## Perubahan terakhir 7 — Jadwal & diagram validasi
 - Hero: caption "Status formulir diatur oleh panitia." dan kotak hitung mundur dihapus.
 - Kartu Jadwal Lengkap sekarang menampilkan timeline per jalur (SMK default) dari `/jadwal`, diambil via proxy saat Tarik Info, disimpan di `jadwal_data`.
