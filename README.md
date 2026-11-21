@@ -74,7 +74,7 @@ Project yang sudah dibuat:
 
 ✅ **Sudah aktif:** migration `supabase/migrations/0001_init.sql` telah dijalankan dan tabel/RLS/RPC/akun admin sudah terbentuk. ✅ **Anon key juga sudah terisi** di `assets/js/config.js`.
 
-⚠️ **Perlu dijalankan:** `supabase/migrations/0002_tahun_pelajaran.sql` (lihat bagian Kontinuitas Tahun Pelajaran di bawah).
+✅ **Sudah aktif:** migration `supabase/migrations/0002_tahun_pelajaran.sql` juga sudah dijalankan (kolom tahun, tabel pengaturan, RPC terbaru).
 
 Jika project dibuat ulang dari nol, langkahnya:
 

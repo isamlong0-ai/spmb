@@ -14,9 +14,6 @@
 - Konfigurasi MCP Supabase ditulis ke `~/.config/opencode/opencode.json` (opsional, tidak dipakai).
 
 ## Yang masih perlu
-- ⚠️ **Jalankan `supabase/migrations/0002_tahun_pelajaran.sql`** di Supabase SQL Editor.
-  (Menambah kolom `tahun_pelajaran`, tabel `pengaturan`, serta memperbarui RPC.
-   Sebelum ini dijalankan, filter tahun di admin belum berfungsi.)
 - Hapus 2 file uji (1x1 pixel) dari folder Drive: `foto_test_koneksi.jpg` dan `foto_test_cors_browser.jpg` — dibuat saat tes koneksi & CORS.
 - Ganti password admin default `AdminSPMB2026!` setelah login pertama.
 
