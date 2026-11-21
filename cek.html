@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#047857">
+  <title>Cek Data Pendaftaran — SPMB SMKN 1 Teluk Keramat</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/styles.css">
+  <style>
+    .cek-wrap { max-width:720px; margin-inline:auto; }
+    .badge.menunggu { background:#fef3c7; color:#92400e; }
+    .print-actions { display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin-top:18px; }
+  </style>
+</head>
+<body>
+<nav class="lp-nav">
+  <div class="wrap">
+    <a class="lp-brand" href="index.html">
+      <img src="https://lh3.googleusercontent.com/d/1zArv6yZsZ-YZCSTtEbTBUQp4C0kv325f" alt="Logo">
+      <div><strong>SMKN 1 TELUK KERAMAT</strong><span>Penerimaan Murid Baru</span></div>
+    </a>
+    <div class="lp-links">
+      <a href="index.html">Beranda</a>
+      <a href="pendaftaran.html">Formulir</a>
+      <a href="cek.html" style="color:var(--primary)">Cek Data</a>
+      <a href="admin.html">Admin</a>
+    </div>
+  </div>
+</nav>
+
+<main class="wrap cek-wrap" style="padding-block:32px 60px">
+  <div class="hero" style="margin-bottom:22px">
+    <h1>Cek Data Pendaftaran</h1>
+    <p>Masukkan NISN untuk melihat data pendaftaran dan mencetak ulang bukti.</p>
+  </div>
+
+  <section class="card">
+    <div class="field">
+      <label for="nisn">Nomor Induk Siswa Nasional (NISN)</label>
+      <input id="nisn" type="text" inputmode="numeric" placeholder="Contoh: 0071234567" autocomplete="off">
+    </div>
+    <button class="btn btn-primary btn-block" id="btnCari" style="margin-top:14px">🔍 Cari Data</button>
+    <div id="hasil" style="display:none;margin-top:20px"></div>
+  </section>
+
+  <section id="buktiCetak" class="hidden" style="margin-top:24px">
+    <div class="bukti-paper" id="areaCetak">
+      <div class="bukti-kop">
+        <img src="https://lh3.googleusercontent.com/d/1zArv6yZsZ-YZCSTtEbTBUQp4C0kv325f" alt="Logo">
+        <h3>Panitia Penerimaan Murid Baru (SPMB)<br>SMK Negeri 1 Teluk Keramat</h3>
+        <p>Tahun Pelajaran <span id="c_tahun">-</span></p>
+      </div>
+      <h4>Bukti Penerimaan Pengiriman Data</h4>
+      <table class="bukti-table">
+        <tr><td class="k">Kode Pendaftaran</td><td>:</td><td id="c_kode"></td></tr>
+        <tr><td class="k">Nama</td><td>:</td><td id="c_nama"></td></tr>
+        <tr><td class="k">NISN</td><td>:</td><td id="c_nisn"></td></tr>
+        <tr><td class="k">Asal Sekolah</td><td>:</td><td id="c_sekolah"></td></tr>
+        <tr><td class="k">Pilihan 1</td><td>:</td><td id="c_j1"></td></tr>
+        <tr><td class="k">Pilihan 2</td><td>:</td><td id="c_j2"></td></tr>
+        <tr><td class="k">Pilihan 3</td><td>:</td><td id="c_j3"></td></tr>
+      </table>
+      <div class="bukti-note"><b>CATATAN PENTING:</b><br>Setelah mengisi formulir ini, peserta wajib mengisi pendaftaran SPMB dengan pilihan sekolah dan 3 jurusan yang sama pada portal Dinas Pendidikan Provinsi Kalimantan Barat: <a href="https://spmb-dikbud.kalbarprov.go.id/">https://spmb-dikbud.kalbarprov.go.id/</a></div>
+      <div class="bukti-foot">Waktu Cetak: <span id="c_waktu"></span></div>
+    </div>
+    <div class="print-actions no-print">
+      <button class="btn btn-primary" id="btnCetak">🖨 Cetak Ulang Bukti</button>
+      <button class="btn btn-info" id="btnPdf">⬇ Unduh PDF</button>
+    </div>
+  </section>
+</main>
+
+<div class="toast-wrap" id="toastWrap"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script type="module" src="assets/js/cek.js"></script>
+</body>
+</html>

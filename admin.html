@@ -45,28 +45,51 @@
 
   <main class="admin-main">
     <div class="admin-head">
-      <div><h1 id="pageTitle">Dashboard</h1><p id="pageSubtitle">Ringkasan pendaftaran SPMB 2026/2027</p></div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
-        <span style="font-size:12px;color:var(--muted)">Tahun pelajaran (form):</span>
-        <select id="tahunAktifSelect" style="width:auto;padding:7px 9px;font-size:12px"></select>
-        <button class="btn btn-primary btn-sm" id="btnSimpanTahun">Simpan</button>
-        <button class="btn btn-ghost btn-sm" id="btnRefresh">↻ Muat Ulang</button>
-        <button class="btn btn-ghost btn-sm" id="btnExportCsv">⬇ CSV</button>
-        <button class="btn btn-primary btn-sm" id="btnExport">⬇ Excel</button>
+      <div><h1 id="pageTitle">Dashboard</h1><p id="pageSubtitle">Ringkasan pendaftaran SPMB</p></div>
+    </div>
+
+    <!-- ============ DASHBOARD (grafik saja) ============ -->
+    <section class="card" id="dashboardSection">
+      <div class="card-head">
+        <div><h2>Ringkasan Pendaftaran</h2><p>Statistik seluruh tahun pelajaran.</p></div>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          <span style="font-size:12px;color:var(--muted)">Tahun pelajaran (form):</span>
+          <select id="tahunAktifSelect" style="width:auto;padding:7px 9px;font-size:12px"></select>
+          <button class="btn btn-primary btn-sm" id="btnSimpanTahun">Simpan</button>
+        </div>
       </div>
-    </div>
 
-    <div class="stat-grid" id="statGrid">
-      <div class="stat-card"><div class="n" id="stTotal">0</div><div class="l">Total Pendaftar</div></div>
-      <div class="stat-card"><div class="n" id="stKip">0</div><div class="l">Memiliki KIP</div></div>
-      <div class="stat-card"><div class="n" id="stFoto">0</div><div class="l">Sudah Upload Foto</div></div>
-    </div>
+      <div class="stat-grid" id="statGrid">
+        <div class="stat-card"><div class="n" id="stTotal">0</div><div class="l">Total Pendaftar</div></div>
+        <div class="stat-card top-jurusan"><div class="n" id="stJ1">-</div><div class="l">Jurusan Pilihan #1</div><div class="sub" id="stJ1n">0 pendaftar</div></div>
+        <div class="stat-card top-jurusan"><div class="n" id="stJ2">-</div><div class="l">Jurusan Pilihan #2</div><div class="sub" id="stJ2n">0 pendaftar</div></div>
+        <div class="stat-card top-jurusan"><div class="n" id="stJ3">-</div><div class="l">Jurusan Pilihan #3</div><div class="sub" id="stJ3n">0 pendaftar</div></div>
+      </div>
 
-    <section class="card" id="dataSection" style="padding:0;overflow:hidden">
+      <div class="grid" style="margin-top:4px">
+        <div class="lp-card" style="grid-column:1/-1">
+          <h4>📊 Jurusan Paling Banyak Dipilih</h4>
+          <div class="chart-list" id="chartJurusan"></div>
+        </div>
+        <div class="lp-card">
+          <h4>🎓 Data Tambahan</h4>
+          <div class="chart-list" id="chartLain"></div>
+        </div>
+        <div class="lp-card">
+          <h4>🗓 Pendaftar per Tahun Pelajaran</h4>
+          <div class="chart-list" id="chartTahun"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ DATA PENDAFTAR ============ -->
+    <section class="card hidden" id="dataSection" style="padding:0;overflow:hidden">
       <div style="padding:18px 18px 0">
         <div class="toolbar">
           <input id="cari" type="text" placeholder="🔍 Cari nama, NISN, atau sekolah…">
           <select id="filterTahun"></select>
+          <button class="btn btn-ghost btn-sm" id="btnExportCsv">⬇ CSV</button>
+          <button class="btn btn-primary btn-sm" id="btnExport">⬇ Excel</button>
         </div>
       </div>
       <div class="table-wrap" style="border:0;border-radius:0">

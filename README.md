@@ -14,13 +14,15 @@ Aplikasi pendaftaran siswa baru berbasis **HTML + CSS + JavaScript (ES modules)*
 .
 ├── index.html                    # BERANDA / landing page (konten bisa diatur di admin)
 ├── pendaftaran.html              # Form pendaftaran (wizard 6 langkah)
-├── admin.html                    # Panel admin (login + CRUD + editor beranda)
+├── cek.html                      # Halaman cek data + cetak ulang bukti
+├── admin.html                    # Panel admin (dashboard grafik + CRUD + editor beranda)
 ├── assets/
 │   ├── css/styles.css            # Design system & responsive layout
 │   └── js/
 │       ├── config.js             # Konfigurasi Supabase, Drive, jurusan
 │       ├── tahun.js              # Tahun pelajaran otomatis (sekarang + depan)
 │       ├── wilayah.js            # Autocomplete wilayah nasional (kalbar offline)
+│       ├── cek.js                # Logika halaman cek data & cetak ulang
 │       ├── landing.js            # Render konten beranda, status & kunci akses
 │       ├── status.js             # Status jadwal pendaftaran (dibuka/tutup)
 │       ├── guard.js              # Pengunci halaman form saat pendaftaran tutup
@@ -31,7 +33,8 @@ Aplikasi pendaftaran siswa baru berbasis **HTML + CSS + JavaScript (ES modules)*
 │   ├── 0002_tahun_pelajaran.sql  # Pemisahan data per tahun pelajaran
 │   ├── 0003_landing.sql          # Tabel konten beranda
 │   ├── 0004_auto_tahun.sql       # Mode tahun pelajaran otomatis
-│   └── 0005_wali_kip_upload.sql  # Field wali lengkap & penyesuaian form
+│   ├── 0005_wali_kip_upload.sql  # Field wali lengkap & penyesuaian form
+│   └── 0007_cek_nisn_kode.sql    # Kode pendaftaran pada hasil cek NISN
 ├── apps-script/
 │   ├── Code.gs                   # Web App upload foto ke Google Drive
 │   └── PANDUAN.md                # Cara deploy Apps Script
@@ -49,6 +52,11 @@ Aplikasi pendaftaran siswa baru berbasis **HTML + CSS + JavaScript (ES modules)*
 - Saat **belum dibuka / sudah ditutup**, semua tautan ke formulir & pengecekan otomatis terkunci (abu-abu + gembok) dan halaman form menampilkan layar pengunci
 - Tombol menuju formulir dan pencarian data
 
+### Cek data (`cek.html`)
+- Halaman mandiri untuk mencari pendaftaran berdasarkan NISN
+- Jika data ditemukan, tersedia tombol **🖨 Cetak Ulang Bukti** dan **⬇ Unduh PDF**
+- Bisa dibuka langsung dengan `cek.html?nisn=0071234567`
+
 ### Form pendaftar (`pendaftaran.html`)
 - Wizard **6 langkah** dengan progress bar dan navigasi bebas ke langkah sebelumnya
 - **Alamat terpisah per wilayah**: provinsi → kabupaten → kecamatan → desa → RT → RW → kode pos → patokan → alamat lengkap
@@ -65,7 +73,9 @@ Aplikasi pendaftaran siswa baru berbasis **HTML + CSS + JavaScript (ES modules)*
 
 ### Panel admin (`admin.html`)
 - Login dengan Supabase Auth
-- Dashboard statistik (total, menunggu, diterima, ditolak)
+- **Dashboard khusus grafik**: total pendaftar, 3 jurusan paling banyak dipilih, grafik jurusan/KIP/tahun — **tanpa tabel data**
+- Tabel data pendaftar hanya tampil di menu **Data Pendaftar**, lengkap dengan tombol Excel/CSV di toolbar
+- Pengatur tahun pelajaran & tombol Simpan hanya ada di Dashboard
 - Pencarian & filter tahun, pagination "muat lebih banyak"
 - Tabel menampilkan **ketiga pilihan jurusan** dalam satu kolom
 - **CRUD lengkap**: lihat, edit seluruh field + nilai rapor, hapus data
@@ -107,7 +117,7 @@ Project yang sudah dibuat:
 Jika project dibuat ulang dari nol, langkahnya:
 
 1. Buka Supabase SQL Editor untuk project tersebut.
-2. Jalankan berurutan: `0001_init.sql`, `0002_tahun_pelajaran.sql`, `0003_landing.sql`, `0004_auto_tahun.sql`, `0005_wali_kip_upload.sql`.
+2. Jalankan berurutan: `0001_init.sql`, `0002_tahun_pelajaran.sql`, `0003_landing.sql`, `0004_auto_tahun.sql`, `0005_wali_kip_upload.sql`, `0007_cek_nisn_kode.sql`.
 3. Di **Project Settings → API**, salin **anon / publishable key**.
 4. Isi ke `assets/js/config.js`:
 
@@ -144,6 +154,7 @@ npx serve .
 Lalu buka:
 - Beranda: `http://localhost:8000/index.html`
 - Form: `http://localhost:8000/pendaftaran.html`
+- Cek data: `http://localhost:8000/cek.html`
 - Admin: `http://localhost:8000/admin.html`
 
 Untuk produksi, host sebagai static site (GitHub Pages, Netlify, Vercel, atau server sekolah). Pastikan `index.html` dan `admin.html` berada di root yang sama dengan folder `assets/`.

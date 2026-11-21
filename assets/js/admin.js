@@ -88,6 +88,7 @@ async function muatData(reset = true) {
   }
   semuaData = reset ? (data || []) : [...semuaData, ...(data || [])];
   offset += data?.length || 0;
+  updateDashboard();
   kumpulkanTahun();
   terapkanFilter();
   $("#btnMore").style.display = (data?.length || 0) < PAGE_SIZE ? "none" : "";
@@ -114,10 +115,46 @@ function kumpulkanTahun() {
   sel.value = modeTahun === "auto" ? "__auto__" : tahunAktif;
 }
 
-function updateStat() {
-  $("#stTotal").textContent = dataTerfilter.length;
-  $("#stKip").textContent = dataTerfilter.filter((d) => d.punya_kip).length;
-  $("#stFoto").textContent = dataTerfilter.filter((d) => d.foto_siswa).length;
+function barisChart(label, jumlah, maks, kelas = "") {
+  const pct = maks ? Math.max(3, Math.round((jumlah / maks) * 100)) : 0;
+  return `<div class="chart-row">
+    <div class="chart-label" title="${escapeHtml(label)}">${escapeHtml(label)}</div>
+    <div class="chart-track"><div class="chart-fill ${kelas}" style="width:${pct}%"></div></div>
+    <div class="chart-nilai">${jumlah}</div>
+  </div>`;
+}
+
+function updateDashboard() {
+  $("#stTotal").textContent = semuaData.length;
+
+  // Hitung jurusan dari ketiga pilihan setiap pendaftar
+  const hitung = {};
+  CONFIG.JURUSAN.forEach((j) => { hitung[j] = 0; });
+  semuaData.forEach((d) => [d.jurusan1, d.jurusan2, d.jurusan3].forEach((j) => {
+    if (j) hitung[j] = (hitung[j] || 0) + 1;
+  }));
+  const urut = Object.entries(hitung).sort((a, b) => b[1] - a[1]);
+  [1, 2, 3].forEach((i) => {
+    const [nama, jumlah] = urut[i - 1] || ["-", 0];
+    $("#stJ" + i).textContent = nama;
+    $("#stJ" + i + "n").textContent = jumlah + " pendaftar";
+  });
+  const maksJ = urut[0]?.[1] || 1;
+  $("#chartJurusan").innerHTML = urut.map(([n, v]) => barisChart(n, v, maksJ)).join("") || "-";
+
+  const kip = semuaData.filter((d) => d.punya_kip).length;
+  const foto = semuaData.filter((d) => d.foto_siswa).length;
+  const maksLain = Math.max(semuaData.length, 1);
+  $("#chartLain").innerHTML =
+    barisChart("Memiliki KIP", kip, maksLain, "warn") +
+    barisChart("Tanpa KIP", semuaData.length - kip, maksLain, "info") +
+    barisChart("Sudah upload foto", foto, maksLain, "info");
+
+  const perTahun = {};
+  semuaData.forEach((d) => { const k = d.tahun_pelajaran || "-"; perTahun[k] = (perTahun[k] || 0) + 1; });
+  const urutTh = Object.entries(perTahun).sort((a, b) => b[0].localeCompare(a[0]));
+  const maksTh = Math.max(...Object.values(perTahun), 1);
+  $("#chartTahun").innerHTML = urutTh.map(([n, v]) => barisChart(n, v, maksTh, "info")).join("") || "-";
 }
 
 function terapkanFilter() {
@@ -129,7 +166,6 @@ function terapkanFilter() {
     const cocokTahun = !th || d.tahun_pelajaran === th;
     return cocokTeks && cocokTahun;
   });
-  updateStat();
   renderTabel();
 }
 
@@ -571,7 +607,6 @@ function bindEvents() {
   $("#cari").addEventListener("input", terapkanFilter);
   $("#filterTahun").addEventListener("change", terapkanFilter);
   $("#btnSimpanTahun").addEventListener("click", simpanTahunAktif);
-  $("#btnRefresh").addEventListener("click", () => { muatData(); toast("Data dimuat ulang."); });
   $("#btnMore").addEventListener("click", () => muatData(false));
   $("#btnExport").addEventListener("click", exportExcel);
   $("#btnExportCsv").addEventListener("click", exportCSV);
@@ -583,14 +618,14 @@ function bindEvents() {
 
   $("#navDashboard").addEventListener("click", () => {
     gantiMenu("navDashboard", "Dashboard");
-    $("#statGrid").classList.remove("hidden");
-    $("#dataSection").classList.remove("hidden");
+    $("#dashboardSection").classList.remove("hidden");
+    $("#dataSection").classList.add("hidden");
     $("#landingSection").classList.add("hidden");
     $("#passwordSection").classList.add("hidden");
   });
   $("#navPendaftar").addEventListener("click", () => {
     gantiMenu("navPendaftar", "Data Pendaftar");
-    $("#statGrid").classList.add("hidden");
+    $("#dashboardSection").classList.add("hidden");
     $("#dataSection").classList.remove("hidden");
     $("#landingSection").classList.add("hidden");
     $("#passwordSection").classList.add("hidden");
@@ -598,7 +633,7 @@ function bindEvents() {
   });
   $("#navLanding").addEventListener("click", () => {
     gantiMenu("navLanding", "Konten Beranda");
-    $("#statGrid").classList.add("hidden");
+    $("#dashboardSection").classList.add("hidden");
     $("#dataSection").classList.add("hidden");
     $("#landingSection").classList.remove("hidden");
     $("#passwordSection").classList.add("hidden");
@@ -606,7 +641,7 @@ function bindEvents() {
   });
   $("#navPassword").addEventListener("click", () => {
     gantiMenu("navPassword", "Ganti Password");
-    $("#statGrid").classList.add("hidden");
+    $("#dashboardSection").classList.add("hidden");
     $("#dataSection").classList.add("hidden");
     $("#landingSection").classList.add("hidden");
     $("#passwordSection").classList.remove("hidden");
