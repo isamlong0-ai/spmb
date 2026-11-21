@@ -3,11 +3,11 @@
  * Sumber: https://wilayah.id (update 2025-07-04).
  *
  * - Data Kalimantan Barat / Sambas disimpan lokal => tetap jalan offline.
- * - Provinsi lain diambil otomatis dari wilayah.id saat online.
+ * - Provinsi lain tersedia dari data nasional yang disimpan lokal (wilayah-data.js).
  * - Semua field memakai <datalist>, jadi tetap bisa diketik manual.
  */
 
-const API = "https://wilayah.id/api/";
+import { WILAYAH_DATA } from "./wilayah-data.js";
 
 export const PROVINSI = [
   { code: "11", name: "Aceh" },
@@ -116,23 +116,8 @@ const KODE_KABUPATEN_KALBAR = {
   "Kota Pontianak": "61.71", "Kota Singkawang": "61.72",
 };
 
-const cacheKab = new Map();
-const cacheKodeKab = new Map();
-const cacheKodeKec = new Map();
-const cacheDesa = new Map();
 let provinsiAktif = "Kalimantan Barat";
 let kodeProvinsiAktif = "61";
-
-async function ambilAPI(path) {
-  try {
-    const r = await fetch(API + path);
-    if (!r.ok) return [];
-    const j = await r.json();
-    return j.data || [];
-  } catch (e) {
-    return [];
-  }
-}
 
 /** Isi <datalist> dengan daftar pilihan. */
 export function isiDatalist(id, daftar) {
@@ -146,65 +131,42 @@ export function isiDatalist(id, daftar) {
   });
 }
 
-/** Daftar kabupaten/kota (lokal untuk Kalbar, API untuk provinsi lain). */
-export async function daftarKabupaten(provinsi) {
+/** Daftar kabupaten/kota (data nasional lokal; Kalbar juga punya cadangan lokal). */
+export function daftarKabupaten(provinsi) {
   const nama = String(provinsi || "").trim();
   const kode = KODE_PROVINSI[nama];
   if (kode) { provinsiAktif = nama; kodeProvinsiAktif = kode; }
   if (KABUPATEN[nama]) return KABUPATEN[nama];
   if (!kode) return [];
-  if (cacheKab.has(kode)) return cacheKab.get(kode);
-  const data = await ambilAPI(`regencies/${kode}.json`);
-  const hasil = data.map((d) => d.name);
-  cacheKodeKab.set(kode, data.map((d) => ({ name: d.name, code: d.code })));
-  cacheKab.set(kode, hasil);
-  return hasil;
+  return (WILAYAH_DATA[kode]?.daftar || []).map((x) => x[1]);
 }
 
-async function cariKodeKab(namaKab) {
+function cariKodeKab(namaKab) {
   if (KODE_KABUPATEN_KALBAR[namaKab]) return KODE_KABUPATEN_KALBAR[namaKab];
-  let list = cacheKodeKab.get(kodeProvinsiAktif);
-  if (!list) {
-    await daftarKabupaten(provinsiAktif);
-    list = cacheKodeKab.get(kodeProvinsiAktif) || [];
-  }
-  return list.find((x) => x.name === namaKab)?.code || null;
+  const daftar = WILAYAH_DATA[kodeProvinsiAktif]?.daftar || [];
+  return daftar.find((x) => x[1] === namaKab)?.[0] || null;
 }
 
-async function kodeKecamatanAPI(kodeKab) {
-  if (cacheKodeKec.has(kodeKab)) return cacheKodeKec.get(kodeKab);
-  const data = await ambilAPI(`districts/${kodeKab}.json`);
-  const list = data.map((d) => ({ name: d.name, code: d.code }));
-  cacheKodeKec.set(kodeKab, list);
-  return list;
-}
-
-/** Daftar kecamatan (semua kabupaten, via API dengan fallback lokal). */
-export async function daftarKecamatan(kabupaten) {
+/** Daftar kecamatan untuk semua kabupaten/kota di Indonesia. */
+export function daftarKecamatan(kabupaten) {
   const nama = String(kabupaten || "").trim();
   if (KECAMATAN[nama]) return KECAMATAN[nama];
-  const kodeKab = await cariKodeKab(nama);
+  const kodeKab = cariKodeKab(nama);
   if (!kodeKab) return [];
-  const list = await kodeKecamatanAPI(kodeKab);
-  return list.map((x) => x.name);
+  return (WILAYAH_DATA[kodeProvinsiAktif]?.kec?.[kodeKab] || []).map((x) => x[1]);
 }
 
-/** Daftar desa/kelurahan. Sambas tersedia offline, lainnya via API. */
-export async function daftarDesa(kabupaten, kecamatan) {
+/** Daftar desa/kelurahan (lengkap untuk Kalbar, Sambas juga punya cadangan offline). */
+export function daftarDesa(kabupaten, kecamatan) {
   const kab = String(kabupaten || "").trim();
   const kec = String(kecamatan || "").trim();
   if (kab === "Kabupaten Sambas" && DESA_SAMBAS[kec]) return DESA_SAMBAS[kec];
-
-  const kodeKab = await cariKodeKab(kab);
+  const kodeKab = cariKodeKab(kab);
   if (!kodeKab) return [];
-  const kecList = await kodeKecamatanAPI(kodeKab);
-  const found = kecList.find((x) => x.name === kec);
-  if (!found) return [];
-  if (cacheDesa.has(found.code)) return cacheDesa.get(found.code);
-  const data = await ambilAPI(`villages/${found.code}.json`);
-  const hasil = data.map((v) => v.name);
-  cacheDesa.set(found.code, hasil);
-  return hasil;
+  const kecList = WILAYAH_DATA[kodeProvinsiAktif]?.kec?.[kodeKab] || [];
+  const kodeKec = kecList.find((x) => x[1] === kec)?.[0];
+  if (!kodeKec) return [];
+  return WILAYAH_DATA[kodeProvinsiAktif]?.desa?.[kodeKec] || [];
 }
 
 /** Inisialisasi datalist + event perubahan berantai. */
