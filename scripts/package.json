@@ -1,0 +1,10 @@
+{
+  "name": "spmb-sinkron-sekolah",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Sinkronisasi data SPMB dari Supabase ke MySQL lokal sekolah",
+  "dependencies": {
+    "mysql2": "^3.11.0"
+  }
+}

@@ -45,6 +45,13 @@ Aplikasi **pengumpulan data calon siswa** untuk SPMB berbasis **HTML + CSS + Jav
 ├── apps-script/
 │   ├── Code.gs                   # Web App upload foto ke Google Drive
 │   └── PANDUAN.md                # Cara deploy Apps Script
+├── supabase/functions/
+│   └── tarik-data/index.ts       # Edge Function cek & cocokkan data untuk server lokal
+├── scripts/
+│   ├── sinkron-sekolah.mjs       # Dijalankan DI SERVER LOKAL sekolah
+│   ├── schema_lokal.sql          # DDL MySQL lokal
+│   ├── package.json / .env.example
+├── PANDUAN_SERVER_LOKAL.md       # Langkah lengkap di server sekolah
 └── README.md
 ```
 
@@ -209,6 +216,21 @@ bulan Januari–Juni 2026 → `2025/2026`, bulan Juli–Desember 2026 → `2026/
 - Jika NIK/NISN sudah terdaftar, form akan menolak dengan pesan yang ramah (kunci unik di database).
 - Autocomplete wilayah (provinsi → kabupaten → kecamatan → desa) bekerja untuk **seluruh Indonesia** via [wilayah.id](https://wilayah.id). Data Kalimantan Barat/Sambas juga tersimpan lokal sebagai fallback saat offline.
 - Jika ingin mengubah daftar jurusan, edit `CONFIG.JURUSAN` di `assets/js/config.js` **dan** sesuaii constraint/opsi di database bila diperlukan.
+
+---
+
+## Sinkronisasi ke server lokal sekolah
+
+Panel admin menyediakan halaman **Data Siswa Diterima**. Untuk menarik data itu ke database lokal sekolah:
+
+1. Deploy Edge Function: `supabase functions deploy tarik-data --no-verify-jwt`
+2. Jalankan `scripts/schema_lokal.sql` di MySQL sekolah
+3. Isi `scripts/.env` (service role key **hanya** di server lokal)
+4. `cd scripts && npm install && node sinkron-sekolah.mjs`
+
+Edge Function yang mencocokkan `dinas_hasil` ↔ `pendaftar` ↔ `nilai_rapor` berdasarkan **NISN + tahun pelajaran**, lalu mengembalikan data + peringatan. Skrip lokal melakukan UPSERT ke MySQL `(nisn, tahun_pelajaran)` dan menyimpan peringatan di tabel `sync_warnings`.
+
+Lihat **PANDUAN_SERVER_LOKAL.md** untuk langkah lengkap, arti peringatan, dan contoh cron. Tidak ada file perantara — hasil langsung masuk database lokal.
 
 ---
 

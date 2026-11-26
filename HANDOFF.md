@@ -15,6 +15,8 @@
 - Konfigurasi MCP Supabase ditulis ke `~/.config/opencode/opencode.json` (opsional, tidak dipakai).
 
 ## Yang masih perlu
+- ⚠️ **Deploy Edge Function** (di komputer dengan Supabase CLI): `supabase functions deploy tarik-data --no-verify-jwt` — belum bisa dilakukan dari environment ini.
+- ⚠️ **Di server lokal sekolah** (besok): jalankan `scripts/schema_lokal.sql` di MySQL, `npm install` di `scripts/`, isi `.env` dari `.env.example`, lalu `node sinkron-sekolah.mjs`. Panduan lengkap: `PANDUAN_SERVER_LOKAL.md`.
 - Hapus 5 file uji di Drive: `foto_test_koneksi.jpg`, `foto_test_cors_browser.jpg`, `foto_test_folder_tahun.jpg`, `foto_test_folder_final.jpg`, `foto_test_url_baru.jpg`. (1x1 pixel) dari Drive: `foto_test_koneksi.jpg`, `foto_test_cors_browser.jpg`, `foto_test_folder_tahun.jpg` (folder utama), dan `foto_test_folder_final.jpg` (dalam subfolder `2026-2027`).
 - Opsional: hapus 1 data dummy `asdfghjk` (NISN `347689054`, kode `SPMB-2027-2028-507682B3`) — bukan dibuat oleh agent, kemungkinan uji manual.
 - Ganti password admin default `AdminSPMB2026!` setelah login pertama — sekarang tersedia menu 🔑 Ganti Password di panel admin (sudah diuji, password dikembalikan ke semula setelah uji).
@@ -37,6 +39,13 @@ Apps Script Web App sudah aktif & teruji (GET + POST upload ke Drive berhasil), 
 - Admin: ubah tahun aktif lewat dropdown di Dashboard + filter tahun di tabel & export Excel/CSV.
 - Export Excel: 2 sheet (Calon Siswa, Nilai Rapor) via SheetJS; sudah diuji menghasilkan `.xlsx`.
 - `cek_nisn` mengembalikan `tahun_pelajaran`.
+
+## Perubahan terakhir 14 — Sinkron server lokal
+- Edge Function `supabase/functions/tarik-data/index.ts` (Deno): cek & cocokkan `dinas_hasil` (otoritas) + `pendaftar` + `nilai_rapor` per NISN+tahun; return `{meta,data,warnings}`; auth via service role key Bearer.
+- Peringatan: NISN_TIDAK_ADA_DI_FORMULIR, FORMULIR_BELUM_LENGKAP, TIDAK_ADA_DI_DINAS.
+- Skrip `scripts/sinkron-sekolah.mjs` (mysql2) UPSERT MySQL `(nisn,tahun_pelajaran)` + tulis `sync_warnings`; DDL di `scripts/schema_lokal.sql`; konfigurasi di `scripts/.env.example`; panduan lengkap `PANDUAN_SERVER_LOKAL.md`.
+- Simulasi logika dengan data nyata: 393 siswa diterima, 0 cocok dengan formulir (form belum dibuka), 393 warning NISN_TIDAK_ADA_DI_FORMULIR — sesuai kondisi saat ini.
+- Edge Function belum di-deploy (perlu CLI & login user). Tidak ada migration SQL baru.
 
 ## Perubahan terakhir 13 — Publish diuji
 - Migration 0012 aktif. Diuji penuh: draft → publik kosong → Publish (393 baris) → publik tampil → Ekspor Pengumuman (file xlsx) → Draft lagi → publik kosong.
