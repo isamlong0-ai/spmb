@@ -1031,16 +1031,30 @@ async function konfirmasiImportHasil() {
   btn.textContent = "Menyimpan…";
   try {
     const jumlah = draftHasil.length;
-    for (let i = 0; i < draftHasil.length; i += 100) {
-      const potongan = draftHasil.slice(i, i + 100);
-      const { error } = await supabase.from("dinas_hasil").upsert(potongan, {
-        onConflict: "tahun_pelajaran,nisn",
-      });
-      if (error) throw error;
+    let tersimpan = 0;
+    for (const baris of draftHasil) {
+      let ada = null;
+      if (baris.nisn) {
+        const { data: hasilCari, error: errCari } = await supabase
+          .from("dinas_hasil")
+          .select("id")
+          .eq("tahun_pelajaran", baris.tahun_pelajaran)
+          .eq("nisn", baris.nisn)
+          .maybeSingle();
+        if (errCari) throw errCari;
+        ada = hasilCari;
+      }
+      const isi = { ...baris };
+      delete isi.id;
+      const errSimpan = ada
+        ? (await supabase.from("dinas_hasil").update(isi).eq("id", ada.id)).error
+        : (await supabase.from("dinas_hasil").insert(isi)).error;
+      if (errSimpan) throw errSimpan;
+      tersimpan++;
     }
     draftHasil = [];
     $("#importHasilPreview").classList.add("hidden");
-    toast(`${jumlah} hasil berhasil disimpan.`);
+    toast(`${tersimpan} dari ${jumlah} hasil berhasil disimpan.`);
     muatHasil();
   } catch (e) {
     toast("Gagal menyimpan hasil: " + e.message, "error");

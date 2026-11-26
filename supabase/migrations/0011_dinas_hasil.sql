@@ -27,13 +27,13 @@ create table if not exists public.dinas_hasil (
   sumber text not null default 'import',
   pendaftar_id uuid references public.pendaftar (id) on delete set null,
   created_at timestamptz not null default now(),
-  updated_at timestamptz not null default now()
+  updated_at timestamptz not null default now(),
+  unique (tahun_pelajaran, nisn)
 );
 
--- Satu NISN hanya satu baris per tahun pelajaran (mendukung import ulang)
-create unique index if not exists idx_dinas_hasil_tahun_nisn
-  on public.dinas_hasil (tahun_pelajaran, nisn)
-  where nisn is not null;
+-- Catatan: unique di atas mencegah duplikat NISN per tahun pelajaran.
+-- Import memakai cek-ada-dulu lalu update/insert (bukan ON CONFLICT),
+-- supaya tetap bekerja juga pada database yang dibuat dengan index partial.
 
 create index if not exists idx_dinas_hasil_tahun on public.dinas_hasil (tahun_pelajaran);
 create index if not exists idx_dinas_hasil_jurusan on public.dinas_hasil (jurusan_diterima);
