@@ -50,6 +50,8 @@ Apps Script Web App sudah aktif & teruji (GET + POST upload ke Drive berhasil), 
 - Admin: tombol Publish/Draft + "Ekspor Pengumuman" (tanpa upload/tambah/export per jurusan); tabel tanpa Aksi & Sumber, kolom Hasil="Lulus".
 - Dasar flag "perlu verifikasi": aturan yang disetujui user sebelumnya — NIK/KK bukan 16 digit atau berakhir `0000`, NISN bukan 10 digit setelah padStart. Di file asli, 11 KK memang hanya 15 digit (mis. `610102080411000`), jadi flag tersebut benar.
 - Kolom pengumuman disempurnakan: No berurutan 1..n, No. Pendaftaran, Nama, NISN, "Diterima di Konsentrasi Keahlian", Total/Bobot Nilai, Bobot TKA, Bobot Prestasi (export admin ikut sama).
+- Validasi NISN import diperketat: harus hanya angka dan tepat 10 digit setelah padding; pratinjau menampilkan jumlah NISN invalid terpisah. Diuji dengan file uji (1 NISN ber-huruf terdeteksi).
+- Kolom Nama rata kiri di tabel Data Siswa Diterima & pengumuman (admin + publik).
 
 ## Perubahan terakhir 11 — Penyesuaian hasil dinas
 - Jurusan "Agribisnis Tanaman" diganti menjadi "Agribisnis Tanaman Pangan dan Hortikultura" (CONFIG.JURUSAN + data lama di DB + daftar di beranda).

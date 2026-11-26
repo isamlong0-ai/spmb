@@ -788,9 +788,11 @@ function properNama(nilai) {
 }
 
 function normalisasiNisn(nilai) {
-  const angka = String(nilai || "").replace(/\D/g, "");
-  const nisn = angka.padStart(10, "0");
-  return nisn.length === 10 ? nisn : "";
+  const teks = String(nilai ?? "").trim();
+  // NISN harus hanya angka dan (setelah ditambah 0 di depan) tepat 10 digit
+  if (!/^\d+$/.test(teks)) return null;
+  const nisn = teks.padStart(10, "0");
+  return nisn.length === 10 ? nisn : null;
 }
 
 function bersihkanNikKk(nilai) {
@@ -862,7 +864,7 @@ function renderHasil() {
       <tr>
         <td>${d.urutan ?? "-"}</td>
         <td style="font-size:11px">${escapeHtml(d.no_pendaftaran_dinas || "-")}</td>
-        <td><b>${escapeHtml(d.nama)}</b>
+        <td class="teks-kiri"><b>${escapeHtml(d.nama)}</b>
           ${d.catatan_verifikasi ? `<br><span class="hint" style="color:var(--warn)">⚠ ${escapeHtml(d.catatan_verifikasi)}</span>` : ""}
           ${d.catatan_mutasi ? `<br><span class="hint" style="color:var(--info)">↔ ${escapeHtml(d.catatan_mutasi)}</span>` : ""}
         </td>
@@ -1000,7 +1002,7 @@ function parseHasilDinas(teks, namaFile) {
       if (nik.flag) catatan.push("NIK perlu verifikasi");
       if (kk.flag) catatan.push("KK perlu verifikasi");
       const nisn = normalisasiNisn(r["NISN"]);
-      if (!nisn) catatan.push("NISN tidak valid");
+      if (!nisn) catatan.push("NISN tidak valid (harus 10 angka)");
       hasil.push({
         tahun_pelajaran: hasilTahunAktif || tahunAktif,
         no_pendaftaran_dinas: r["Nomor Pendaftaran"] || null,
@@ -1034,9 +1036,11 @@ function tampilkanPreviewHasil() {
   const cocok = draftHasil.filter((d) => d.nisn && ada.has(d.nisn)).length;
   const baru = draftHasil.filter((d) => d.nisn && !ada.has(d.nisn)).length;
   const flag = draftHasil.filter((d) => d.catatan_verifikasi).length;
+  const nisnInvalid = draftHasil.filter((d) => !d.nisn).length;
   box.innerHTML = `
     <b>${draftHasil.length} baris terbaca dari file dinas.</b><br>
     ✅ ${cocok} NISN cocok dengan data formulir · 🆕 ${baru} siswa baru · ⚠️ ${flag} perlu verifikasi<br>
+    ${nisnInvalid ? `<span style="color:var(--danger);font-weight:700">⛔ ${nisnInvalid} NISN tidak valid (bukan 10 digit angka) — tetap disimpan dengan catatan, NISN dikosongkan.</span><br>` : ""}
     <span class="hint">NIK/KK yang terpotong dikosongkan, tidak menimpa data formulir.</span>
     <div style="display:flex;gap:8px;margin-top:12px">
       <button class="btn btn-primary btn-sm" id="konfirmasiImportHasil">💾 Simpan ke Data Diterima</button>
@@ -1231,7 +1235,7 @@ function renderPengumuman() {
       <tr>
         <td>${i + 1}</td>
         <td style="font-size:11px">${escapeHtml(d.no_pendaftaran_dinas || "-")}</td>
-        <td><b>${escapeHtml(d.nama)}</b></td>
+        <td class="teks-kiri"><b>${escapeHtml(d.nama)}</b></td>
         <td>${escapeHtml(d.nisn || "-")}</td>
         <td>${escapeHtml(d.jurusan_diterima)}</td>
         <td>${d.total_nilai ?? "-"}</td>

@@ -35,7 +35,7 @@ function render() {
       <tr>
         <td>${i + 1}</td>
         <td style="font-size:11px">${escapeHtml(d.no_pendaftaran_dinas || "-")}</td>
-        <td><b>${escapeHtml(d.nama)}</b></td>
+        <td class="teks-kiri"><b>${escapeHtml(d.nama)}</b></td>
         <td>${escapeHtml(d.nisn || "-")}</td>
         <td>${escapeHtml(d.jurusan_diterima)}</td>
         <td>${d.total_nilai ?? "-"}</td>
