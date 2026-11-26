@@ -17,11 +17,11 @@
 ## Yang masih perlu
 - ⚠️ **Deploy Edge Function** (di komputer dengan Supabase CLI): `supabase functions deploy tarik-data --no-verify-jwt` — belum bisa dilakukan dari environment ini.
 - ⚠️ **Di server lokal sekolah** (besok): jalankan `scripts/schema_lokal.sql` di MySQL, `npm install` di `scripts/`, isi `.env` dari `.env.example`, lalu `node sinkron-sekolah.mjs`. Panduan lengkap: `PANDUAN_SERVER_LOKAL.md`.
-- Hapus 5 file uji 1×1 pixel di Drive: `foto_test_koneksi.jpg`, `foto_test_cors_browser.jpg`, `foto_test_folder_tahun.jpg`, `foto_test_url_baru.jpg` (folder utama), dan `foto_test_folder_final.jpg` (subfolder `2026-2027`).
-- Data dummy `asdfghjk` sudah dihapus dari tabel `pendaftar`.
-- **Ganti password admin default** — kata sandi awal tidak disimpan di repo; ganti lewat menu 🔑 Ganti Password di panel admin.
-- **Deploy ulang Apps Script** setelah penambahan token `UPLOAD_SECRET` (Manage deployments → New version). URL tetap sama.
-- Audit: kredensial sudah dihapus dari `HANDOFF.md` & `0001_init.sql`; data dummy `pendaftar` sudah dihapus; token upload ditambahkan.
+- ✅ 5 file uji 1×1 pixel di Drive sudah dihapus oleh user.
+- ✅ Data dummy `asdfghjk` sudah dihapus dari tabel `pendaftar`.
+- ⏸️ **Ganti password admin default** — ditunda dulu sesuai instruksi user (bisa lewat menu 🔑 Ganti Password).
+- ✅ Apps Script sudah di-update user dengan kode token terbaru. Diuji: tanpa token → "Akses ditolak", dengan token → lolos. URL tidak berubah.
+- Audit: kredensial sudah dihapus dari `HANDOFF.md` & `0001_init.sql`; token upload aktif.
 
 Apps Script Web App sudah aktif & teruji (GET + POST upload ke Drive berhasil), URL terisi di config.
 
