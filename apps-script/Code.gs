@@ -9,6 +9,9 @@
  */
 
 const DEFAULT_FOLDER_ID = '1iRtqkKP46f-hVwdpKlioHxdF2I8FDlQT';
+// Token sederhana: mencegah penyalahgunaan URL Web App oleh pihak yang hanya punya link.
+// Catatan: token ini tetap dapat dibaca di frontend, jadi bukan pengamanan kuat.
+const UPLOAD_SECRET = 'spmb-upload-2026';
 
 /** Health check sederhana: buka URL Web App di browser. */
 function doGet(e) {
@@ -28,6 +31,9 @@ function doPost(e) {
     }
 
     const req = JSON.parse(e.postData.contents);
+    if (req.secret !== UPLOAD_SECRET) {
+      return balasan({ ok: false, error: 'Akses ditolak.' });
+    }
 
     // Aksi khusus: tarik info dari portal dinas (dipanggil panel admin)
     if (req.aksi === 'scrape_dinas' || req.action === 'scrape_dinas') {

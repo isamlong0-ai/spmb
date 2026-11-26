@@ -1,5 +1,5 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { CONFIG } from "./config.js?v=19";
+import { CONFIG } from "./config.js?v=20";
 import { ambilTahunAktif } from "./tahun.js";
 
 // Halaman publik harus selalu berjalan sebagai anon, walaupun browser

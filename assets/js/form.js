@@ -1,5 +1,5 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { CONFIG, MAPEL, SEMESTER, FOTO_FIELDS } from "./config.js?v=19";
+import { CONFIG, MAPEL, SEMESTER, FOTO_FIELDS } from "./config.js?v=20";
 import { initWilayah } from "./wilayah.js";
 import { ambilTahunAktif, tahunAwal } from "./tahun.js";
 
@@ -303,6 +303,7 @@ async function uploadFoto(base64, filename, tahun) {
     method: "POST",
     headers: { "Content-Type": "text/plain;charset=utf-8" },
     body: JSON.stringify({
+      secret: CONFIG.UPLOAD_SECRET,
       base64,
       filename,
       folderId: CONFIG.DRIVE_FOLDER_ID,

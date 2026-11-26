@@ -2,7 +2,7 @@
 
 ## Sudah selesai
 - Project Supabase: `spmb-smkn1tk`, ref `eyugtyqppolmynhxccot`, region `ap-southeast-1`.
-  - DB password: `SpMb2026#TkSambas!Kbr`
+  - Kredensial tidak disimpan di repo — lihat `.env` lokal / Supabase Dashboard.
 - ✅ SQL migration **sudah dijalankan** (tabel `pendaftar`, `nilai_rapor`, RLS, RPC `simpan_pendaftaran`/`cek_nisn`, akun admin semua sudah ada & teruji).
 - ✅ Anon/publishable key sudah terisi di `assets/js/config.js`.
 - ✅ Tes end-to-end berhasil: insert via RPC → cek NISN → hapus data dummy (DB bersih).
@@ -17,9 +17,11 @@
 ## Yang masih perlu
 - ⚠️ **Deploy Edge Function** (di komputer dengan Supabase CLI): `supabase functions deploy tarik-data --no-verify-jwt` — belum bisa dilakukan dari environment ini.
 - ⚠️ **Di server lokal sekolah** (besok): jalankan `scripts/schema_lokal.sql` di MySQL, `npm install` di `scripts/`, isi `.env` dari `.env.example`, lalu `node sinkron-sekolah.mjs`. Panduan lengkap: `PANDUAN_SERVER_LOKAL.md`.
-- Hapus 5 file uji di Drive: `foto_test_koneksi.jpg`, `foto_test_cors_browser.jpg`, `foto_test_folder_tahun.jpg`, `foto_test_folder_final.jpg`, `foto_test_url_baru.jpg`. (1x1 pixel) dari Drive: `foto_test_koneksi.jpg`, `foto_test_cors_browser.jpg`, `foto_test_folder_tahun.jpg` (folder utama), dan `foto_test_folder_final.jpg` (dalam subfolder `2026-2027`).
-- Opsional: hapus 1 data dummy `asdfghjk` (NISN `347689054`, kode `SPMB-2027-2028-507682B3`) — bukan dibuat oleh agent, kemungkinan uji manual.
-- Ganti password admin default `AdminSPMB2026!` setelah login pertama — sekarang tersedia menu 🔑 Ganti Password di panel admin (sudah diuji, password dikembalikan ke semula setelah uji).
+- Hapus 5 file uji 1×1 pixel di Drive: `foto_test_koneksi.jpg`, `foto_test_cors_browser.jpg`, `foto_test_folder_tahun.jpg`, `foto_test_url_baru.jpg` (folder utama), dan `foto_test_folder_final.jpg` (subfolder `2026-2027`).
+- Data dummy `asdfghjk` sudah dihapus dari tabel `pendaftar`.
+- **Ganti password admin default** — kata sandi awal tidak disimpan di repo; ganti lewat menu 🔑 Ganti Password di panel admin.
+- **Deploy ulang Apps Script** setelah penambahan token `UPLOAD_SECRET` (Manage deployments → New version). URL tetap sama.
+- Audit: kredensial sudah dihapus dari `HANDOFF.md` & `0001_init.sql`; data dummy `pendaftar` sudah dihapus; token upload ditambahkan.
 
 Apps Script Web App sudah aktif & teruji (GET + POST upload ke Drive berhasil), URL terisi di config.
 
@@ -141,7 +143,8 @@ Apps Script Web App sudah aktif & teruji (GET + POST upload ke Drive berhasil), 
   Sudah diuji untuk ketiga kondisi lalu jadwal dikembalikan ke 2026-11-01 s.d. 2026-12-31 (Dibuka).
 - Menu Ganti Password ditambahkan & diuji (verifikasi password lama + updateUser), lalu password dikembalikan.
 
-## Kredensial
-- Anon key: `sb_publishable_XBST_lVhiVHsq6FpFAmx-A_ddN0JB1K`
-- Admin: `admin@smkn1tk.sch.id` / `AdminSPMB2026!`
-- Folder Drive: `1iRtqkKP46f-hVwdpKlioHxdF2I8FDlQT`
+## Referensi (bukan kredensial rahasia)
+- Anon/publishable key: tersimpan di `assets/js/config.js` (aman untuk frontend, dibatasi RLS).
+- Akun admin: `admin@smkn1tk.sch.id` — kata sandi harus diganti via panel admin.
+- Folder Drive: ID ada di `assets/js/config.js`.
+- Service role key: **hanya** di `.env` server lokal, tidak di repo.

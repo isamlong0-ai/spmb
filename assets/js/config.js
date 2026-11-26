@@ -11,6 +11,9 @@ export const CONFIG = {
   // Kosongkan jika ingin sementara menyimpan foto sebagai data URL / belum aktif.
   DRIVE_UPLOAD_URL: "https://script.google.com/macros/s/AKfycbyI9xgpIi6jnxHWmUuVRakeNxTwWWaNgYUuBMrhc_900HBX48swaEiwOZRgE5Wq_1dROQ/exec",
 
+  // Token sederhana untuk Web App upload foto (bukan rahasia kuat — tetap terlihat di frontend)
+  UPLOAD_SECRET: "spmb-upload-2026",
+
   // Portal resmi SPMB Dinas Kalimantan Barat
   PORTAL_DINAS: "https://spmb-dikbud.kalbarprov.go.id/",
 

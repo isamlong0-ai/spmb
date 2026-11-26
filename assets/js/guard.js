@@ -5,7 +5,7 @@
  * (Bukan pengamanan server — aturan tegas tetap ada di RLS/landing.)
  */
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { CONFIG } from "./config.js?v=19";
+import { CONFIG } from "./config.js?v=20";
 import { ambilStatus, LABEL_STATUS } from "./status.js";
 
 const supabase = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);

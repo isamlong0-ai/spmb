@@ -255,9 +255,10 @@ grant execute on function public.cek_nisn(text) to anon, authenticated;
 
 -- -----------------------------------------------------------------------------
 -- (Opsional) Akun admin untuk panel admin.html
--- Ganti password default segera setelah login pertama.
+-- Project yang sudah ada: akun sudah dibuat & kata sandi harus diganti via panel admin.
+-- Project baru: GANTI placeholder di bawah dengan kata sandi Anda SEBELUM menjalankan migration.
 -- Email    : admin@smkn1tk.sch.id
--- Password : AdminSPMB2026!
+-- Password : __GANTI_SEBELUM_DIJALANKAN__
 -- -----------------------------------------------------------------------------
 do $$
 declare v_user_id uuid;
@@ -272,7 +273,7 @@ begin
       confirmation_token, recovery_token, email_change_token_new, email_change
     ) values (
       '00000000-0000-0000-0000-000000000000', v_user_id, 'authenticated', 'authenticated',
-      'admin@smkn1tk.sch.id', extensions.crypt('AdminSPMB2026!', extensions.gen_salt('bf')),
+      'admin@smkn1tk.sch.id', extensions.crypt('__GANTI_SEBELUM_DIJALANKAN__', extensions.gen_salt('bf')),
       now(), now(), now(),
       '{"provider":"email","providers":["email"]}'::jsonb, '{}'::jsonb, false,
       '', '', '', ''

@@ -34,6 +34,9 @@ DRIVE_UPLOAD_URL: "https://script.google.com/macros/s/AKfycby.../exec",
 
 > Catatan: setiap kali melakukan **New deployment**, URL akan berubah. GunakanDeployment yang sudah ada → **Manage deployments** → edit untuk mempertahankan URL yang sama.
 
+## 4a. Token upload
+`Code.gs` versi terbaru memerlukan field `secret` pada setiap POST. Nilainya harus sama dengan `UPLOAD_SECRET` di `apps-script/Code.gs` dan `CONFIG.UPLOAD_SECRET` di `assets/js/config.js`. Token ini hanya mencegah penyalahgunaan URL oleh orang yang sekadar punya link — **bukan rahasia kuat** karena tetap bisa dibaca di frontend. Setelah mengubah kode, lakukan deploy versi baru.
+
 ## 4b. Perbaruan kode (subfolder per tahun pelajaran)
 Versi `Code.gs` terbaru otomatis membuat subfolder bernama tahun pelajaran
 (mis. `2026-2027`) di dalam folder utama Drive. Jika Anda sudah pernah deploy:
