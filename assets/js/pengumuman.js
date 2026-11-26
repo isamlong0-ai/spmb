@@ -2,7 +2,11 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { CONFIG } from "./config.js?v=19";
 import { ambilTahunAktif } from "./tahun.js";
 
-const supabase = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
+// Halaman publik harus selalu berjalan sebagai anon, walaupun browser
+// menyimpan sesi login admin di localStorage (origin yang sama).
+const supabase = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY, {
+  auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false },
+});
 const $ = (s) => document.querySelector(s);
 
 function escapeHtml(s) {

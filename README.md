@@ -145,7 +145,7 @@ Project yang sudah dibuat:
 
 ✅ **Sudah aktif:** migration `supabase/migrations/0011_dinas_hasil.sql` (tabel terpisah `dinas_hasil` untuk hasil siswa diterima).
 
-⚠️ **Perlu dijalankan:** `supabase/migrations/0012_pengumuman_publish.sql` (kolom `is_published` + izin baca publik hanya untuk hasil dinas yang dipublish).
+✅ **Sudah aktif:** migration `supabase/migrations/0012_pengumuman_publish.sql` (kolom `is_published` + izin baca publik hanya untuk hasil dinas yang dipublish).
 
 Jika project dibuat ulang dari nol, langkahnya:
 
