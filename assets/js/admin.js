@@ -516,7 +516,7 @@ async function simpanTahunAktif() {
 
 /* --------------------------- Konten beranda ---------------------------- */
 function gantiMenu(id, judul) {
-  ["navDashboard", "navPendaftar", "navLanding", "navPassword"].forEach((n) =>
+  ["navDashboard", "navPendaftar", "navHasil", "navLanding", "navPassword"].forEach((n) =>
     $("#" + n).classList.toggle("active", n === id));
   $("#pageTitle").textContent = judul;
   perbaruiSubtitle();
@@ -757,6 +757,361 @@ async function simpanInfoDinas() {
   }
 }
 
+/* -------------------------- Data siswa diterima ------------------------ */
+let dataHasil = [];
+let jurusanHasilAktif = "Semua";
+let draftHasil = [];
+let nonaktifId = null;
+let mutasiId = null;
+
+function normalisasiJurusan(nama) {
+  const bersih = String(nama || "").replace(/\s+/g, " ").trim();
+  const cocok = CONFIG.JURUSAN.find((j) => j.toLowerCase() === bersih.toLowerCase())
+    || CONFIG.JURUSAN.find((j) => bersih.toLowerCase().includes(j.toLowerCase()))
+    || CONFIG.JURUSAN.find((j) => j.toLowerCase().includes(bersih.toLowerCase()));
+  return cocok || bersih;
+}
+
+function normalisasiNisn(nilai) {
+  const angka = String(nilai || "").replace(/\D/g, "");
+  const nisn = angka.padStart(10, "0");
+  return nisn.length === 10 ? nisn : "";
+}
+
+function bersihkanNikKk(nilai) {
+  const angka = String(nilai || "").replace(/\D/g, "");
+  if (angka.length !== 16 || /0{4}$/.test(angka)) return { value: null, flag: true };
+  return { value: angka, flag: false };
+}
+
+function angkaDesimal(nilai) {
+  const n = parseFloat(String(nilai || "").replace(/[^0-9.\-]/g, ""));
+  return isNaN(n) ? null : n;
+}
+
+async function muatHasil() {
+  try {
+    const { data, error } = await supabase
+      .from("dinas_hasil")
+      .select("*")
+      .eq("tahun_pelajaran", tahunAktif)
+      .order("jurusan_diterima", { ascending: true })
+      .order("urutan", { ascending: true });
+    if (error) throw error;
+    dataHasil = data || [];
+  } catch (e) {
+    dataHasil = [];
+    toast("Gagal memuat data hasil: " + e.message, "error");
+  }
+  renderHasil();
+}
+
+function renderHasil() {
+  const tabs = $("#hasilTabs");
+  const body = $("#hasilBody");
+  if (!tabs || !body) return;
+
+  const daftarJurusan = Array.from(new Set([
+    "Semua", ...CONFIG.JURUSAN, ...dataHasil.map((d) => d.jurusan_diterima),
+  ]));
+  tabs.innerHTML = daftarJurusan.map((j) =>
+    `<button type="button" class="jadwal-tab ${j === jurusanHasilAktif ? "aktif" : ""}" data-jurusan="${escapeHtml(j)}">${escapeHtml(j)}</button>`
+  ).join("");
+  tabs.querySelectorAll(".jadwal-tab").forEach((b) =>
+    b.addEventListener("click", () => {
+      jurusanHasilAktif = b.dataset.jurusan;
+      renderHasil();
+    }));
+
+  const tampilNonaktif = $("#tampilNonaktif")?.checked;
+  const baris = dataHasil.filter((d) => {
+    const cocokJurusan = jurusanHasilAktif === "Semua" || d.jurusan_diterima === jurusanHasilAktif;
+    const cocokStatus = tampilNonaktif || d.status !== "nonaktif";
+    return cocokJurusan && cocokStatus;
+  });
+
+  if (!baris.length) {
+    body.innerHTML = `<tr><td colspan="11" style="padding:30px;color:var(--muted)">Belum ada data pada jurusan ini.</td></tr>`;
+  } else {
+    body.innerHTML = baris.map((d) => `
+      <tr>
+        <td>${d.urutan ?? "-"}</td>
+        <td style="font-size:11px">${escapeHtml(d.no_pendaftaran_dinas || "-")}</td>
+        <td><b>${escapeHtml(d.nama)}</b>
+          ${d.catatan_verifikasi ? `<br><span class="hint" style="color:var(--warn)">⚠ ${escapeHtml(d.catatan_verifikasi)}</span>` : ""}
+          ${d.catatan_mutasi ? `<br><span class="hint" style="color:var(--info)">↔ ${escapeHtml(d.catatan_mutasi)}</span>` : ""}
+        </td>
+        <td>${escapeHtml(d.nisn || "-")}</td>
+        <td>${escapeHtml(d.jurusan_diterima)}</td>
+        <td>${d.total_nilai ?? "-"}</td>
+        <td>${d.bobot_nilai ?? "-"}</td>
+        <td>${d.bobot_tka ?? "-"}</td>
+        <td>${d.bobot_prestasi ?? "-"}</td>
+        <td>
+          ${d.status === "nonaktif"
+            ? `<span class="badge ditolak">Nonaktif</span>${d.alasan_nonaktif ? `<br><span class="hint">${escapeHtml(d.alasan_nonaktif)}</span>` : ""}`
+            : `<span class="badge ${d.sumber === "manual_form" ? "diterima" : "menunggu"}">${d.sumber === "manual_form" ? "Formulir" : "Dinas"}</span>`}
+        </td>
+        <td><div class="row-actions">
+          ${d.status === "nonaktif"
+            ? `<button class="btn btn-sm btn-info" data-aktifkan-hasil="${d.id}">Aktifkan</button>`
+            : `<button class="btn btn-sm btn-info" data-mutasi-hasil="${d.id}">Mutasi</button>
+               <button class="btn btn-sm btn-ghost" data-nonaktif-hasil="${d.id}">Nonaktifkan</button>`}
+          <button class="btn btn-sm btn-danger" data-hapus-hasil="${d.id}">Hapus</button>
+        </div></td>
+      </tr>`).join("");
+    body.querySelectorAll("[data-hapus-hasil]").forEach((b) =>
+      b.addEventListener("click", () => hapusHasil(b.dataset.hapusHasil)));
+    body.querySelectorAll("[data-nonaktif-hasil]").forEach((b) =>
+      b.addEventListener("click", () => bukaNonaktif(b.dataset.nonaktifHasil)));
+    body.querySelectorAll("[data-aktifkan-hasil]").forEach((b) =>
+      b.addEventListener("click", () => aktifkanHasil(b.dataset.aktifkanHasil)));
+    body.querySelectorAll("[data-mutasi-hasil]").forEach((b) =>
+      b.addEventListener("click", () => bukaMutasi(b.dataset.mutasiHasil)));
+  }
+  $("#infoHasil").textContent = `${baris.length} siswa · ${jurusanHasilAktif} · Tahun ${tahunAktif}`;
+}
+
+function bukaMutasi(id) {
+  const d = dataHasil.find((x) => x.id === id);
+  if (!d) return;
+  mutasiId = id;
+  $("#mutasiJurusanBaru").innerHTML = CONFIG.JURUSAN.map((j) =>
+    `<option value="${escapeHtml(j)}" ${j === d.jurusan_diterima ? "selected" : ""}>${escapeHtml(j)}</option>`).join("");
+  $("#mutasiAlasan").value = "Mutasi";
+  $("#mutasiCatatan").value = "";
+  $("#overlayMutasi").classList.add("show");
+  document.body.classList.add("lock-scroll");
+}
+
+async function simpanMutasi() {
+  if (!mutasiId) return;
+  const d = dataHasil.find((x) => x.id === mutasiId);
+  if (!d) return;
+  const baru = $("#mutasiJurusanBaru").value;
+  const alasan = $("#mutasiAlasan").value;
+  const catatan = $("#mutasiCatatan").value.trim();
+  const riwayat = `${d.jurusan_diterima} → ${baru} (${alasan})` + (catatan ? ` — ${catatan}` : "");
+  const { error } = await supabase.from("dinas_hasil").update({
+    jurusan_diterima: baru,
+    catatan_mutasi: riwayat,
+    updated_at: new Date().toISOString(),
+  }).eq("id", mutasiId);
+  if (error) { toast("Gagal memindahkan jurusan: " + error.message, "error"); return; }
+  $("#overlayMutasi").classList.remove("show");
+  document.body.classList.remove("lock-scroll");
+  mutasiId = null;
+  toast("Jurusan siswa diperbarui.");
+  muatHasil();
+}
+
+function bukaNonaktif(id) {
+  nonaktifId = id;
+  $("#alasanNonaktif").value = "Mengundurkan diri";
+  $("#catatanNonaktif").value = "";
+  $("#overlayNonaktif").classList.add("show");
+  document.body.classList.add("lock-scroll");
+}
+
+async function simpanNonaktif() {
+  if (!nonaktifId) return;
+  const alasan = $("#alasanNonaktif").value;
+  const catatan = $("#catatanNonaktif").value.trim();
+  const { error } = await supabase.from("dinas_hasil").update({
+    status: "nonaktif",
+    alasan_nonaktif: catatan ? `${alasan} — ${catatan}` : alasan,
+    updated_at: new Date().toISOString(),
+  }).eq("id", nonaktifId);
+  if (error) { toast("Gagal menonaktifkan: " + error.message, "error"); return; }
+  $("#overlayNonaktif").classList.remove("show");
+  document.body.classList.remove("lock-scroll");
+  nonaktifId = null;
+  toast("Siswa dinonaktifkan. Data tetap tersimpan.");
+  muatHasil();
+}
+
+async function aktifkanHasil(id) {
+  const { error } = await supabase.from("dinas_hasil").update({
+    status: "diterima",
+    alasan_nonaktif: null,
+    updated_at: new Date().toISOString(),
+  }).eq("id", id);
+  if (error) { toast("Gagal mengaktifkan: " + error.message, "error"); return; }
+  toast("Siswa diaktifkan kembali.");
+  muatHasil();
+}
+
+async function hapusHasil(id) {
+  if (!confirm("Yakin hapus data siswa diterima ini?")) return;
+  const { error } = await supabase.from("dinas_hasil").delete().eq("id", id);
+  if (error) toast("Gagal menghapus: " + error.message, "error");
+  else { toast("Data dihapus."); muatHasil(); }
+}
+
+function parseHasilDinas(teks, namaFile) {
+  const hasil = [];
+  const ekstensi = String(namaFile || "").toLowerCase();
+
+  if (ekstensi.endsWith(".xlsx") && typeof XLSX !== "undefined" && !teks.trim().startsWith("<")) {
+    toast("File .xlsx perlu dibaca sebagai biner — gunakan ekspor HTML dari portal dinas.", "warn");
+    return hasil;
+  }
+
+  const doc = new DOMParser().parseFromString(teks, "text/html");
+  doc.querySelectorAll(".card").forEach((card) => {
+    const judul = card.querySelector(".card-title h4")?.textContent?.trim() || "";
+    if (!/jurusan/i.test(judul)) return;
+    const jurusan = normalisasiJurusan(judul.replace(/^jurusan\s*/i, ""));
+    const jalur = card.querySelector("h5")?.textContent?.trim() || "Reguler SMK";
+    const header = Array.from(card.querySelectorAll("thead th")).map((t) => t.textContent.trim());
+    card.querySelectorAll("tbody tr").forEach((tr) => {
+      const sel = Array.from(tr.querySelectorAll("td")).map((c) => c.textContent.trim());
+      if (!sel.length) return;
+      const r = {};
+      header.forEach((h, i) => { r[h] = sel[i] || ""; });
+      const nik = bersihkanNikKk(r["NIK"]);
+      const kk = bersihkanNikKk(r["KK"]);
+      const catatan = [];
+      if (nik.flag) catatan.push("NIK perlu verifikasi");
+      if (kk.flag) catatan.push("KK perlu verifikasi");
+      const nisn = normalisasiNisn(r["NISN"]);
+      if (!nisn) catatan.push("NISN tidak valid");
+      hasil.push({
+        tahun_pelajaran: tahunAktif,
+        no_pendaftaran_dinas: r["Nomor Pendaftaran"] || null,
+        nama: r["Nama Siswa"] || "",
+        nisn: nisn || null,
+        nik: nik.value,
+        kk: kk.value,
+        jurusan_diterima: jurusan,
+        jalur,
+        status: "diterima",
+        urutan: angkaDesimal(r["Urut"]),
+        pilihan: angkaDesimal(r["Pilihan"]),
+        total_nilai: angkaDesimal(r["Total Nilai"]),
+        bobot_nilai: angkaDesimal(r["Bobot Nilai"]),
+        bobot_tka: angkaDesimal(r["Bobot TKA"]),
+        bobot_prestasi: angkaDesimal(r["Bobot Prestasi"]),
+        keterangan: r["Keterangan"] || null,
+        catatan_verifikasi: catatan.length ? catatan.join("; ") : null,
+        sumber: "import",
+      });
+    });
+  });
+  return hasil;
+}
+
+function tampilkanPreviewHasil() {
+  const box = $("#importHasilPreview");
+  if (!box) return;
+  box.classList.remove("hidden");
+  const ada = new Set(semuaData.map((d) => String(d.nisn || "")));
+  const cocok = draftHasil.filter((d) => d.nisn && ada.has(d.nisn)).length;
+  const baru = draftHasil.filter((d) => d.nisn && !ada.has(d.nisn)).length;
+  const flag = draftHasil.filter((d) => d.catatan_verifikasi).length;
+  box.innerHTML = `
+    <b>${draftHasil.length} baris terbaca dari file dinas.</b><br>
+    ✅ ${cocok} NISN cocok dengan data formulir · 🆕 ${baru} siswa baru · ⚠️ ${flag} perlu verifikasi<br>
+    <span class="hint">NIK/KK yang terpotong dikosongkan, tidak menimpa data formulir.</span>
+    <div style="display:flex;gap:8px;margin-top:12px">
+      <button class="btn btn-primary btn-sm" id="konfirmasiImportHasil">💾 Simpan ke Data Diterima</button>
+      <button class="btn btn-ghost btn-sm" id="batalImportHasil">Batal</button>
+    </div>`;
+  $("#konfirmasiImportHasil").addEventListener("click", konfirmasiImportHasil);
+  $("#batalImportHasil").addEventListener("click", () => {
+    draftHasil = [];
+    box.classList.add("hidden");
+  });
+}
+
+async function konfirmasiImportHasil() {
+  if (!draftHasil.length) return;
+  const btn = $("#konfirmasiImportHasil");
+  btn.disabled = true;
+  btn.textContent = "Menyimpan…";
+  try {
+    const jumlah = draftHasil.length;
+    for (let i = 0; i < draftHasil.length; i += 100) {
+      const potongan = draftHasil.slice(i, i + 100);
+      const { error } = await supabase.from("dinas_hasil").upsert(potongan, {
+        onConflict: "tahun_pelajaran,nisn",
+      });
+      if (error) throw error;
+    }
+    draftHasil = [];
+    $("#importHasilPreview").classList.add("hidden");
+    toast(`${jumlah} hasil berhasil disimpan.`);
+    muatHasil();
+  } catch (e) {
+    toast("Gagal menyimpan hasil: " + e.message, "error");
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "💾 Simpan ke Data Diterima";
+  }
+}
+
+function bukaTambahHasil() {
+  const sel = $("#pilihPendaftar");
+  const tersedia = semuaData.filter((d) => !dataHasil.some((h) => h.pendaftar_id === d.id || (d.nisn && h.nisn === d.nisn)));
+  sel.innerHTML = `<option value="">-- Pilih calon siswa --</option>` +
+    tersedia.map((d) => `<option value="${d.id}">${escapeHtml(d.nama)} — ${escapeHtml(d.nisn || "-")} (${escapeHtml(d.tahun_pelajaran || "-")})</option>`).join("");
+  $("#tambahJurusan").innerHTML = CONFIG.JURUSAN.map((j) => `<option value="${escapeHtml(j)}">${escapeHtml(j)}</option>`).join("");
+  $("#tambahCatatan").value = "";
+  $("#overlayTambahHasil").classList.add("show");
+  document.body.classList.add("lock-scroll");
+}
+
+async function simpanTambahHasil() {
+  const id = $("#pilihPendaftar").value;
+  const d = semuaData.find((x) => x.id === id);
+  if (!d) { toast("Pilih calon siswa terlebih dahulu.", "warn"); return; }
+  const { error } = await supabase.from("dinas_hasil").insert({
+    tahun_pelajaran: d.tahun_pelajaran || tahunAktif,
+    no_pendaftaran_dinas: d.kode_pendaftaran || null,
+    nama: d.nama,
+    nisn: d.nisn || null,
+    nik: d.nik || null,
+    kk: d.kk || null,
+    jurusan_diterima: $("#tambahJurusan").value,
+    jalur: "Reguler SMK",
+    status: $("#tambahStatus").value,
+    catatan_verifikasi: $("#tambahCatatan").value.trim() || null,
+    sumber: "manual_form",
+    pendaftar_id: d.id,
+  });
+  if (error) { toast("Gagal menambah: " + error.message, "error"); return; }
+  $("#overlayTambahHasil").classList.remove("show");
+  document.body.classList.remove("lock-scroll");
+  toast("Siswa ditambahkan ke data diterima.");
+  muatHasil();
+}
+
+function exportHasil(semua) {
+  const tampilNonaktif = $("#tampilNonaktif")?.checked;
+  const semuaBaris = tampilNonaktif ? dataHasil : dataHasil.filter((d) => d.status !== "nonaktif");
+  const baris = semua ? semuaBaris : semuaBaris.filter((d) => d.jurusan_diterima === jurusanHasilAktif);
+  if (!baris.length) { toast("Tidak ada data untuk diekspor.", "warn"); return; }
+  const kolom = [
+    ["urutan", "Urut"], ["no_pendaftaran_dinas", "No. Pendaftaran Dinas"], ["nama", "Nama"],
+    ["nisn", "NISN"], ["jurusan_diterima", "Jurusan Diterima"], ["jalur", "Jalur"],
+    ["status", "Status"], ["total_nilai", "Total Nilai"], ["bobot_nilai", "Bobot Nilai"],
+    ["bobot_tka", "Bobot TKA"], ["bobot_prestasi", "Bobot Prestasi"],
+    ["sumber", "Sumber"], ["catatan_verifikasi", "Catatan Verifikasi"],
+    ["alasan_nonaktif", "Alasan Nonaktif"], ["catatan_mutasi", "Catatan Mutasi"],
+  ];
+  const ws = XLSX.utils.json_to_sheet(baris.map((d) => {
+    const o = {};
+    kolom.forEach(([k, l]) => { o[l] = d[k] ?? ""; });
+    return o;
+  }));
+  ws["!cols"] = kolom.map(([, l]) => ({ wch: Math.min(Math.max(l.length + 4, 12), 30) }));
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, semua ? "Semua Siswa" : jurusanHasilAktif.slice(0, 31));
+  const label = semua ? "semua" : jurusanHasilAktif.replace(/[^\w-]+/g, "-").toLowerCase();
+  XLSX.writeFile(wb, `siswa-diterima-${label}-${new Date().toISOString().slice(0, 10)}.xlsx`);
+  toast(`Excel berhasil diunduh (${baris.length} siswa).`);
+}
+
 /* ---------------------------- Ganti password --------------------------- */
 async function gantiPassword() {
   const lama = $("#passLama").value;
@@ -826,6 +1181,7 @@ function bindEvents() {
     $("#dashboardSection").classList.remove("hidden");
     $("#dataSection").classList.add("hidden");
     $("#landingSection").classList.add("hidden");
+    $("#hasilSection").classList.add("hidden");
     $("#passwordSection").classList.add("hidden");
   });
   $("#navPendaftar").addEventListener("click", () => {
@@ -833,14 +1189,25 @@ function bindEvents() {
     $("#dashboardSection").classList.add("hidden");
     $("#dataSection").classList.remove("hidden");
     $("#landingSection").classList.add("hidden");
+    $("#hasilSection").classList.add("hidden");
     $("#passwordSection").classList.add("hidden");
     $("#dataSection").scrollIntoView({ behavior: "smooth" });
+  });
+  $("#navHasil").addEventListener("click", () => {
+    gantiMenu("navHasil", "Data Siswa Diterima");
+    $("#dashboardSection").classList.add("hidden");
+    $("#dataSection").classList.add("hidden");
+    $("#landingSection").classList.add("hidden");
+    $("#hasilSection").classList.remove("hidden");
+    $("#passwordSection").classList.add("hidden");
+    muatHasil();
   });
   $("#navLanding").addEventListener("click", () => {
     gantiMenu("navLanding", "Konten Beranda");
     $("#dashboardSection").classList.add("hidden");
     $("#dataSection").classList.add("hidden");
     $("#landingSection").classList.remove("hidden");
+    $("#hasilSection").classList.add("hidden");
     $("#passwordSection").classList.add("hidden");
     muatLanding();
     muatInfoDinas();
@@ -850,6 +1217,7 @@ function bindEvents() {
     $("#dashboardSection").classList.add("hidden");
     $("#dataSection").classList.add("hidden");
     $("#landingSection").classList.add("hidden");
+    $("#hasilSection").classList.add("hidden");
     $("#passwordSection").classList.remove("hidden");
     $("#passPesan").textContent = `Akun: ${emailAdmin}`;
     ["passLama", "passBaru", "passUlang"].forEach((id) => { $("#" + id).value = ""; });
@@ -857,6 +1225,65 @@ function bindEvents() {
   $("#btnSimpanLanding").addEventListener("click", simpanLanding);
   $("#btnTarikDinas").addEventListener("click", tarikInfoDinas);
   $("#btnSimpanDinas").addEventListener("click", simpanInfoDinas);
+  $("#btnImportHasil").addEventListener("click", () => $("#fileHasil").click());
+  $("#fileHasil").addEventListener("change", async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const teks = await file.text();
+    draftHasil = parseHasilDinas(teks, file.name);
+    e.target.value = "";
+    if (!draftHasil.length) { toast("Tidak ada baris siswa yang terbaca dari file.", "error"); return; }
+    tampilkanPreviewHasil();
+  });
+  $("#btnTambahHasil").addEventListener("click", bukaTambahHasil);
+  $("#simpanTambahHasil").addEventListener("click", simpanTambahHasil);
+  $("#tutupTambahHasil").addEventListener("click", () => {
+    $("#overlayTambahHasil").classList.remove("show");
+    document.body.classList.remove("lock-scroll");
+  });
+  $("#batalTambahHasil").addEventListener("click", () => {
+    $("#overlayTambahHasil").classList.remove("show");
+    document.body.classList.remove("lock-scroll");
+  });
+  $("#overlayTambahHasil").addEventListener("click", (e) => {
+    if (e.target.id === "overlayTambahHasil") {
+      $("#overlayTambahHasil").classList.remove("show");
+      document.body.classList.remove("lock-scroll");
+    }
+  });
+  $("#btnExportSemuaHasil").addEventListener("click", () => exportHasil(true));
+  $("#btnExportJurusan").addEventListener("click", () => exportHasil(false));
+  $("#tampilNonaktif").addEventListener("change", renderHasil);
+  $("#tutupNonaktif").addEventListener("click", () => {
+    $("#overlayNonaktif").classList.remove("show");
+    document.body.classList.remove("lock-scroll");
+  });
+  $("#batalNonaktif").addEventListener("click", () => {
+    $("#overlayNonaktif").classList.remove("show");
+    document.body.classList.remove("lock-scroll");
+  });
+  $("#overlayNonaktif").addEventListener("click", (e) => {
+    if (e.target.id === "overlayNonaktif") {
+      $("#overlayNonaktif").classList.remove("show");
+      document.body.classList.remove("lock-scroll");
+    }
+  });
+  $("#simpanNonaktif").addEventListener("click", simpanNonaktif);
+  $("#simpanMutasi").addEventListener("click", simpanMutasi);
+  $("#tutupMutasi").addEventListener("click", () => {
+    $("#overlayMutasi").classList.remove("show");
+    document.body.classList.remove("lock-scroll");
+  });
+  $("#batalMutasi").addEventListener("click", () => {
+    $("#overlayMutasi").classList.remove("show");
+    document.body.classList.remove("lock-scroll");
+  });
+  $("#overlayMutasi").addEventListener("click", (e) => {
+    if (e.target.id === "overlayMutasi") {
+      $("#overlayMutasi").classList.remove("show");
+      document.body.classList.remove("lock-scroll");
+    }
+  });
   $("#btnGantiPassword").addEventListener("click", gantiPassword);
 }
 

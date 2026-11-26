@@ -37,6 +37,7 @@
     </div>
     <button class="nav-item active" id="navDashboard">📊 Dashboard</button>
     <button class="nav-item" id="navPendaftar">👥 Data Calon Siswa</button>
+    <button class="nav-item" id="navHasil">🎓 Data Siswa Diterima</button>
     <button class="nav-item" id="navLanding">🏠 Konten Beranda</button>
     <button class="nav-item" id="navPassword">🔑 Ganti Password</button>
     <div style="flex:1"></div>
@@ -111,6 +112,117 @@
         <button class="btn btn-ghost btn-sm" id="btnMore">Muat lebih banyak</button>
       </div>
     </section>
+
+    <!-- ============ DATA SISWA DITERIMA ============ -->
+    <section class="card hidden" id="hasilSection" style="padding:0;overflow:hidden">
+      <div style="padding:18px 18px 0">
+        <div class="card-head" style="margin-bottom:14px;border:0;padding:0">
+          <div><h2>Data Siswa Diterima</h2><p>Hasil perangkingan dari portal dinas — internal sekolah.</p></div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn btn-primary btn-sm" id="btnImportHasil">⬆ Upload Dokumen Dinas</button>
+            <button class="btn btn-ghost btn-sm" id="btnTambahHasil">➕ Tambah dari Formulir</button>
+            <button class="btn btn-info btn-sm" id="btnExportSemuaHasil">⬇ Export Semua</button>
+            <label style="font-size:12px;color:var(--muted);display:flex;align-items:center;gap:5px">
+              <input type="checkbox" id="tampilNonaktif" style="width:auto"> Tampilkan nonaktif
+            </label>
+          </div>
+        </div>
+        <input type="file" id="fileHasil" accept=".xls,.html,.htm,.xlsx" style="display:none">
+        <div id="importHasilPreview" class="hidden callout" style="margin-bottom:14px"></div>
+        <div id="hasilTabs" class="jadwal-tabs"></div>
+      </div>
+      <div class="table-wrap" style="border:0;border-radius:0">
+        <table class="data-table admin-table" id="tabelHasil">
+          <thead><tr>
+            <th>Urut</th><th>No. Pendaftaran</th><th>Nama</th><th>NISN</th><th>Jurusan Diterima</th>
+            <th>Total Nilai</th><th>Bobot Nilai</th><th>Bobot TKA</th><th>Bobot Prestasi</th>
+            <th>Sumber</th><th>Aksi</th>
+          </tr></thead>
+          <tbody id="hasilBody"><tr><td colspan="11" style="padding:30px;color:var(--muted)">Memuat data…</td></tr></tbody>
+        </table>
+      </div>
+      <div style="padding:14px 18px;display:flex;justify-content:space-between;align-items:center;gap:10px">
+        <span id="infoHasil" style="font-size:12px;color:var(--muted)"></span>
+        <button class="btn btn-ghost btn-sm" id="btnExportJurusan">⬇ Export Jurusan Ini</button>
+      </div>
+    </section>
+
+    <!-- MODAL MUTASI JURUSAN -->
+    <div class="overlay" id="overlayMutasi">
+      <div class="modal">
+        <div class="modal-head"><h3>Mutasi / Pindah Jurusan</h3><button class="modal-close" id="tutupMutasi">×</button></div>
+        <p class="hint" style="margin:0 0 12px">Siswa tetap aktif; hanya jurusan diterimanya yang diubah. Riwayat perpindahan dicatat.</p>
+        <div class="field">
+          <label>Jurusan Baru</label>
+          <select id="mutasiJurusanBaru"></select>
+        </div>
+        <div class="field" style="margin-top:12px">
+          <label>Alasan</label>
+          <select id="mutasiAlasan">
+            <option value="Mutasi">Mutasi</option>
+            <option value="Pindah jurusan">Pindah jurusan</option>
+            <option value="Lainnya">Lainnya</option>
+          </select>
+        </div>
+        <div class="field" style="margin-top:12px">
+          <label>Catatan <span class="hint">(opsional)</span></label>
+          <input id="mutasiCatatan" type="text" placeholder="Keterangan tambahan">
+        </div>
+        <div class="modal-foot">
+          <button class="btn btn-ghost" id="batalMutasi">Batal</button>
+          <button class="btn btn-primary" id="simpanMutasi">Simpan Perpindahan</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL NONAKTIFKAN -->
+    <div class="overlay" id="overlayNonaktif">
+      <div class="modal">
+        <div class="modal-head"><h3>Nonaktifkan Siswa</h3><button class="modal-close" id="tutupNonaktif">×</button></div>
+        <p class="hint" style="margin:0 0 12px">Siswa tetap tersimpan di database, tapi tidak dihitung dalam jumlah siswa aktif.</p>
+        <div class="field">
+          <label>Alasan</label>
+          <select id="alasanNonaktif">
+            <option value="Mengundurkan diri">Mengundurkan diri</option>
+            <option value="Pindah sekolah">Pindah sekolah</option>
+            <option value="Lainnya">Lainnya</option>
+          </select>
+        </div>
+        <div class="field" style="margin-top:12px">
+          <label>Catatan <span class="hint">(opsional)</span></label>
+          <input id="catatanNonaktif" type="text" placeholder="Keterangan tambahan">
+        </div>
+        <div class="modal-foot">
+          <button class="btn btn-ghost" id="batalNonaktif">Batal</button>
+          <button class="btn btn-primary" id="simpanNonaktif">Nonaktifkan</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL TAMBAH DARI FORMULIR -->
+    <div class="overlay" id="overlayTambahHasil">
+      <div class="modal wide">
+        <div class="modal-head"><h3>Tambah Siswa Diterima dari Formulir</h3><button class="modal-close" id="tutupTambahHasil">×</button></div>
+        <div class="field">
+          <label>Pilih Calon Siswa</label>
+          <select id="pilihPendaftar"></select>
+          <span class="hint">Data diambil dari formulir yang sudah diisi.</span>
+        </div>
+        <div class="grid" style="margin-top:14px">
+          <div class="field"><label>Jurusan Diterima</label><select id="tambahJurusan"></select></div>
+          <div class="field"><label>Status</label><select id="tambahStatus">
+            <option value="diterima">Diterima</option>
+            <option value="cadangan">Cadangan</option>
+            <option value="tidak_diterima">Tidak Diterima</option>
+          </select></div>
+          <div class="field full"><label>Catatan</label><input id="tambahCatatan" type="text" placeholder="Misal: menggantikan siswa yang mengundurkan diri"></div>
+        </div>
+        <div class="modal-foot">
+          <button class="btn btn-ghost" id="batalTambahHasil">Batal</button>
+          <button class="btn btn-primary" id="simpanTambahHasil">Simpan ke Data Diterima</button>
+        </div>
+      </div>
+    </div>
 
     <!-- ============ KONTEN BERANDA ============ -->
     <section class="card hidden" id="landingSection" style="max-width:820px">
@@ -241,6 +353,6 @@
 <div class="toast-wrap" id="toastWrap"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-<script type="module" src="assets/js/admin.js?v=15"></script>
+<script type="module" src="assets/js/admin.js?v=17"></script>
 </body>
 </html>

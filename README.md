@@ -39,7 +39,8 @@ Aplikasi **pengumpulan data calon siswa** untuk SPMB berbasis **HTML + CSS + Jav
 │   ├── 0007_cek_nisn_kode.sql    # Kode pengiriman data pada hasil cek NISN
 │   ├── 0008_status_manual.sql    # Buka/tutup formulir diatur manual
 │   ├── 0009_dinas_info.sql       # Info portal dinas + RPC minat jurusan
-│   └── 0010_jadwal_validasi.sql  # Jadwal lengkap & jumlah validasi sekolah
+│   ├── 0010_jadwal_validasi.sql  # Jadwal lengkap & jumlah validasi sekolah
+│   └── 0011_dinas_hasil.sql      # Tabel terpisah hasil siswa diterima
 ├── apps-script/
 │   ├── Code.gs                   # Web App upload foto ke Google Drive
 │   └── PANDUAN.md                # Cara deploy Apps Script
@@ -90,6 +91,7 @@ Aplikasi **pengumpulan data calon siswa** untuk SPMB berbasis **HTML + CSS + Jav
 - **CRUD lengkap**: lihat, edit seluruh field + nilai rapor, hapus data
 - Export **Excel (.xlsx)** dengan 2 sheet: Calon Siswa & Nilai Rapor (tetap tersedia CSV)
 - **Editor Konten Beranda**: mengatur judul, tagline, sambutan, tahun pelajaran, waktu, **status buka/tutup formulir**, dan tanggal sebagai catatan
+- Menu **🎓 Data Siswa Diterima**: tab per jurusan, tabel siswa hasil dinas, tombol **Upload Dokumen Dinas** (file HTML ekspor portal), **Tambah dari Formulir**, **Mutasi/Pindah Jurusan**, **Nonaktifkan/Aktifkan** siswa (tetap tersimpan, tidak dihitung aktif), export Excel per jurusan & universal
 - Tombol **🔄 Tarik Info dari Portal Dinas** → draft bisa diedit → **Simpan Info Dinas** → tampil di beranda (data lama tetap tampil bila gagal)
 - Pengatur tahun pelajaran aktif untuk form publik
 - **Ganti password** akun admin langsung dari panel (menu 🔑 Ganti Password)
@@ -131,10 +133,12 @@ Project yang sudah dibuat:
 
 ✅ **Sudah aktif:** migration `supabase/migrations/0010_jadwal_validasi.sql` (kolom `jadwal_data` & data jadwal awal). Kolom `minat_validasi` sudah tidak dipakai di UI.
 
+⚠️ **Perlu dijalankan:** `supabase/migrations/0011_dinas_hasil.sql` (tabel terpisah `dinas_hasil` untuk hasil siswa diterima).
+
 Jika project dibuat ulang dari nol, langkahnya:
 
 1. Buka Supabase SQL Editor untuk project tersebut.
-2. Jalankan berurutan: `0001_init.sql`, `0002_tahun_pelajaran.sql`, `0003_landing.sql`, `0004_auto_tahun.sql`, `0005_wali_kip_upload.sql`, `0007_cek_nisn_kode.sql`, `0008_status_manual.sql`, `0009_dinas_info.sql`, `0010_jadwal_validasi.sql`.
+2. Jalankan berurutan: `0001_init.sql`, `0002_tahun_pelajaran.sql`, `0003_landing.sql`, `0004_auto_tahun.sql`, `0005_wali_kip_upload.sql`, `0007_cek_nisn_kode.sql`, `0008_status_manual.sql`, `0009_dinas_info.sql`, `0010_jadwal_validasi.sql`, `0011_dinas_hasil.sql`.
 3. Di **Project Settings → API**, salin **anon / publishable key**.
 4. Isi ke `assets/js/config.js`:
 
