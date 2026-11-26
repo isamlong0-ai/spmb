@@ -99,7 +99,7 @@ Aplikasi **pengumpulan data calon siswa** untuk SPMB berbasis **HTML + CSS + Jav
 
 ### Pengumuman kelulusan (`pengumuman.html`)
 - Halaman publik menampilkan **hanya data hasil impor dinas yang sudah di-Publish** (bukan data formulir/manual, bukan yang nonaktif)
-- Tabel tanpa kolom Aksi & Sumber; kolom **Hasil** berisi "Lulus", tab jurusan diurutkan abjad
+- Tabel memuat: No (berurutan 1..n), No. Pendaftaran, Nama, NISN, **Diterima di Konsentrasi Keahlian**, Total Nilai, Bobot Nilai, Bobot TKA, Bobot Prestasi — tanpa kolom Aksi & Sumber; tab jurusan diurutkan abjad
 - Awalnya berstatus **draft**; admin menekan **🚀 Publish ke Publik** di panel admin untuk menampilkannya, atau **↩️ Jadikan Draft** untuk menyembunyikan
 - Tombol **⬇ Ekspor Pengumuman** hanya ada di sisi admin; halaman publik tidak punya tombol ekspor
 - Tombol **🔄 Tarik Info dari Portal Dinas** → draft bisa diedit → **Simpan Info Dinas** → tampil di beranda (data lama tetap tampil bila gagal)

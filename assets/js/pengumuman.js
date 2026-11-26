@@ -25,15 +25,19 @@ function render() {
   const baris = data.filter((d) => jurusanAktif === "Semua" || d.jurusan_diterima === jurusanAktif);
   const body = $("#pengumumanBody");
   if (!baris.length) {
-    body.innerHTML = `<tr><td colspan="5" style="padding:30px;color:var(--muted)">Belum ada pengumuman yang dipublikasikan.</td></tr>`;
+    body.innerHTML = `<tr><td colspan="9" style="padding:30px;color:var(--muted)">Belum ada pengumuman yang dipublikasikan.</td></tr>`;
   } else {
     body.innerHTML = baris.map((d, i) => `
       <tr>
-        <td>${d.urutan ?? i + 1}</td>
+        <td>${i + 1}</td>
+        <td style="font-size:11px">${escapeHtml(d.no_pendaftaran_dinas || "-")}</td>
         <td><b>${escapeHtml(d.nama)}</b></td>
         <td>${escapeHtml(d.nisn || "-")}</td>
         <td>${escapeHtml(d.jurusan_diterima)}</td>
-        <td><span class="badge diterima">Lulus</span></td>
+        <td>${d.total_nilai ?? "-"}</td>
+        <td>${d.bobot_nilai ?? "-"}</td>
+        <td>${d.bobot_tka ?? "-"}</td>
+        <td>${d.bobot_prestasi ?? "-"}</td>
       </tr>`).join("");
   }
   $("#infoPengumuman").textContent = `${baris.length} siswa dinyatakan lulus · ${jurusanAktif}`;
@@ -46,7 +50,7 @@ async function muat() {
     // RLS hanya mengembalikan baris import yang sudah dipublish & tidak nonaktif
     const { data: hasil, error } = await supabase
       .from("dinas_hasil")
-      .select("urutan,nama,nisn,jurusan_diterima,tahun_pelajaran")
+      .select("urutan,no_pendaftaran_dinas,nama,nisn,jurusan_diterima,total_nilai,bobot_nilai,bobot_tka,bobot_prestasi,tahun_pelajaran")
       .eq("tahun_pelajaran", tahun)
       .order("jurusan_diterima", { ascending: true })
       .order("urutan", { ascending: true });

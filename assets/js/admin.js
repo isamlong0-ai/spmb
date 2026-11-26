@@ -1225,15 +1225,19 @@ function renderPengumuman() {
   $("#statusPengumuman").style.borderColor = published ? "#a7f3d0" : "#fed7aa";
 
   if (!baris.length) {
-    body.innerHTML = `<tr><td colspan="6" style="padding:30px;color:var(--muted)">Belum ada data.</td></tr>`;
+    body.innerHTML = `<tr><td colspan="10" style="padding:30px;color:var(--muted)">Belum ada data.</td></tr>`;
   } else {
     body.innerHTML = baris.map((d, i) => `
       <tr>
-        <td>${d.urutan ?? i + 1}</td>
+        <td>${i + 1}</td>
+        <td style="font-size:11px">${escapeHtml(d.no_pendaftaran_dinas || "-")}</td>
         <td><b>${escapeHtml(d.nama)}</b></td>
         <td>${escapeHtml(d.nisn || "-")}</td>
         <td>${escapeHtml(d.jurusan_diterima)}</td>
-        <td><span class="badge diterima">Lulus</span></td>
+        <td>${d.total_nilai ?? "-"}</td>
+        <td>${d.bobot_nilai ?? "-"}</td>
+        <td>${d.bobot_tka ?? "-"}</td>
+        <td>${d.bobot_prestasi ?? "-"}</td>
         <td>${d.is_published ? '<span class="badge diterima">Tampil</span>' : '<span class="badge menunggu">Draft</span>'}</td>
       </tr>`).join("");
   }
@@ -1260,14 +1264,18 @@ function exportPengumuman() {
     .sort((a, b) => String(a.jurusan_diterima).localeCompare(String(b.jurusan_diterima), "id")
       || (Number(a.urutan) || 0) - (Number(b.urutan) || 0))
     .map((d, i) => ({
-      "No": d.urutan ?? i + 1,
+      "No": i + 1,
+      "No. Pendaftaran": d.no_pendaftaran_dinas || "",
       "Nama": d.nama,
       "NISN": d.nisn || "",
-      "Jurusan Diterima": d.jurusan_diterima,
-      "Hasil": "Lulus",
+      "Diterima di Konsentrasi Keahlian": d.jurusan_diterima,
+      "Total Nilai": d.total_nilai ?? "",
+      "Bobot Nilai": d.bobot_nilai ?? "",
+      "Bobot TKA": d.bobot_tka ?? "",
+      "Bobot Prestasi": d.bobot_prestasi ?? "",
     }));
   const ws = XLSX.utils.json_to_sheet(baris);
-  ws["!cols"] = [{ wch: 8 }, { wch: 30 }, { wch: 16 }, { wch: 44 }, { wch: 12 }];
+  ws["!cols"] = [{ wch: 6 }, { wch: 26 }, { wch: 28 }, { wch: 16 }, { wch: 44 }, { wch: 13 }, { wch: 13 }, { wch: 12 }, { wch: 15 }];
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, "Pengumuman Kelulusan");
   XLSX.writeFile(wb, `pengumuman-kelulusan-${pengumumanTahunAktif}-${new Date().toISOString().slice(0, 10)}.xlsx`);
