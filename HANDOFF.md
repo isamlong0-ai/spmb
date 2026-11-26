@@ -15,7 +15,6 @@
 - Konfigurasi MCP Supabase ditulis ke `~/.config/opencode/opencode.json` (opsional, tidak dipakai).
 
 ## Yang masih perlu
-- ⚠️ **Jalankan `supabase/migrations/0011_dinas_hasil.sql`** di SQL Editor (tabel `dinas_hasil` untuk hasil siswa diterima, kolom `alasan_nonaktif` & `catatan_mutasi`).
 - Hapus 5 file uji di Drive: `foto_test_koneksi.jpg`, `foto_test_cors_browser.jpg`, `foto_test_folder_tahun.jpg`, `foto_test_folder_final.jpg`, `foto_test_url_baru.jpg`. (1x1 pixel) dari Drive: `foto_test_koneksi.jpg`, `foto_test_cors_browser.jpg`, `foto_test_folder_tahun.jpg` (folder utama), dan `foto_test_folder_final.jpg` (dalam subfolder `2026-2027`).
 - Opsional: hapus 1 data dummy `asdfghjk` (NISN `347689054`, kode `SPMB-2027-2028-507682B3`) — bukan dibuat oleh agent, kemungkinan uji manual.
 - Ganti password admin default `AdminSPMB2026!` setelah login pertama — sekarang tersedia menu 🔑 Ganti Password di panel admin (sudah diuji, password dikembalikan ke semula setelah uji).
@@ -38,6 +37,13 @@ Apps Script Web App sudah aktif & teruji (GET + POST upload ke Drive berhasil), 
 - Admin: ubah tahun aktif lewat dropdown di Dashboard + filter tahun di tabel & export Excel/CSV.
 - Export Excel: 2 sheet (Calon Siswa, Nilai Rapor) via SheetJS; sudah diuji menghasilkan `.xlsx`.
 - `cek_nisn` mengembalikan `tahun_pelajaran`.
+
+## Perubahan terakhir 10 — Hasil dinas aktif
+- Migration 0011 dijalankan user. Tabel `dinas_hasil` aktif.
+- Error "no unique constraint matching ON CONFLICT" diperbaiki di kode: import kini cek-ada-dulu lalu update/insert (tanpa ON CONFLICT), tetap aman dengan index partial. Migration file juga disesuaikan untuk install baru.
+- Import file `laporandatasekolah.xls` berhasil: **393 baris** tersimpan, 0 cocok dengan data formulir (portal baru 1 dummy), 11 flag verifikasi.
+- Diuji: tab 8 (Semua + 7 jurusan), Akuntansi 71; aksi Nonaktifkan (392 aktif) → Aktifkan (393); Mutasi GABRIL ke TKJ lalu dikembalikan; export Excel universal & per jurusan berhasil; modal Tambah dari Formulir terbuka.
+- Kondisi akhir DB bersih: 393 baris, 0 nonaktif, 0 mutasi.
 
 ## Perubahan terakhir 9 — Video akun & judul berita
 - Kartu baru "Video Panduan Pembuatan Akun" (URL resmi di `CONFIG.VIDEO_AKUN_URL`) ditambahkan di samping Video SMK.

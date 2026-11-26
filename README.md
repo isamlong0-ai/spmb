@@ -133,7 +133,7 @@ Project yang sudah dibuat:
 
 ✅ **Sudah aktif:** migration `supabase/migrations/0010_jadwal_validasi.sql` (kolom `jadwal_data` & data jadwal awal). Kolom `minat_validasi` sudah tidak dipakai di UI.
 
-⚠️ **Perlu dijalankan:** `supabase/migrations/0011_dinas_hasil.sql` (tabel terpisah `dinas_hasil` untuk hasil siswa diterima).
+✅ **Sudah aktif:** migration `supabase/migrations/0011_dinas_hasil.sql` (tabel terpisah `dinas_hasil` untuk hasil siswa diterima).
 
 Jika project dibuat ulang dari nol, langkahnya:
 
