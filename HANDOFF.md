@@ -15,6 +15,7 @@
 - Konfigurasi MCP Supabase ditulis ke `~/.config/opencode/opencode.json` (opsional, tidak dipakai).
 
 ## Yang masih perlu
+- ⚠️ **Jalankan `supabase/migrations/0012_pengumuman_publish.sql`** di SQL Editor (kolom `is_published` + RLS baca publik).
 - Hapus 5 file uji di Drive: `foto_test_koneksi.jpg`, `foto_test_cors_browser.jpg`, `foto_test_folder_tahun.jpg`, `foto_test_folder_final.jpg`, `foto_test_url_baru.jpg`. (1x1 pixel) dari Drive: `foto_test_koneksi.jpg`, `foto_test_cors_browser.jpg`, `foto_test_folder_tahun.jpg` (folder utama), dan `foto_test_folder_final.jpg` (dalam subfolder `2026-2027`).
 - Opsional: hapus 1 data dummy `asdfghjk` (NISN `347689054`, kode `SPMB-2027-2028-507682B3`) — bukan dibuat oleh agent, kemungkinan uji manual.
 - Ganti password admin default `AdminSPMB2026!` setelah login pertama — sekarang tersedia menu 🔑 Ganti Password di panel admin (sudah diuji, password dikembalikan ke semula setelah uji).
@@ -37,6 +38,13 @@ Apps Script Web App sudah aktif & teruji (GET + POST upload ke Drive berhasil), 
 - Admin: ubah tahun aktif lewat dropdown di Dashboard + filter tahun di tabel & export Excel/CSV.
 - Export Excel: 2 sheet (Calon Siswa, Nilai Rapor) via SheetJS; sudah diuji menghasilkan `.xlsx`.
 - `cek_nisn` mengembalikan `tahun_pelajaran`.
+
+## Perubahan terakhir 12 — Pengumuman & autocomplete
+- "Tambah dari Formulir" kini autocomplete (`#cariPendaftar` + datalist), bukan dropdown 500+ opsi.
+- Halaman baru `pengumuman.html` (publik) + menu admin "Pengumuman Kelulusan".
+- Hanya `sumber='import'`, `status<>'nonaktif'`, `is_published=true` yang tampil di publik (RLS).
+- Admin: tombol Publish/Draft + "Ekspor Pengumuman" (tanpa upload/tambah/export per jurusan); tabel tanpa Aksi & Sumber, kolom Hasil="Lulus".
+- Dasar flag "perlu verifikasi": aturan yang disetujui user sebelumnya — NIK/KK bukan 16 digit atau berakhir `0000`, NISN bukan 10 digit setelah padStart. Di file asli, 11 KK memang hanya 15 digit (mis. `610102080411000`), jadi flag tersebut benar.
 
 ## Perubahan terakhir 11 — Penyesuaian hasil dinas
 - Jurusan "Agribisnis Tanaman" diganti menjadi "Agribisnis Tanaman Pangan dan Hortikultura" (CONFIG.JURUSAN + data lama di DB + daftar di beranda).

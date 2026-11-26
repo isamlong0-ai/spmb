@@ -40,7 +40,8 @@ Aplikasi **pengumpulan data calon siswa** untuk SPMB berbasis **HTML + CSS + Jav
 │   ├── 0008_status_manual.sql    # Buka/tutup formulir diatur manual
 │   ├── 0009_dinas_info.sql       # Info portal dinas + RPC minat jurusan
 │   ├── 0010_jadwal_validasi.sql  # Jadwal lengkap & jumlah validasi sekolah
-│   └── 0011_dinas_hasil.sql      # Tabel terpisah hasil siswa diterima
+│   ├── 0011_dinas_hasil.sql      # Tabel terpisah hasil siswa diterima
+│   └── 0012_pengumuman_publish.sql # Draft/publish pengumuman + akses publik
 ├── apps-script/
 │   ├── Code.gs                   # Web App upload foto ke Google Drive
 │   └── PANDUAN.md                # Cara deploy Apps Script
@@ -94,6 +95,13 @@ Aplikasi **pengumpulan data calon siswa** untuk SPMB berbasis **HTML + CSS + Jav
 - Menu **🎓 Data Siswa Diterima**: tab **Semua + 7 jurusan diurutkan abjad + tab Nonaktif**, tabel siswa hasil dinas, tombol **Upload Dokumen Dinas** (file HTML ekspor portal), **Tambah dari Formulir**, **Mutasi/Pindah Jurusan**, **Nonaktifkan/Aktifkan** siswa, export Excel per jurusan & universal
 - Data hasil **tersimpan per tahun pelajaran** (kolom `tahun_pelajaran`); dropdown tahun di halaman ini untuk melihat tahun lama. Import tahun berikutnya **tidak menimpa** tahun sebelumnya
 - Nama siswa di-*proper case* saat import; siswa nonaktif **tidak tampil di tabel maupun export** (hanya di tab Nonaktif untuk diaktifkan kembali)
+- Tombol **Tambah dari Formulir** memakai **autocomplete** (ketik nama/NISN), bukan dropdown panjang
+
+### Pengumuman kelulusan (`pengumuman.html`)
+- Halaman publik menampilkan **hanya data hasil impor dinas yang sudah di-Publish** (bukan data formulir/manual, bukan yang nonaktif)
+- Tabel tanpa kolom Aksi & Sumber; kolom **Hasil** berisi "Lulus", tab jurusan diurutkan abjad
+- Awalnya berstatus **draft**; admin menekan **🚀 Publish ke Publik** di panel admin untuk menampilkannya, atau **↩️ Jadikan Draft** untuk menyembunyikan
+- Tombol **⬇ Ekspor Pengumuman** hanya ada di sisi admin; halaman publik tidak punya tombol ekspor
 - Tombol **🔄 Tarik Info dari Portal Dinas** → draft bisa diedit → **Simpan Info Dinas** → tampil di beranda (data lama tetap tampil bila gagal)
 - Pengatur tahun pelajaran aktif untuk form publik
 - **Ganti password** akun admin langsung dari panel (menu 🔑 Ganti Password)
@@ -136,6 +144,8 @@ Project yang sudah dibuat:
 ✅ **Sudah aktif:** migration `supabase/migrations/0010_jadwal_validasi.sql` (kolom `jadwal_data` & data jadwal awal). Kolom `minat_validasi` sudah tidak dipakai di UI.
 
 ✅ **Sudah aktif:** migration `supabase/migrations/0011_dinas_hasil.sql` (tabel terpisah `dinas_hasil` untuk hasil siswa diterima).
+
+⚠️ **Perlu dijalankan:** `supabase/migrations/0012_pengumuman_publish.sql` (kolom `is_published` + izin baca publik hanya untuk hasil dinas yang dipublish).
 
 Jika project dibuat ulang dari nol, langkahnya:
 

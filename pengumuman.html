@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#065f46">
+  <title>Pengumuman Kelulusan — SMKN 1 Teluk Keramat</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+<nav class="lp-nav">
+  <div class="wrap">
+    <a class="lp-brand" href="index.html">
+      <img src="https://lh3.googleusercontent.com/d/1zArv6yZsZ-YZCSTtEbTBUQp4C0kv325f" alt="Logo">
+      <div><strong>SMKN 1 TELUK KERAMAT</strong><span>Pengumuman Kelulusan SPMB</span></div>
+    </a>
+    <div class="lp-links">
+      <a href="index.html">Beranda</a>
+      <a href="pengumuman.html" style="color:var(--primary)">Pengumuman</a>
+      <a href="cek.html">Cek Data</a>
+    </div>
+  </div>
+</nav>
+
+<main class="wrap" style="padding-block:36px 60px">
+  <div class="hero" style="margin-bottom:22px">
+    <h1>Pengumuman Kelulusan SPMB</h1>
+    <p>SMK Negeri 1 Teluk Keramat — Tahun Pelajaran <span class="tahun-inline">2026/2027</span></p>
+  </div>
+
+  <div id="statusPengumuman" class="lp-gate hidden" role="status"></div>
+
+  <section class="card" style="padding:0;overflow:hidden">
+    <div style="padding:18px 18px 0">
+      <div id="pengumumanTabs" class="jadwal-tabs"></div>
+    </div>
+    <div class="table-wrap" style="border:0;border-radius:0">
+      <table class="data-table">
+        <thead><tr>
+          <th style="width:70px">No</th><th>Nama</th><th>NISN</th>
+          <th>Jurusan Diterima</th><th style="width:100px">Hasil</th>
+        </tr></thead>
+        <tbody id="pengumumanBody">
+          <tr><td colspan="5" style="padding:30px;color:var(--muted)">Memuat pengumuman…</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div style="padding:14px 18px"><span id="infoPengumuman" style="font-size:12px;color:var(--muted)"></span></div>
+  </section>
+
+  <p class="hint" style="text-align:center;margin-top:18px">
+    Informasi ini merupakan hasil pengolahan data oleh panitia sekolah. Pendaftaran resmi tetap melalui
+    <a href="https://spmb-dikbud.kalbarprov.go.id/" target="_blank" rel="noopener">portal Dinas Pendidikan dan Kebudayaan Provinsi Kalimantan Barat</a>.
+  </p>
+</main>
+
+<script type="module" src="assets/js/pengumuman.js"></script>
+</body>
+</html>

@@ -516,7 +516,7 @@ async function simpanTahunAktif() {
 
 /* --------------------------- Konten beranda ---------------------------- */
 function gantiMenu(id, judul) {
-  ["navDashboard", "navPendaftar", "navHasil", "navLanding", "navPassword"].forEach((n) =>
+  ["navDashboard", "navPendaftar", "navHasil", "navPengumuman", "navLanding", "navPassword"].forEach((n) =>
     $("#" + n).classList.toggle("active", n === id));
   $("#pageTitle").textContent = judul;
   perbaruiSubtitle();
@@ -764,6 +764,7 @@ let draftHasil = [];
 let nonaktifId = null;
 let mutasiId = null;
 let hasilTahunAktif = null;
+let petaPendaftar = {};
 
 function normalisasiJurusan(nama) {
   const alias = {
@@ -1089,10 +1090,15 @@ async function konfirmasiImportHasil() {
 }
 
 function bukaTambahHasil() {
-  const sel = $("#pilihPendaftar");
   const tersedia = semuaData.filter((d) => !dataHasil.some((h) => h.pendaftar_id === d.id || (d.nisn && h.nisn === d.nisn)));
-  sel.innerHTML = `<option value="">-- Pilih calon siswa --</option>` +
-    tersedia.map((d) => `<option value="${d.id}">${escapeHtml(d.nama)} — ${escapeHtml(d.nisn || "-")} (${escapeHtml(d.tahun_pelajaran || "-")})</option>`).join("");
+  petaPendaftar = {};
+  const daftar = tersedia.map((d) => {
+    const label = `${properNama(d.nama)} — ${d.nisn || "-"} (${d.tahun_pelajaran || "-"})`;
+    petaPendaftar[label] = d.id;
+    return label;
+  });
+  $("#dl-pendaftar").innerHTML = daftar.map((x) => `<option value="${escapeHtml(x)}"></option>`).join("");
+  $("#cariPendaftar").value = "";
   $("#tambahJurusan").innerHTML = CONFIG.JURUSAN.map((j) => `<option value="${escapeHtml(j)}">${escapeHtml(j)}</option>`).join("");
   $("#tambahCatatan").value = "";
   $("#overlayTambahHasil").classList.add("show");
@@ -1100,9 +1106,16 @@ function bukaTambahHasil() {
 }
 
 async function simpanTambahHasil() {
-  const id = $("#pilihPendaftar").value;
+  const ketikan = $("#cariPendaftar").value.trim();
+  let id = petaPendaftar[ketikan];
+  if (!id) {
+    const nisn = (ketikan.match(/\b\d{10}\b/) || [])[0];
+    const dCari = semuaData.find((x) => (nisn && x.nisn === nisn)
+      || (ketikan.length > 2 && String(x.nama).toLowerCase().includes(ketikan.toLowerCase())));
+    id = dCari?.id;
+  }
   const d = semuaData.find((x) => x.id === id);
-  if (!d) { toast("Pilih calon siswa terlebih dahulu.", "warn"); return; }
+  if (!d) { toast("Calon siswa tidak ditemukan. Ketik nama/NISN yang tersedia.", "warn"); return; }
   const { error } = await supabase.from("dinas_hasil").insert({
     tahun_pelajaran: d.tahun_pelajaran || tahunAktif,
     no_pendaftaran_dinas: d.kode_pendaftaran || null,
@@ -1152,6 +1165,113 @@ function exportHasil(semua) {
   const label = semua ? "semua" : jurusanHasilAktif.replace(/[^\w-]+/g, "-").toLowerCase();
   XLSX.writeFile(wb, `siswa-diterima-${label}-${new Date().toISOString().slice(0, 10)}.xlsx`);
   toast(`Excel berhasil diunduh (${baris.length} siswa).`);
+}
+
+/* -------------------------- Pengumuman kelulusan ----------------------- */
+let dataPengumuman = [];
+let pengumumanTahunAktif = null;
+
+async function muatPengumuman() {
+  try {
+    const { data: semua, error: errTahun } = await supabase
+      .from("dinas_hasil").select("tahun_pelajaran").eq("sumber", "import");
+    if (errTahun) throw errTahun;
+    const daftar = Array.from(new Set([
+      tahunAktif, ...(semua || []).map((d) => d.tahun_pelajaran).filter(Boolean),
+    ])).sort().reverse();
+    const pilih = $("#pengumumanTahun");
+    const sebelumnya = pengumumanTahunAktif || hasilTahunAktif || tahunAktif;
+    pilih.innerHTML = daftar.map((t) => `<option value="${escapeHtml(t)}">${escapeHtml(t)}</option>`).join("");
+    pengumumanTahunAktif = daftar.includes(sebelumnya) ? sebelumnya : daftar[0];
+    pilih.value = pengumumanTahunAktif;
+
+    const { data, error } = await supabase
+      .from("dinas_hasil")
+      .select("*")
+      .eq("sumber", "import")
+      .eq("tahun_pelajaran", pengumumanTahunAktif)
+      .neq("status", "nonaktif")
+      .order("jurusan_diterima", { ascending: true })
+      .order("urutan", { ascending: true });
+    if (error) throw error;
+    dataPengumuman = data || [];
+  } catch (e) {
+    dataPengumuman = [];
+    toast("Gagal memuat pengumuman: " + e.message, "error");
+  }
+  renderPengumuman();
+}
+
+function renderPengumuman() {
+  const tabs = $("#pengumumanTabs");
+  const body = $("#pengumumanBody");
+  if (!tabs || !body) return;
+  const daftar = ["Semua", ...CONFIG.JURUSAN.slice().sort((a, b) => a.localeCompare(b, "id"))];
+  tabs.innerHTML = daftar.map((j) =>
+    `<button type="button" class="jadwal-tab ${j === jurusanHasilAktif ? "aktif" : ""}" data-jurusan="${escapeHtml(j)}">${escapeHtml(j)}</button>`).join("");
+  tabs.querySelectorAll(".jadwal-tab").forEach((b) => b.addEventListener("click", () => {
+    jurusanHasilAktif = b.dataset.jurusan;
+    renderPengumuman();
+  }));
+
+  const baris = dataPengumuman.filter((d) =>
+    jurusanHasilAktif === "Semua" || d.jurusan_diterima === jurusanHasilAktif);
+  const published = dataPengumuman.filter((d) => d.is_published).length;
+  $("#statusPengumuman").innerHTML = published
+    ? `✅ <b>Sudah dipublikasikan:</b> ${published} siswa tampil di halaman pengumuman publik.`
+    : "📝 <b>Masih draft.</b> Halaman pengumuman publik belum menampilkan data apa pun.";
+  $("#statusPengumuman").style.background = published ? "var(--primary-50)" : "#fff7ed";
+  $("#statusPengumuman").style.color = published ? "var(--primary)" : "#9a3412";
+  $("#statusPengumuman").style.borderColor = published ? "#a7f3d0" : "#fed7aa";
+
+  if (!baris.length) {
+    body.innerHTML = `<tr><td colspan="6" style="padding:30px;color:var(--muted)">Belum ada data.</td></tr>`;
+  } else {
+    body.innerHTML = baris.map((d, i) => `
+      <tr>
+        <td>${d.urutan ?? i + 1}</td>
+        <td><b>${escapeHtml(d.nama)}</b></td>
+        <td>${escapeHtml(d.nisn || "-")}</td>
+        <td>${escapeHtml(d.jurusan_diterima)}</td>
+        <td><span class="badge diterima">Lulus</span></td>
+        <td>${d.is_published ? '<span class="badge diterima">Tampil</span>' : '<span class="badge menunggu">Draft</span>'}</td>
+      </tr>`).join("");
+  }
+  $("#infoPengumuman").textContent = `${baris.length} siswa · ${jurusanHasilAktif} · ${pengumumanTahunAktif}`;
+}
+
+async function setPublishPengumuman(flag) {
+  if (!dataPengumuman.length) { toast("Tidak ada data untuk dipublikasikan.", "warn"); return; }
+  const teks = flag ? "publish" : "kembalikan ke draft";
+  if (!confirm(`Yakin ingin ${teks} ${dataPengumuman.length} siswa?`)) return;
+  const { error } = await supabase.from("dinas_hasil")
+    .update({ is_published: flag, updated_at: new Date().toISOString() })
+    .eq("sumber", "import")
+    .eq("tahun_pelajaran", pengumumanTahunAktif)
+    .neq("status", "nonaktif");
+  if (error) { toast("Gagal: " + error.message, "error"); return; }
+  toast(flag ? "Pengumuman berhasil dipublikasikan." : "Pengumuman dikembalikan ke draft.");
+  muatPengumuman();
+}
+
+function exportPengumuman() {
+  if (!dataPengumuman.length) { toast("Tidak ada data untuk diekspor.", "warn"); return; }
+  const baris = dataPengumuman.slice()
+    .sort((a, b) => String(a.jurusan_diterima).localeCompare(String(b.jurusan_diterima), "id")
+      || (Number(a.urutan) || 0) - (Number(b.urutan) || 0))
+    .map((d, i) => ({
+      "No": d.urutan ?? i + 1,
+      "Nama": d.nama,
+      "NISN": d.nisn || "",
+      "Jurusan Diterima": d.jurusan_diterima,
+      "Hasil": "Lulus",
+    }));
+  const ws = XLSX.utils.json_to_sheet(baris);
+  ws["!cols"] = [{ wch: 8 }, { wch: 30 }, { wch: 16 }, { wch: 44 }, { wch: 12 }];
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "Pengumuman Kelulusan");
+  XLSX.writeFile(wb, `pengumuman-kelulusan-${pengumumanTahunAktif}-${new Date().toISOString().slice(0, 10)}.xlsx`);
+  toast(`Pengumuman diekspor (${baris.length} siswa). Hanya admin yang punya tombol ini.`);
 }
 
 /* ---------------------------- Ganti password --------------------------- */
@@ -1225,6 +1345,7 @@ function bindEvents() {
     $("#landingSection").classList.add("hidden");
     $("#hasilSection").classList.add("hidden");
     $("#passwordSection").classList.add("hidden");
+    $("#pengumumanSection").classList.add("hidden");
   });
   $("#navPendaftar").addEventListener("click", () => {
     gantiMenu("navPendaftar", "Data Calon Siswa");
@@ -1233,6 +1354,7 @@ function bindEvents() {
     $("#landingSection").classList.add("hidden");
     $("#hasilSection").classList.add("hidden");
     $("#passwordSection").classList.add("hidden");
+    $("#pengumumanSection").classList.add("hidden");
     $("#dataSection").scrollIntoView({ behavior: "smooth" });
   });
   $("#navHasil").addEventListener("click", () => {
@@ -1242,7 +1364,17 @@ function bindEvents() {
     $("#landingSection").classList.add("hidden");
     $("#hasilSection").classList.remove("hidden");
     $("#passwordSection").classList.add("hidden");
+    $("#pengumumanSection").classList.add("hidden");
     muatHasil();
+  });
+  $("#navPengumuman").addEventListener("click", () => {
+    gantiMenu("navPengumuman", "Pengumuman Kelulusan");
+    $("#dashboardSection").classList.add("hidden");
+    $("#dataSection").classList.add("hidden");
+    $("#landingSection").classList.add("hidden");
+    $("#hasilSection").classList.add("hidden");
+    $("#pengumumanSection").classList.remove("hidden");
+    muatPengumuman();
   });
   $("#navLanding").addEventListener("click", () => {
     gantiMenu("navLanding", "Konten Beranda");
@@ -1251,6 +1383,7 @@ function bindEvents() {
     $("#landingSection").classList.remove("hidden");
     $("#hasilSection").classList.add("hidden");
     $("#passwordSection").classList.add("hidden");
+    $("#pengumumanSection").classList.add("hidden");
     muatLanding();
     muatInfoDinas();
   });
@@ -1315,6 +1448,13 @@ function bindEvents() {
   });
   $("#simpanNonaktif").addEventListener("click", simpanNonaktif);
   $("#simpanMutasi").addEventListener("click", simpanMutasi);
+  $("#btnPublishPengumuman").addEventListener("click", () => setPublishPengumuman(true));
+  $("#btnDraftPengumuman").addEventListener("click", () => setPublishPengumuman(false));
+  $("#btnExportPengumuman").addEventListener("click", exportPengumuman);
+  $("#pengumumanTahun").addEventListener("change", (e) => {
+    pengumumanTahunAktif = e.target.value;
+    muatPengumuman();
+  });
   $("#tutupMutasi").addEventListener("click", () => {
     $("#overlayMutasi").classList.remove("show");
     document.body.classList.remove("lock-scroll");
