@@ -143,13 +143,6 @@ Jika project dibuat ulang dari nol, langkahnya:
 SUPABASE_ANON_KEY: "sb_publishable_...",
 ```
 
-Migration juga membuat akun admin:
-
-```
-Email    : admin@smkn1tk.sch.id
-Password : AdminSPMB2026!
-```
-
 > **Segera ganti password admin** setelah login pertama lewat menu **🔑 Ganti Password** di panel admin (cukup isi password lama, password baru, dan konfirmasinya).
 
 ### 2. Google Apps Script
