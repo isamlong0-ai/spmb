@@ -122,9 +122,8 @@
             <button class="btn btn-primary btn-sm" id="btnImportHasil">⬆ Upload Dokumen Dinas</button>
             <button class="btn btn-ghost btn-sm" id="btnTambahHasil">➕ Tambah dari Formulir</button>
             <button class="btn btn-info btn-sm" id="btnExportSemuaHasil">⬇ Export Semua</button>
-            <label style="font-size:12px;color:var(--muted);display:flex;align-items:center;gap:5px">
-              <input type="checkbox" id="tampilNonaktif" style="width:auto"> Tampilkan nonaktif
-            </label>
+            <label style="font-size:12px;color:var(--muted)">Tahun:</label>
+            <select id="hasilTahun" style="width:auto;padding:5px 8px;font-size:12px"></select>
           </div>
         </div>
         <input type="file" id="fileHasil" accept=".xls,.html,.htm,.xlsx" style="display:none">
@@ -353,6 +352,6 @@
 <div class="toast-wrap" id="toastWrap"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-<script type="module" src="assets/js/admin.js?v=18"></script>
+<script type="module" src="assets/js/admin.js?v=19"></script>
 </body>
 </html>

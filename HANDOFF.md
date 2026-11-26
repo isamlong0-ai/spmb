@@ -38,6 +38,13 @@ Apps Script Web App sudah aktif & teruji (GET + POST upload ke Drive berhasil), 
 - Export Excel: 2 sheet (Calon Siswa, Nilai Rapor) via SheetJS; sudah diuji menghasilkan `.xlsx`.
 - `cek_nisn` mengembalikan `tahun_pelajaran`.
 
+## Perubahan terakhir 11 — Penyesuaian hasil dinas
+- Jurusan "Agribisnis Tanaman" diganti menjadi "Agribisnis Tanaman Pangan dan Hortikultura" (CONFIG.JURUSAN + data lama di DB + daftar di beranda).
+- Nama siswa & jurusan di-Proper Case saat import.
+- Tab diurutkan abjad setelah "Semua"; tab "Nonaktif" ditaruh terakhir — checkbox "Tampilkan nonaktif" dihapus.
+- Siswa nonaktif tidak tampil di tabel & tidak ikut export (tetap bisa diaktifkan lewat tab Nonaktif).
+- Dropdown tahun di halaman hasil; import menulis ke tahun yang dipilih, data tahun lain tidak ditimpa/dihapus.
+
 ## Perubahan terakhir 10 — Hasil dinas aktif
 - Migration 0011 dijalankan user. Tabel `dinas_hasil` aktif.
 - Error "no unique constraint matching ON CONFLICT" diperbaiki di kode: import kini cek-ada-dulu lalu update/insert (tanpa ON CONFLICT), tetap aman dengan index partial. Migration file juga disesuaikan untuk install baru.

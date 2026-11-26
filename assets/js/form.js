@@ -1,5 +1,5 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { CONFIG, MAPEL, SEMESTER, FOTO_FIELDS } from "./config.js?v=15";
+import { CONFIG, MAPEL, SEMESTER, FOTO_FIELDS } from "./config.js?v=19";
 import { initWilayah } from "./wilayah.js";
 import { ambilTahunAktif, tahunAwal } from "./tahun.js";
 

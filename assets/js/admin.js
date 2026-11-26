@@ -1,5 +1,5 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { CONFIG, MAPEL, SEMESTER } from "./config.js?v=15";
+import { CONFIG, MAPEL, SEMESTER } from "./config.js?v=19";
 import { ambilTahunAktif, pilihanTahunAktif, pilihanTahunData, tahunPelajaran } from "./tahun.js";
 
 const supabase = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
@@ -763,13 +763,27 @@ let jurusanHasilAktif = "Semua";
 let draftHasil = [];
 let nonaktifId = null;
 let mutasiId = null;
+let hasilTahunAktif = null;
 
 function normalisasiJurusan(nama) {
+  const alias = {
+    "Agribisnis Tanaman": "Agribisnis Tanaman Pangan dan Hortikultura",
+    "Teknik Komputer": "Teknik Komputer dan Jaringan",
+  };
   const bersih = String(nama || "").replace(/\s+/g, " ").trim();
+  if (alias[bersih]) return alias[bersih];
   const cocok = CONFIG.JURUSAN.find((j) => j.toLowerCase() === bersih.toLowerCase())
     || CONFIG.JURUSAN.find((j) => bersih.toLowerCase().includes(j.toLowerCase()))
     || CONFIG.JURUSAN.find((j) => j.toLowerCase().includes(bersih.toLowerCase()));
   return cocok || bersih;
+}
+
+function properNama(nilai) {
+  return String(nilai || "")
+    .toLowerCase()
+    .replace(/(^|[\s'’-])([a-z])/g, (_, depan, huruf) => depan + huruf.toUpperCase())
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
 function normalisasiNisn(nilai) {
@@ -791,10 +805,23 @@ function angkaDesimal(nilai) {
 
 async function muatHasil() {
   try {
+    const { data: semuaTahun, error: errTahun } = await supabase
+      .from("dinas_hasil").select("tahun_pelajaran");
+    if (errTahun) throw errTahun;
+    const daftar = Array.from(new Set([
+      tahunAktif,
+      ...(semuaTahun || []).map((d) => d.tahun_pelajaran).filter(Boolean),
+    ])).sort().reverse();
+    const pilih = $("#hasilTahun");
+    const sebelumnya = hasilTahunAktif || tahunAktif;
+    pilih.innerHTML = daftar.map((t) => `<option value="${escapeHtml(t)}">${escapeHtml(t)}</option>`).join("");
+    hasilTahunAktif = daftar.includes(sebelumnya) ? sebelumnya : daftar[0];
+    pilih.value = hasilTahunAktif;
+
     const { data, error } = await supabase
       .from("dinas_hasil")
       .select("*")
-      .eq("tahun_pelajaran", tahunAktif)
+      .eq("tahun_pelajaran", hasilTahunAktif)
       .order("jurusan_diterima", { ascending: true })
       .order("urutan", { ascending: true });
     if (error) throw error;
@@ -811,9 +838,7 @@ function renderHasil() {
   const body = $("#hasilBody");
   if (!tabs || !body) return;
 
-  const daftarJurusan = Array.from(new Set([
-    "Semua", ...CONFIG.JURUSAN, ...dataHasil.map((d) => d.jurusan_diterima),
-  ]));
+  const daftarJurusan = ["Semua", ...CONFIG.JURUSAN.slice().sort((a, b) => a.localeCompare(b, "id")), "Nonaktif"];
   tabs.innerHTML = daftarJurusan.map((j) =>
     `<button type="button" class="jadwal-tab ${j === jurusanHasilAktif ? "aktif" : ""}" data-jurusan="${escapeHtml(j)}">${escapeHtml(j)}</button>`
   ).join("");
@@ -823,11 +848,10 @@ function renderHasil() {
       renderHasil();
     }));
 
-  const tampilNonaktif = $("#tampilNonaktif")?.checked;
   const baris = dataHasil.filter((d) => {
-    const cocokJurusan = jurusanHasilAktif === "Semua" || d.jurusan_diterima === jurusanHasilAktif;
-    const cocokStatus = tampilNonaktif || d.status !== "nonaktif";
-    return cocokJurusan && cocokStatus;
+    if (jurusanHasilAktif === "Nonaktif") return d.status === "nonaktif";
+    return d.status !== "nonaktif"
+      && (jurusanHasilAktif === "Semua" || d.jurusan_diterima === jurusanHasilAktif);
   });
 
   if (!baris.length) {
@@ -869,7 +893,7 @@ function renderHasil() {
     body.querySelectorAll("[data-mutasi-hasil]").forEach((b) =>
       b.addEventListener("click", () => bukaMutasi(b.dataset.mutasiHasil)));
   }
-  $("#infoHasil").textContent = `${baris.length} siswa · ${jurusanHasilAktif} · Tahun ${tahunAktif}`;
+  $("#infoHasil").textContent = `${baris.length} siswa · ${jurusanHasilAktif} · Tahun ${hasilTahunAktif || tahunAktif}`;
 }
 
 function bukaMutasi(id) {
@@ -977,9 +1001,9 @@ function parseHasilDinas(teks, namaFile) {
       const nisn = normalisasiNisn(r["NISN"]);
       if (!nisn) catatan.push("NISN tidak valid");
       hasil.push({
-        tahun_pelajaran: tahunAktif,
+        tahun_pelajaran: hasilTahunAktif || tahunAktif,
         no_pendaftaran_dinas: r["Nomor Pendaftaran"] || null,
-        nama: r["Nama Siswa"] || "",
+        nama: properNama(r["Nama Siswa"]),
         nisn: nisn || null,
         nik: nik.value,
         kk: kk.value,
@@ -1082,7 +1106,7 @@ async function simpanTambahHasil() {
   const { error } = await supabase.from("dinas_hasil").insert({
     tahun_pelajaran: d.tahun_pelajaran || tahunAktif,
     no_pendaftaran_dinas: d.kode_pendaftaran || null,
-    nama: d.nama,
+    nama: properNama(d.nama),
     nisn: d.nisn || null,
     nik: d.nik || null,
     kk: d.kk || null,
@@ -1101,8 +1125,12 @@ async function simpanTambahHasil() {
 }
 
 function exportHasil(semua) {
-  const tampilNonaktif = $("#tampilNonaktif")?.checked;
-  const semuaBaris = tampilNonaktif ? dataHasil : dataHasil.filter((d) => d.status !== "nonaktif");
+  // Siswa nonaktif tidak pernah diekspor
+  const semuaBaris = dataHasil
+    .filter((d) => d.status !== "nonaktif")
+    .slice()
+    .sort((a, b) => String(a.jurusan_diterima).localeCompare(String(b.jurusan_diterima), "id")
+      || (Number(a.urutan) || 0) - (Number(b.urutan) || 0));
   const baris = semua ? semuaBaris : semuaBaris.filter((d) => d.jurusan_diterima === jurusanHasilAktif);
   if (!baris.length) { toast("Tidak ada data untuk diekspor.", "warn"); return; }
   const kolom = [
@@ -1267,7 +1295,10 @@ function bindEvents() {
   });
   $("#btnExportSemuaHasil").addEventListener("click", () => exportHasil(true));
   $("#btnExportJurusan").addEventListener("click", () => exportHasil(false));
-  $("#tampilNonaktif").addEventListener("change", renderHasil);
+  $("#hasilTahun").addEventListener("change", (e) => {
+    hasilTahunAktif = e.target.value;
+    muatHasil();
+  });
   $("#tutupNonaktif").addEventListener("click", () => {
     $("#overlayNonaktif").classList.remove("show");
     document.body.classList.remove("lock-scroll");

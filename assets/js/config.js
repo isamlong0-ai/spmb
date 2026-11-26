@@ -34,14 +34,15 @@ export const CONFIG = {
   NAMA_SEKOLAH: "SMK Negeri 1 Teluk Keramat",
   PORTAL_DIKNAS: "https://spmb-dikbud.kalbarprov.go.id/",
 
+  // Diurutkan abjad (sesuai urutan tab di panel admin)
   JURUSAN: [
-    "Teknik Komputer dan Jaringan",
-    "Agribisnis Tanaman",
-    "Desain Komunikasi Visual",
-    "Teknik Kendaraan Ringan",
-    "Bisnis Retail",
-    "Manajemen Perkantoran",
+    "Agribisnis Tanaman Pangan dan Hortikultura",
     "Akuntansi",
+    "Bisnis Retail",
+    "Desain Komunikasi Visual",
+    "Manajemen Perkantoran",
+    "Teknik Kendaraan Ringan",
+    "Teknik Komputer dan Jaringan",
   ],
 };
 

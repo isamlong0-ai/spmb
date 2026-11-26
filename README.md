@@ -91,7 +91,9 @@ Aplikasi **pengumpulan data calon siswa** untuk SPMB berbasis **HTML + CSS + Jav
 - **CRUD lengkap**: lihat, edit seluruh field + nilai rapor, hapus data
 - Export **Excel (.xlsx)** dengan 2 sheet: Calon Siswa & Nilai Rapor (tetap tersedia CSV)
 - **Editor Konten Beranda**: mengatur judul, tagline, sambutan, tahun pelajaran, waktu, **status buka/tutup formulir**, dan tanggal sebagai catatan
-- Menu **🎓 Data Siswa Diterima**: tab per jurusan, tabel siswa hasil dinas, tombol **Upload Dokumen Dinas** (file HTML ekspor portal), **Tambah dari Formulir**, **Mutasi/Pindah Jurusan**, **Nonaktifkan/Aktifkan** siswa (tetap tersimpan, tidak dihitung aktif), export Excel per jurusan & universal
+- Menu **🎓 Data Siswa Diterima**: tab **Semua + 7 jurusan diurutkan abjad + tab Nonaktif**, tabel siswa hasil dinas, tombol **Upload Dokumen Dinas** (file HTML ekspor portal), **Tambah dari Formulir**, **Mutasi/Pindah Jurusan**, **Nonaktifkan/Aktifkan** siswa, export Excel per jurusan & universal
+- Data hasil **tersimpan per tahun pelajaran** (kolom `tahun_pelajaran`); dropdown tahun di halaman ini untuk melihat tahun lama. Import tahun berikutnya **tidak menimpa** tahun sebelumnya
+- Nama siswa di-*proper case* saat import; siswa nonaktif **tidak tampil di tabel maupun export** (hanya di tab Nonaktif untuk diaktifkan kembali)
 - Tombol **🔄 Tarik Info dari Portal Dinas** → draft bisa diedit → **Simpan Info Dinas** → tampil di beranda (data lama tetap tampil bila gagal)
 - Pengatur tahun pelajaran aktif untuk form publik
 - **Ganti password** akun admin langsung dari panel (menu 🔑 Ganti Password)
