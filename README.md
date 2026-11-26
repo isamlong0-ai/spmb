@@ -112,7 +112,6 @@ Project yang sudah dibuat:
 | Project ref | `eyugtyqppolmynhxccot` |
 | Region | `ap-southeast-1` (Singapore) |
 | URL | `https://eyugtyqppolmynhxccot.supabase.co` |
-| DB password | `SpMb2026#TkSambas!Kbr` |
 
 ✅ **Sudah aktif:** migration `supabase/migrations/0001_init.sql` telah dijalankan dan tabel/RLS/RPC/akun admin sudah terbentuk. ✅ **Anon key juga sudah terisi** di `assets/js/config.js`.
 
