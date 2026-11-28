@@ -16,6 +16,7 @@
     <aside class="sidebar">
       <h3>Web Sekolah</h3>
       <div class="side-link active" data-panel="berita">📰 Berita</div>
+      <div class="side-link" data-panel="galeri">🖼️ Galeri</div>
       <div class="side-link" data-panel="info">ℹ️ Informasi</div>
       <div class="side-link" data-panel="profil">🏫 Profil Detail</div>
       <div class="side-link" data-panel="daftar">📋 Daftar (Jurusan/Fasilitas/Ekskul/Agenda)</div>
@@ -162,6 +163,35 @@
 
           <div class="actions"><button class="btn btn-primary" id="btnSimpanProfil">Simpan Profil Detail</button></div>
         </div>
+      </section>
+
+      <!-- GALERI -->
+      <section class="panel" id="panel-galeri">
+        <h2>Galeri</h2>
+        <p style="color:var(--muted);margin-top:-6px">Kelola foto galeri sekolah.</p>
+        <div class="card" style="padding:18px;margin-bottom:18px">
+          <h3 style="margin-top:0" id="formGaleriTitle">Tambah Foto</h3>
+          <div class="form-grid">
+            <div><label>Judul</label><input class="input" id="gJudul"></div>
+            <div><label>Kategori</label><input class="input" id="gKategori" placeholder="Kegiatan"></div>
+            <div><label>Tanggal</label><input class="input" id="gTanggal" type="date"></div>
+            <div><label>Status</label><select class="input" id="gStatus">
+              <option value="draft">Draft</option>
+              <option value="pending">Menunggu Verifikasi</option>
+              <option value="published">Terbit (Published)</option>
+            </select></div>
+            <div class="full"><label>Gambar</label><input class="input" id="gFile" type="file" accept="image/*"><input class="input" id="gUrl" placeholder="atau URL gambar" style="margin-top:6px"></div>
+          </div>
+          <div class="actions">
+            <button class="btn btn-primary" id="btnSimpanGaleri">Simpan</button>
+            <button class="btn btn-outline" id="btnResetGaleri">Batal</button>
+          </div>
+          <input type="hidden" id="gId">
+        </div>
+        <table class="table" id="tblGaleri">
+          <thead><tr><th>Judul</th><th>Kategori</th><th>Tanggal</th><th>Status</th><th>Aksi</th></tr></thead>
+          <tbody></tbody>
+        </table>
       </section>
 
       <!-- DAFTAR -->

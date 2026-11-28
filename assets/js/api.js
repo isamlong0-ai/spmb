@@ -143,3 +143,25 @@ export async function deleteAlumni(id) {
   const { error } = await supabase.from("alumni").delete().eq("id", id);
   if (error) throw error;
 }
+
+// ---------- Galeri ----------
+export async function listGaleri({ limit = 12, offset = 0, publishedOnly = true } = {}) {
+  let q = supabase.from("web_galeri").select("*", { count: "exact" }).order("tanggal", { ascending: false }).range(offset, offset + limit - 1);
+  if (publishedOnly) q = q.eq("is_published", true);
+  const { data, error, count } = await q;
+  if (error) throw error;
+  return { data: data || [], count: count || 0 };
+}
+export async function saveGaleri(payload) {
+  if (payload.id) {
+    const { error } = await supabase.from("web_galeri").update(payload).eq("id", payload.id);
+    if (error) throw error;
+  } else {
+    const { error } = await supabase.from("web_galeri").insert(payload);
+    if (error) throw error;
+  }
+}
+export async function deleteGaleri(id) {
+  const { error } = await supabase.from("web_galeri").delete().eq("id", id);
+  if (error) throw error;
+}

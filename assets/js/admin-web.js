@@ -5,6 +5,7 @@ import {
   listBerita, getBerita, saveBerita, deleteBerita,
   listDaftar, saveDaftar, deleteDaftar,
   listAlumni, saveAlumni, deleteAlumni,
+  listGaleri, saveGaleri, deleteGaleri,
   uploadGambar,
   listUsers, createUser, deleteUser, resetUserPassword,
   supabase,
@@ -372,6 +373,68 @@ async function simpanProfilDetail() {
   } catch (e) { toast(e.message, "err"); }
 }
 
+// ---------- GALERI ----------
+async function muatGaleriTable() {
+  const { data } = await listGaleri({ limit: 50, offset: 0, publishedOnly: false });
+  const tbody = $("#tblGaleri tbody");
+  tbody.innerHTML = data.map(g => `<tr>
+    <td>${escapeHtml(g.judul || "-")}</td>
+    <td>${escapeHtml(g.kategori || "-")}</td>
+    <td>${g.tanggal ? new Date(g.tanggal).toLocaleDateString("id-ID") : "-"}</td>
+    <td>${g.status || (g.is_published ? "published" : "draft")}</td>
+    <td>
+      <button class="btn btn-outline btn-sm" data-edit="${g.id}">Edit</button>
+      <button class="btn btn-outline btn-sm" data-del="${g.id}" style="color:#dc2626">Hapus</button>
+    </td>
+  </tr>`).join("");
+  tbody.querySelectorAll("[data-edit]").forEach(b => b.addEventListener("click", () => editGaleri(b.dataset.edit)));
+  tbody.querySelectorAll("[data-del]").forEach(b => b.addEventListener("click", () => hapusGaleri(b.dataset.del)));
+}
+async function editGaleri(id) {
+  const { data } = await listGaleri({ limit: 100, offset: 0, publishedOnly: false });
+  const g = data.find(x => x.id === id);
+  if (!g) return;
+  $("#gId").value = g.id;
+  $("#gJudul").value = g.judul || "";
+  $("#gKategori").value = g.kategori || "";
+  $("#gTanggal").value = (g.tanggal || "").slice(0, 10);
+  $("#gStatus").value = g.status || (g.is_published ? "published" : "draft");
+  $("#gUrl").value = g.gambar_url || "";
+  $("#formGaleriTitle").textContent = "Edit Foto";
+}
+function resetGaleri() {
+  $("#gId").value = ""; $("#gJudul").value = ""; $("#gKategori").value = "";
+  $("#gTanggal").value = new Date().toISOString().slice(0,10); $("#gStatus").value = "draft";
+  $("#gUrl").value = ""; $("#gFile").value = "";
+  $("#formGaleriTitle").textContent = "Tambah Foto";
+}
+async function hapusGaleri(id) {
+  if (!confirm("Hapus foto ini?")) return;
+  try { await deleteGaleri(id); toast("Foto dihapus", "ok"); await muatGaleriTable(); }
+  catch (e) { toast(e.message, "err"); }
+}
+async function simpanGaleri() {
+  try {
+    let url = $("#gUrl").value.trim();
+    const file = $("#gFile").files[0];
+    if (file) url = await uploadGambar(file, "galeri");
+    const payload = {
+      judul: $("#gJudul").value.trim() || null,
+      kategori: $("#gKategori").value.trim() || null,
+      tanggal: $("#gTanggal").value,
+      gambar_url: url,
+      status: $("#gStatus").value,
+      is_published: $("#gStatus").value === "published",
+    };
+    const id = $("#gId").value;
+    if (id) payload.id = id;
+    await saveGaleri(payload);
+    toast("Foto disimpan", "ok");
+    resetGaleri();
+    await muatGaleriTable();
+  } catch (e) { toast(e.message, "err"); }
+}
+
 // ---------- AKUN ----------
 async function gantiPassword() {
   const lama = $("#pLama").value, baru = $("#pBaru").value, konf = $("#pKonf").value;
@@ -399,6 +462,9 @@ async function main() {
     const sel = $("#bStatus");
     Array.from(sel.options).forEach(o => { if (o.value === "published") o.remove(); });
     $("#bStatus").value = "pending";
+    const gsel = $("#gStatus");
+    Array.from(gsel.options).forEach(o => { if (o.value === "published") o.remove(); });
+    $("#gStatus").value = "pending";
   }
 
   $("#btnSimpanBerita").addEventListener("click", simpanBerita);
@@ -437,6 +503,8 @@ async function main() {
   $("#btnGantiPass").addEventListener("click", gantiPassword);
   $("#btnSimpanProfil").addEventListener("click", simpanProfilDetail);
   $("#btnSimpanAlumni").addEventListener("click", simpanAlumni);
+  $("#btnSimpanGaleri").addEventListener("click", simpanGaleri);
+  $("#btnResetGaleri").addEventListener("click", resetGaleri);
   $("#btnResetAlumni").addEventListener("click", resetAlumni);
   $("#btnLogout2").addEventListener("click", async () => { await signOut(); location.href = "admin.html"; });
 
@@ -445,6 +513,7 @@ async function main() {
   await muatProfilDetail();
   await muatDaftarTable();
   await muatAlumniTable();
+  await muatGaleriTable();
   if (role === "admin") await muatUsers();
   // default panel berita
 }

@@ -99,6 +99,19 @@
   </div>
 </section>
 
+<!-- ===================== GALERI ===================== -->
+<section class="section alt" id="galeri">
+  <div class="wrap">
+    <div class="kicker">Galeri</div>
+    <h2 class="sec-title">Galeri Foto Sekolah</h2>
+    <p class="sec-sub">Dokumentasi kegiatan dan suasana sekolah.</p>
+    <div class="news-grid" id="galeriGrid"></div>
+    <div class="load-more">
+      <button class="btn btn-outline" id="btnLoadGaleri">Muat Lebih Banyak</button>
+    </div>
+  </div>
+</section>
+
 <!-- ===================== PROFIL ===================== -->
 <section class="section alt" id="profil">
   <div class="wrap">
@@ -209,6 +222,19 @@
 
 <!-- ===================== BACK TO TOP ===================== -->
 <button id="btnTop" class="btn-top" aria-label="Kembali ke atas">&#8593;</button>
+
+<!-- ===================== LIGHTBOX GALERI ===================== -->
+<div class="modal-backdrop" id="modalGaleri">
+  <div class="modal" style="max-width:900px">
+    <div class="modal-head">
+      <h3 id="modalGaleriJudul">-</h3>
+      <button class="modal-close" id="modalGaleriClose">&times;</button>
+    </div>
+    <div class="modal-body" style="text-align:center">
+      <img id="modalGaleriImg" alt="" style="max-width:100%;border-radius:10px">
+    </div>
+  </div>
+</div>
 
 <!-- ===================== TOAST ===================== -->
 <div id="toastWrap"></div>

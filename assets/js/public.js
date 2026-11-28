@@ -1,5 +1,5 @@
 import { CONFIG } from "./config.js";
-import { getInfo, listBerita, getBerita, listDaftar } from "./api.js";
+import { getInfo, listBerita, getBerita, listDaftar, listGaleri } from "./api.js";
 
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
@@ -260,6 +260,54 @@ async function muatDaftar() {
   }
 }
 
+let galeriOffset = 0;
+const GALERI_LIMIT = 12;
+let galeriTotal = 0;
+
+function kartuGaleri(g) {
+  return `<article class="card" data-id="${g.id}" style="cursor:pointer">
+    <img class="news-img" src="${g.gambar_url}" alt="${escapeHtml(g.judul || "")}" loading="lazy">
+    <div class="card-body">
+      <div class="news-meta"><span class="badge cat">${escapeHtml(g.kategori || "Umum")}</span><span>${new Date(g.tanggal).toLocaleDateString("id-ID", { day:"2-digit", month:"short", year:"numeric" })}</span></div>
+      <h3 class="news-title">${escapeHtml(g.judul || "Foto")}</h3>
+    </div>
+  </article>`;
+}
+
+async function muatGaleri(reset = false) {
+  if (reset) { galeriOffset = 0; $("#galeriGrid").innerHTML = ""; }
+  try {
+    const { data, count } = await listGaleri({ limit: GALERI_LIMIT, offset: galeriOffset, publishedOnly: true });
+    galeriTotal = count;
+    const grid = $("#galeriGrid");
+    if (galeriOffset === 0 && data.length === 0) {
+      grid.innerHTML = `<p style="color:var(--muted)">Belum ada foto galeri.</p>`;
+    } else {
+      grid.insertAdjacentHTML("beforeend", data.map(kartuGaleri).join(""));
+    }
+    galeriOffset += data.length;
+    $("#btnLoadGaleri").style.display = galeriOffset < galeriTotal ? "inline-flex" : "none";
+    grid.querySelectorAll("article.card").forEach(c => {
+      if (c.dataset.bound) return;
+      c.dataset.bound = "1";
+      c.addEventListener("click", () => bukaGaleri(c.dataset.id, data));
+    });
+  } catch (e) { toast("Gagal memuat galeri", "err"); }
+}
+
+function bukaGaleri(id, data) {
+  const g = data.find(x => x.id === id);
+  if (!g) return;
+  $("#modalGaleriJudul").textContent = g.judul || "Foto";
+  $("#modalGaleriImg").src = g.gambar_url;
+  $("#modalGaleri").classList.add("open");
+}
+
+function initGaleriModal() {
+  $("#modalGaleriClose").addEventListener("click", () => $("#modalGaleri").classList.remove("open"));
+  $("#modalGaleri").addEventListener("click", (e) => { if (e.target.id === "modalGaleri") $("#modalGaleri").classList.remove("open"); });
+}
+
 function initTabs() {
   $$("#infoTabs .tab").forEach(t => t.addEventListener("click", () => {
     $$("#infoTabs .tab").forEach(x => x.classList.remove("active"));
@@ -311,6 +359,9 @@ async function main() {
   await muatBerita(true);
   await muatSidebar();
   await muatDaftar();
+  await muatGaleri(true);
+  initGaleriModal();
+  $("#btnLoadGaleri").addEventListener("click", () => muatGaleri(false));
   $("#btnLoadMore").addEventListener("click", () => muatBerita(false));
 }
 
