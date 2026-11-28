@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0f172a">
+  <meta name="description" content="Pendaftaran dan direktori alumni SMK Negeri 1 Teluk Keramat.">
+  <title>Alumni — SMK Negeri 1 Teluk Keramat</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<nav class="nav">
+  <div class="wrap">
+    <a class="brand" href="index.html">
+      <img src="https://lh3.googleusercontent.com/d/1zArv6yZsZ-YZCSTtEbTBUQp4C0kv325f" alt="Logo Sekolah">
+      <div>SMKN 1 TELUK KERAMAT<small>Portal Berita &amp; Informasi Sekolah</small></div>
+    </a>
+    <button class="hamburger" id="hamburger" aria-label="Menu">&#9776;</button>
+    <div class="menu" id="menu">
+      <a href="index.html#berita">Berita</a>
+      <a href="alumni.html">Alumni</a>
+      <a href="index.html#profil">Profil</a>
+      <a href="index.html#kontak">Kontak</a>
+      <a class="btn-spmb" href="spmb/index.html" target="_blank" rel="noopener">SPMB</a>
+      <a href="admin.html">Login</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero hero-compact">
+  <div class="wrap">
+    <div>
+      <h1>Alumni SMKN 1 Teluk Keramat</h1>
+      <p>Pendaftaran dan direktori alumni. Isi formulir untuk terdaftar; data tampil setelah disetujui admin.</p>
+    </div>
+  </div>
+</header>
+
+<section class="section">
+  <div class="wrap">
+    <div class="tabs" id="alumniTabs">
+      <button class="tab active" data-tab="formulir">Formulir Alumni</button>
+      <button class="tab" data-tab="data">Data Alumni</button>
+    </div>
+
+    <div class="tab-panel active" id="panel-formulir">
+      <div id="alumniFormWrap" class="card" style="padding:18px">
+        <h3 style="margin-top:0">Formulir Alumni</h3>
+        <div id="alumniFormStatus" style="color:var(--muted);font-size:13px;margin-bottom:10px"></div>
+        <form id="alumniForm">
+          <div class="form-grid">
+            <div><label>Nama Lengkap</label><input class="input" id="aNama" required></div>
+            <div><label>Tahun Lulus</label><input class="input" id="aTahun" type="number" min="1990" max="2100" required></div>
+            <div><label>NISN (jika ada)</label><input class="input" id="aNisn"></div>
+            <div><label>NIS / NIPD (jika ada)</label><input class="input" id="aNis"></div>
+            <div><label>Jurusan</label><select class="input" id="aJurusan"></select></div>
+            <div><label>Status Saat Ini</label><select class="input" id="aStatus">
+              <option value="kuliah">Kuliah</option>
+              <option value="kerja">Bekerja</option>
+              <option value="wirausaha">Wirausaha</option>
+              <option value="mencari">Sedang Mencari</option>
+              <option value="lainnya">Lainnya</option>
+            </select></div>
+            <div><label>Institusi / Perusahaan</label><input class="input" id="aInstitusi"></div>
+            <div><label>Kota</label><input class="input" id="aKota"></div>
+            <div class="full"><label>Kontak (WA/Email)</label><input class="input" id="aKontak"></div>
+            <div class="full"><label>Catatan</label><textarea class="input" id="aCatatan" style="min-height:70px"></textarea></div>
+          </div>
+          <div class="actions"><button class="btn btn-primary" type="submit">Kirim Data Alumni</button></div>
+        </form>
+      </div>
+    </div>
+
+    <div class="tab-panel" id="panel-data" style="display:none">
+      <div class="news-toolbar" style="margin-bottom:14px">
+        <div class="news-search-wrap" style="max-width:360px">
+          <span class="search-ic">&#128269;</span>
+          <input id="alumniSearch" class="news-search" type="search" placeholder="Cari nama/jurusan/institusi...">
+        </div>
+        <div class="filter-row" id="alumniFilter"></div>
+      </div>
+      <div class="news-grid" id="alumniGrid"></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="grid grid-3">
+      <div>
+        <h5>SMK Negeri 1 Teluk Keramat</h5>
+        <p>Portal berita &amp; informasi sekolah.</p>
+      </div>
+      <div>
+        <h5>Tautan</h5>
+        <p>
+          <a href="index.html#berita">Berita</a><br>
+          <a href="alumni.html">Alumni</a><br>
+          <a href="index.html#profil">Profil</a><br>
+          <a href="spmb/index.html">SPMB</a><br>
+          <a href="admin.html">Login</a>
+        </p>
+      </div>
+      <div>
+        <h5>Informasi</h5>
+        <p>Portal Dinas: <a href="https://spmb-dikbud.kalbarprov.go.id/" target="_blank" rel="noopener">spmb-dikbud.kalbarprov.go.id</a></p>
+      </div>
+    </div>
+    <div class="wrap bottom">© 2026 SMK Negeri 1 Teluk Keramat — Seluruh hak dilindungi.</div>
+  </div>
+</footer>
+
+<div id="toastWrap"></div>
+<script type="module" src="assets/js/alumni.js"></script>
+</body>
+</html>

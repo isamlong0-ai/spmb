@@ -37,10 +37,12 @@ export async function updateInfo(payload) {
   if (error) throw error;
 }
 
-export async function listBerita({ kategori = null, limit = 6, offset = 0, publishedOnly = true, q = null } = {}) {
-  let query = supabase.from("web_berita").select("*", { count: "exact" }).order("tanggal", { ascending: false }).range(offset, offset + limit - 1);
+export async function listBerita({ kategori = null, limit = 6, offset = 0, publishedOnly = true, q = null, pinned = null } = {}) {
+  let query = supabase.from("web_berita").select("*", { count: "exact" }).order("is_pinned", { ascending: false }).order("tanggal", { ascending: false }).range(offset, offset + limit - 1);
   if (publishedOnly) query = query.eq("is_published", true);
   if (kategori && kategori !== "Semua") query = query.eq("kategori", kategori);
+  if (pinned === true) query = query.eq("is_pinned", true);
+  if (pinned === false) query = query.eq("is_pinned", false);
   if (q && q.trim()) {
     const s = q.trim().replace(/[%_]/g, "");
     if (s) query = query.or(`judul.ilike.%${s}%,ringkasan.ilike.%${s}%,isi.ilike.%${s}%`);

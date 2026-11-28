@@ -1,5 +1,5 @@
 import { CONFIG } from "./config.js";
-import { getInfo, listBerita, getBerita, listDaftar, listAlumni, saveAlumni } from "./api.js";
+import { getInfo, listBerita, getBerita, listDaftar } from "./api.js";
 
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
@@ -112,15 +112,16 @@ function kartuBerita(b) {
   </article>`;
 }
 
-function renderFeatured(b) {
+function renderFeatured(b, pinned = false) {
   const wrap = $("#newsFeatured");
   if (!b) { wrap.innerHTML = ""; return; }
   const tgl = new Date(b.tanggal).toLocaleDateString("id-ID", { day: "2-digit", month: "long", year: "numeric" });
   const img = b.gambar_url ? `<img class="f-img" src="${b.gambar_url}" alt="" loading="lazy">` : `<div class="f-img"></div>`;
+  const kicker = pinned ? `📌 Berita Disematkan &bull; ${escapeHtml(b.kategori || "Umum")} &bull; ${tgl}` : `${escapeHtml(b.kategori || "Umum")} &bull; ${tgl}`;
   wrap.innerHTML = `<div class="featured-card" data-id="${b.id}">
     ${img}
     <div class="f-body">
-      <div class="f-kicker">${escapeHtml(b.kategori || "Umum")} &bull; ${tgl}</div>
+      <div class="f-kicker">${kicker}</div>
       <h3>${escapeHtml(b.judul)}</h3>
       <p>${escapeHtml(b.ringkasan || "")}</p>
       <div><button class="btn btn-primary btn-sm" data-open="${b.id}">Baca Selengkapnya</button></div>
@@ -133,15 +134,24 @@ function renderFeatured(b) {
 async function muatBerita(reset = false) {
   if (reset) { offset = 0; $("#newsGrid").innerHTML = ""; $("#newsFeatured").innerHTML = ""; }
   try {
-    const { data, count } = await listBerita({ kategori: kategoriAktif, limit: LIMIT, offset, publishedOnly: true, q: searchQuery });
+    const isFilter = (searchQuery.trim() !== "" || (kategoriAktif && kategoriAktif !== "Semua"));
+    // berita disematkan (pinned) hanya saat tidak ada filter/pencarian
+    let pinned = [];
+    if (offset === 0 && !isFilter) {
+      try { const r = await listBerita({ limit: 5, publishedOnly: true, pinned: true }); pinned = r || []; } catch (e) { pinned = []; }
+    }
+    const { data, count } = await listBerita({ kategori: kategoriAktif, limit: LIMIT, offset, publishedOnly: true, q: searchQuery, pinned: (isFilter ? null : false) });
     total = count;
     const grid = $("#newsGrid");
     if (offset === 0) {
-      if (data.length === 0) {
+      if (pinned.length > 0) {
+        renderFeatured(pinned[0], true);
+        grid.insertAdjacentHTML("beforeend", data.map(kartuBerita).join(""));
+      } else if (data.length === 0) {
         grid.innerHTML = `<p style="color:var(--muted)">Tidak ada berita yang cocok.</p>`;
         renderFeatured(null);
       } else {
-        renderFeatured(data[0]);
+        renderFeatured(data[0], false);
         grid.insertAdjacentHTML("beforeend", data.slice(1).map(kartuBerita).join(""));
       }
     } else {
@@ -248,89 +258,6 @@ async function muatDaftar() {
   }
 }
 
-let allAlumni = [];
-let alumniStatusFilter = "semua";
-let alumniSearchQuery = "";
-
-function statusLabel(s) {
-  return ({ kuliah:"Kuliah", kerja:"Bekerja", wirausaha:"Wirausaha", mencari:"Mencari Kerja", lainnya:"Lainnya", belum_dilacak:"Belum Dilacak" }[s] || s);
-}
-
-function kartuAlumni(a) {
-  return `<article class="card"><div class="card-body">
-    <div class="news-meta"><span class="badge cat">${escapeHtml(a.jurusan || "Umum")}</span><span>${a.tahun_lulus}</span></div>
-    <h3 class="news-title">${escapeHtml(a.nama)}</h3>
-    <p class="news-excerpt">${escapeHtml(statusLabel(a.status))}${a.institusi ? " — " + escapeHtml(a.institusi) : ""}${a.kota ? " (" + escapeHtml(a.kota) + ")" : ""}</p>
-  </div></article>`;
-}
-
-function renderAlumni() {
-  const grid = $("#alumniGrid");
-  let data = allAlumni;
-  if (alumniStatusFilter !== "semua") data = data.filter(a => a.status === alumniStatusFilter);
-  if (alumniSearchQuery.trim()) {
-    const q = alumniSearchQuery.toLowerCase();
-    data = data.filter(a => (a.nama + " " + (a.jurusan||"") + " " + (a.institusi||"") + " " + (a.kota||"")).toLowerCase().includes(q));
-  }
-  if (data.length === 0) { grid.innerHTML = `<p style="color:var(--muted)">Belum ada alumni yang ditampilkan.</p>`; return; }
-  grid.innerHTML = data.map(kartuAlumni).join("");
-}
-
-async function muatAlumni() {
-  try {
-    allAlumni = await listAlumni({ publishedOnly: true });
-    renderAlumni();
-  } catch (e) { $("#alumniGrid").innerHTML = `<p style="color:var(--muted)">Belum ada data alumni.</p>`; }
-}
-
-function initAlumniFilter() {
-  const statuses = ["semua","kuliah","kerja","wirausaha","mencari","lainnya"];
-  const labels = { semua:"Semua", kuliah:"Kuliah", kerja:"Kerja", wirausaha:"Wirausaha", mencari:"Mencari", lainnya:"Lainnya" };
-  $("#alumniFilter").innerHTML = statuses.map(s => `<button class="chip ${s === alumniStatusFilter ? "active" : ""}" data-status="${s}">${labels[s]}</button>`).join("");
-  $("#alumniFilter").querySelectorAll(".chip").forEach(b => b.addEventListener("click", () => {
-    alumniStatusFilter = b.dataset.status;
-    initAlumniFilter();
-    renderAlumni();
-  }));
-  $("#alumniSearch").addEventListener("input", (e) => { alumniSearchQuery = e.target.value; renderAlumni(); });
-}
-
-async function initAlumniForm() {
-  // jurusan options
-  const sel = $("#aJurusan");
-  try {
-    const items = await listDaftar("jurusan");
-    if (items.length) sel.innerHTML = items.map(i => `<option value="${escapeHtml(i.judul)}">${escapeHtml(i.judul)}</option>`).join("");
-    else throw new Error("none");
-  } catch (e) {
-    const fallback = ["Teknik Komputer dan Jaringan","Akuntansi","Desain Komunikasi Visual","Manajemen Perkantoran","Teknik Kendaraan Ringan","Agribisnis Tanaman Pangan dan Hortikultura","Bisnis Retail"];
-    sel.innerHTML = fallback.map(j => `<option value="${j}">${j}</option>`).join("");
-  }
-  $("#alumniForm").addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const payload = {
-      nama: $("#aNama").value.trim(),
-      tahun_lulus: parseInt($("#aTahun").value, 10),
-      nisn: $("#aNisn").value.trim() || null,
-      nis: $("#aNis").value.trim() || null,
-      jurusan: $("#aJurusan").value,
-      status: $("#aStatus").value,
-      institusi: $("#aInstitusi").value.trim() || null,
-      kota: $("#aKota").value.trim() || null,
-      kontak: $("#aKontak").value.trim() || null,
-      catatan: $("#aCatatan").value.trim() || null,
-      is_published: false,
-    };
-    if (!payload.nama || !payload.tahun_lulus) { toast("Nama dan tahun lulus wajib", "err"); return; }
-    if (!payload.nisn && !payload.nis) { toast("Isi NISN atau NIS/NIPD", "err"); return; }
-    try {
-      await saveAlumni(payload);
-      toast("Data alumni terkirim, menunggu persetujuan admin", "ok");
-      $("#alumniForm").reset();
-    } catch (err) { toast(err.message || "Gagal mengirim", "err"); }
-  });
-}
-
 function initTabs() {
   $$("#infoTabs .tab").forEach(t => t.addEventListener("click", () => {
     $$("#infoTabs .tab").forEach(x => x.classList.remove("active"));
@@ -382,9 +309,6 @@ async function main() {
   await muatBerita(true);
   await muatSidebar();
   await muatDaftar();
-  initAlumniFilter();
-  await initAlumniForm();
-  await muatAlumni();
   $("#btnLoadMore").addEventListener("click", () => muatBerita(false));
 }
 

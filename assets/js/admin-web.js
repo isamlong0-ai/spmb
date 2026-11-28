@@ -68,6 +68,7 @@ function resetFormBerita() {
   $("#bGambarUrl").value = ""; $("#bGambarFile").value = "";
   $("#bTanggal").value = new Date().toISOString().slice(0, 10);
   $("#bStatus").value = "true";
+  $("#bPinned").value = "false";
   $("#formBeritaTitle").textContent = "Tambah Berita";
 }
 async function editBerita(id) {
@@ -77,6 +78,7 @@ async function editBerita(id) {
   $("#bKategori").value = b.kategori || CONFIG.KATEGORI[0];
   $("#bTanggal").value = (b.tanggal || "").slice(0, 10);
   $("#bStatus").value = String(!!b.is_published);
+  $("#bPinned").value = String(!!b.is_pinned);
   $("#bRingkasan").value = b.ringkasan || "";
   $("#bIsi").value = b.isi || "";
   $("#bGambarUrl").value = b.gambar_url || "";
@@ -101,6 +103,7 @@ async function simpanBerita() {
       isi: $("#bIsi").value.trim(),
       gambar_url: gambar || null,
       is_published: $("#bStatus").value === "true",
+      is_pinned: $("#bPinned").value === "true",
     };
     const id = $("#bId").value;
     if (id) { payload.id = id; await saveBerita(payload); }

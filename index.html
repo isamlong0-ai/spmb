@@ -24,7 +24,7 @@
     <button class="hamburger" id="hamburger" aria-label="Menu">&#9776;</button>
     <div class="menu" id="menu">
       <a href="#berita">Berita</a>
-      <a href="#alumni">Alumni</a>
+      <a href="alumni.html">Alumni</a>
       <a href="#profil">Profil</a>
       <a href="#informasi">Informasi</a>
       <a href="#kontak">Kontak</a>
@@ -133,50 +133,6 @@
     <div class="tab-panel" id="panel-fasilitas"></div>
     <div class="tab-panel" id="panel-ekskul"></div>
     <div class="tab-panel" id="panel-agenda"></div>
-  </div>
-</section>
-
-<!-- ===================== ALUMNI ===================== -->
-<section class="section" id="alumni">
-  <div class="wrap">
-    <div class="kicker">Alumni</div>
-    <h2 class="sec-title">Direktori &amp; Pendaftaran Alumni</h2>
-    <p class="sec-sub">Alumni dapat mendaftarkan diri dan memperbarui status (kuliah/kerja/wirausaha). Data tampil setelah disetujui admin.</p>
-
-    <div id="alumniFormWrap" class="card" style="padding:18px;margin-bottom:24px">
-      <h3 style="margin-top:0">Formulir Alumni</h3>
-      <div id="alumniFormStatus" style="color:var(--muted);font-size:13px;margin-bottom:10px"></div>
-      <form id="alumniForm">
-        <div class="form-grid">
-          <div><label>Nama Lengkap</label><input class="input" id="aNama" required></div>
-          <div><label>Tahun Lulus</label><input class="input" id="aTahun" type="number" min="1990" max="2100" required></div>
-          <div><label>NISN (jika ada)</label><input class="input" id="aNisn"></div>
-          <div><label>NIS / NIPD (jika ada)</label><input class="input" id="aNis"></div>
-          <div><label>Jurusan</label><select class="input" id="aJurusan"></select></div>
-          <div><label>Status Saat Ini</label><select class="input" id="aStatus">
-            <option value="kuliah">Kuliah</option>
-            <option value="kerja">Bekerja</option>
-            <option value="wirausaha">Wirausaha</option>
-            <option value="mencari">Sedang Mencari</option>
-            <option value="lainnya">Lainnya</option>
-          </select></div>
-          <div><label>Institusi / Perusahaan</label><input class="input" id="aInstitusi"></div>
-          <div><label>Kota</label><input class="input" id="aKota"></div>
-          <div class="full"><label>Kontak (WA/Email)</label><input class="input" id="aKontak"></div>
-          <div class="full"><label>Catatan</label><textarea class="input" id="aCatatan" style="min-height:70px"></textarea></div>
-        </div>
-        <div class="actions"><button class="btn btn-primary" type="submit">Kirim Data Alumni</button></div>
-      </form>
-    </div>
-
-    <div class="news-toolbar" style="margin-bottom:14px">
-      <div class="news-search-wrap" style="max-width:360px">
-        <span class="search-ic">&#128269;</span>
-        <input id="alumniSearch" class="news-search" type="search" placeholder="Cari nama/jurusan/institusi...">
-      </div>
-      <div class="filter-row" id="alumniFilter"></div>
-    </div>
-    <div class="news-grid" id="alumniGrid"></div>
   </div>
 </section>
 
