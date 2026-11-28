@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#0f172a">
-  <meta name="description" content="Website resmi SMK Negeri 1 Teluk Keramat. Berita, kegiatan, dan informasi sekolah.">
-  <title>SMK Negeri 1 Teluk Keramat</title>
+  <meta name="description" content="Portal berita dan informasi resmi SMK Negeri 1 Teluk Keramat.">
+  <title>Portal Berita — SMK Negeri 1 Teluk Keramat</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -19,12 +19,12 @@
   <div class="wrap">
     <a class="brand" href="#beranda">
       <img src="https://lh3.googleusercontent.com/d/1zArv6yZsZ-YZCSTtEbTBUQp4C0kv325f" alt="Logo Sekolah">
-      <div>SMKN 1 TELUK KERAMAT<small id="navTagline">Sekolah Vokasi Unggul</small></div>
+      <div>SMKN 1 TELUK KERAMAT<small id="navTagline">Portal Berita &amp; Informasi Sekolah</small></div>
     </a>
     <button class="hamburger" id="hamburger" aria-label="Menu">&#9776;</button>
     <div class="menu" id="menu">
-      <a href="#profil">Profil</a>
       <a href="#berita">Berita</a>
+      <a href="#profil">Profil</a>
       <a href="#informasi">Informasi</a>
       <a href="#kontak">Kontak</a>
       <a class="btn-spmb" href="spmb/index.html" target="_blank" rel="noopener">SPMB</a>
@@ -33,20 +33,20 @@
   </div>
 </nav>
 
-<!-- ===================== HERO ===================== -->
-<header class="hero" id="beranda">
+<!-- ===================== HERO (compact) ===================== -->
+<header class="hero hero-compact" id="beranda">
   <div class="wrap">
     <div>
-      <span class="badge" style="background:rgba(255,255,255,0.15);color:#a7f3d0">Website Resmi Sekolah</span>
+      <span class="badge" style="background:rgba(255,255,255,0.15);color:#a7f3d0">Portal Berita Resmi</span>
       <h1 id="heroJudul">SMK Negeri 1 Teluk Keramat</h1>
-      <p id="heroTagline">Membangun generasi cerdas, terampil, dan berakhlak melalui pendidikan vokasi yang unggul.</p>
+      <p id="heroTagline">Berita, kegiatan, dan informasi terbaru dari sekolah — disajikan interaktif dan mudah diakses.</p>
       <div class="cta-row">
-        <a class="btn btn-primary" href="#berita">Lihat Berita</a>
+        <a class="btn btn-primary" href="#berita">Baca Berita Terbaru</a>
         <a class="btn btn-ghost" href="spmb/index.html" target="_blank" rel="noopener">Daftar SPMB</a>
       </div>
     </div>
-    <aside class="hero-card">
-      <h3>Informasi Sekolah</h3>
+    <aside class="hero-card hero-stats">
+      <h3>Sekilas Sekolah</h3>
       <div class="hero-stat"><span>Tahun Berdiri</span><strong id="statBerdiri">-</strong></div>
       <div class="hero-stat"><span>Jumlah Siswa</span><strong id="statSiswa">-</strong></div>
       <div class="hero-stat"><span>Guru &amp; Tendik</span><strong id="statGuru">-</strong></div>
@@ -55,8 +55,53 @@
   </div>
 </header>
 
+<!-- ===================== PORTAL BERITA ===================== -->
+<section class="section" id="berita">
+  <div class="wrap">
+    <div class="kicker">Portal Berita</div>
+    <h2 class="sec-title">Berita &amp; Kegiatan Sekolah</h2>
+    <p class="sec-sub">Informasi terbaru seputar kegiatan, prestasi, dan pengumuman sekolah. Cari, filter, dan baca dengan nyaman.</p>
+
+    <!-- toolbar -->
+    <div class="news-toolbar">
+      <div class="news-search-wrap">
+        <span class="search-ic">&#128269;</span>
+        <input id="newsSearch" class="news-search" type="search" placeholder="Cari judul atau isi berita...">
+      </div>
+      <div class="filter-row" id="filterBerita"></div>
+    </div>
+
+    <!-- featured -->
+    <div id="newsFeatured" class="featured-wrap"></div>
+
+    <!-- grid + sidebar -->
+    <div class="news-layout">
+      <div>
+        <div class="news-grid" id="newsGrid">
+          <div class="skeleton" style="height:220px"></div>
+          <div class="skeleton" style="height:220px"></div>
+          <div class="skeleton" style="height:220px"></div>
+        </div>
+        <div class="load-more">
+          <button class="btn btn-outline" id="btnLoadMore">Muat Lebih Banyak</button>
+        </div>
+      </div>
+      <aside class="news-sidebar">
+        <div class="sidebar-card">
+          <h4>Berita Terbaru</h4>
+          <div id="sidebarLatest"></div>
+        </div>
+        <div class="sidebar-card">
+          <h4>Kategori</h4>
+          <div id="sidebarCats"></div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
 <!-- ===================== PROFIL ===================== -->
-<section class="section" id="profil">
+<section class="section alt" id="profil">
   <div class="wrap">
     <div class="kicker">Profil</div>
     <h2 class="sec-title">Tentang Sekolah</h2>
@@ -68,24 +113,6 @@
       <div class="card"><div class="card-body">
         <h3>Misi</h3><p id="misiText" style="white-space:pre-line">-</p>
       </div></div>
-    </div>
-  </div>
-</section>
-
-<!-- ===================== BERITA ===================== -->
-<section class="section alt" id="berita">
-  <div class="wrap">
-    <div class="kicker">Berita</div>
-    <h2 class="sec-title">Berita &amp; Kegiatan Sekolah</h2>
-    <p class="sec-sub">Informasi terbaru seputar kegiatan, prestasi, dan pengumuman sekolah.</p>
-    <div class="filter-row" id="filterBerita"></div>
-    <div class="news-grid" id="newsGrid">
-      <div class="skeleton" style="height:220px"></div>
-      <div class="skeleton" style="height:220px"></div>
-      <div class="skeleton" style="height:220px"></div>
-    </div>
-    <div class="load-more">
-      <button class="btn btn-outline" id="btnLoadMore">Muat Lebih Banyak</button>
     </div>
   </div>
 </section>
@@ -136,14 +163,14 @@
     <div class="grid grid-3">
       <div>
         <h5 id="footerNama">SMK Negeri 1 Teluk Keramat</h5>
-        <p id="footerTagline">Sekolah vokasi unggul.</p>
+        <p id="footerTagline">Portal berita &amp; informasi sekolah.</p>
       </div>
       <div>
         <h5>Tautan</h5>
         <p>
-          <a href="#beranda">Beranda</a><br>
-          <a href="#profil">Profil</a><br>
           <a href="#berita">Berita</a><br>
+          <a href="#profil">Profil</a><br>
+          <a href="#informasi">Informasi</a><br>
           <a href="spmb/index.html">SPMB</a><br>
           <a href="admin.html">Login Admin</a>
         </p>
@@ -169,9 +196,17 @@
       <img id="modalImg" alt="" style="display:none">
       <div class="news-meta" id="modalMeta"></div>
       <div class="isi" id="modalIsi"></div>
+      <div class="share-row">
+        <button class="btn btn-outline btn-sm" id="btnCopyLink">Salin Tautan</button>
+        <a class="btn btn-outline btn-sm" id="btnWaShare" href="#" target="_blank" rel="noopener">Bagikan ke WhatsApp</a>
+      </div>
+      <div id="modalRelated" class="related-wrap"></div>
     </div>
   </div>
 </div>
+
+<!-- ===================== BACK TO TOP ===================== -->
+<button id="btnTop" class="btn-top" aria-label="Kembali ke atas">&#8593;</button>
 
 <!-- ===================== TOAST ===================== -->
 <div id="toastWrap"></div>

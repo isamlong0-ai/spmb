@@ -9,11 +9,14 @@ function toast(msg, type = "") {
   el.className = `toast ${type}`; el.textContent = msg;
   $("#toastWrap").appendChild(el); setTimeout(() => el.remove(), 3500);
 }
+function escapeHtml(s) { return String(s ?? "").replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c])); }
 
 let kategoriAktif = "Semua";
+let searchQuery = "";
 let offset = 0;
 let total = 0;
 const LIMIT = 6;
+let debounceTimer = null;
 
 async function muatInfo() {
   try {
@@ -39,7 +42,6 @@ async function muatInfo() {
     $("#footerNama").textContent = info.nama_sekolah || CONFIG.NAMA_SEKOLAH;
     $("#footerTagline").textContent = info.tagline || CONFIG.TAGLINE;
   } catch (e) {
-    // fallback ke config (mis. tabel belum dibuat / offline)
     $("#heroJudul").textContent = CONFIG.NAMA_SEKOLAH;
     $("#navTagline").textContent = CONFIG.TAGLINE;
     $("#heroTagline").textContent = CONFIG.TAGLINE;
@@ -67,7 +69,6 @@ function renderFilter() {
   wrap.querySelectorAll(".chip").forEach(b => b.addEventListener("click", () => {
     kategoriAktif = b.dataset.cat;
     offset = 0;
-    $("#newsGrid").innerHTML = "";
     renderFilter();
     muatBerita(true);
   }));
@@ -86,22 +87,43 @@ function kartuBerita(b) {
   </article>`;
 }
 
-function escapeHtml(s) { return String(s ?? "").replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c])); }
+function renderFeatured(b) {
+  const wrap = $("#newsFeatured");
+  if (!b) { wrap.innerHTML = ""; return; }
+  const tgl = new Date(b.tanggal).toLocaleDateString("id-ID", { day: "2-digit", month: "long", year: "numeric" });
+  const img = b.gambar_url ? `<img class="f-img" src="${b.gambar_url}" alt="" loading="lazy">` : `<div class="f-img"></div>`;
+  wrap.innerHTML = `<div class="featured-card" data-id="${b.id}">
+    ${img}
+    <div class="f-body">
+      <div class="f-kicker">${escapeHtml(b.kategori || "Umum")} &bull; ${tgl}</div>
+      <h3>${escapeHtml(b.judul)}</h3>
+      <p>${escapeHtml(b.ringkasan || "")}</p>
+      <div><button class="btn btn-primary btn-sm" data-open="${b.id}">Baca Selengkapnya</button></div>
+    </div>
+  </div>`;
+  wrap.querySelector("[data-open]").addEventListener("click", () => bukaBerita(b.id));
+  wrap.querySelector(".featured-card").addEventListener("click", (e) => { if (!e.target.closest("button")) bukaBerita(b.id); });
+}
 
 async function muatBerita(reset = false) {
-  if (reset) { offset = 0; $("#newsGrid").innerHTML = ""; }
+  if (reset) { offset = 0; $("#newsGrid").innerHTML = ""; $("#newsFeatured").innerHTML = ""; }
   try {
-    const { data, count } = await listBerita({ kategori: kategoriAktif, limit: LIMIT, offset, publishedOnly: true });
+    const { data, count } = await listBerita({ kategori: kategoriAktif, limit: LIMIT, offset, publishedOnly: true, q: searchQuery });
     total = count;
     const grid = $("#newsGrid");
-    if (offset === 0 && data.length === 0) {
-      grid.innerHTML = `<p style="color:var(--muted)">Belum ada berita.</p>`;
+    if (offset === 0) {
+      if (data.length === 0) {
+        grid.innerHTML = `<p style="color:var(--muted)">Tidak ada berita yang cocok.</p>`;
+        renderFeatured(null);
+      } else {
+        renderFeatured(data[0]);
+        grid.insertAdjacentHTML("beforeend", data.slice(1).map(kartuBerita).join(""));
+      }
     } else {
       grid.insertAdjacentHTML("beforeend", data.map(kartuBerita).join(""));
     }
     offset += data.length;
     $("#btnLoadMore").style.display = offset < total ? "inline-flex" : "none";
-    // click handlers
     grid.querySelectorAll("article.card").forEach(c => {
       if (c.dataset.bound) return;
       c.dataset.bound = "1";
@@ -123,13 +145,68 @@ async function bukaBerita(id) {
     const tgl = new Date(b.tanggal).toLocaleDateString("id-ID", { day: "2-digit", month: "long", year: "numeric" });
     $("#modalMeta").innerHTML = `<span class="badge cat">${b.kategori || "Umum"}</span><span>${tgl}</span>${b.penulis ? " &bull; " + escapeHtml(b.penulis) : ""}`;
     $("#modalIsi").textContent = b.isi || b.ringkasan || "";
+    // share
+    const url = `${location.origin}${location.pathname}#berita-${b.id}`;
+    $("#btnCopyLink").onclick = async () => {
+      try { await navigator.clipboard.writeText(url); toast("Tautan disalin", "ok"); }
+      catch { toast("Gagal menyalin", "err"); }
+    };
+    $("#btnWaShare").href = `https://wa.me/?text=${encodeURIComponent(b.judul + " " + url)}`;
+    // related
+    const relatedWrap = $("#modalRelated");
+    relatedWrap.innerHTML = "";
+    try {
+      const { data } = await listBerita({ kategori: b.kategori, limit: 4, publishedOnly: true });
+      const rel = data.filter(x => x.id !== b.id).slice(0, 3);
+      if (rel.length) {
+        relatedWrap.innerHTML = `<h4>Berita Terkait</h4>` + rel.map(r => `
+          <div class="related-item" data-id="${r.id}">
+            <div class="ri-title">${escapeHtml(r.judul)}</div>
+            <div class="ri-date">${new Date(r.tanggal).toLocaleDateString("id-ID", { day:"2-digit", month:"short", year:"numeric" })}</div>
+          </div>`).join("");
+        relatedWrap.querySelectorAll(".related-item").forEach(el => el.addEventListener("click", () => { $("#modalBerita").classList.remove("open"); bukaBerita(el.dataset.id); }));
+      }
+    } catch (e) {}
     $("#modalBerita").classList.add("open");
   } catch (e) { toast("Gagal membuka berita", "err"); }
 }
 
+async function muatSidebar() {
+  // berita terbaru
+  try {
+    const { data } = await listBerita({ limit: 5, publishedOnly: true });
+    const wrap = $("#sidebarLatest");
+    wrap.innerHTML = data.map(b => `
+      <div class="sidebar-item" data-id="${b.id}">
+        ${b.gambar_url ? `<img src="${b.gambar_url}" alt="" loading="lazy">` : `<div style="width:56px;height:42px;background:#e2e8f0;border-radius:6px;flex-shrink:0"></div>`}
+        <div>
+          <div class="si-title">${escapeHtml(b.judul)}</div>
+          <div class="si-date">${new Date(b.tanggal).toLocaleDateString("id-ID", { day:"2-digit", month:"short", year:"numeric" })}</div>
+        </div>
+      </div>`).join("");
+    wrap.querySelectorAll(".sidebar-item").forEach(el => el.addEventListener("click", () => bukaBerita(el.dataset.id)));
+  } catch (e) {}
+  // kategori counts
+  try {
+    const counts = {};
+    CONFIG.KATEGORI.forEach(c => counts[c] = 0);
+    for (const c of CONFIG.KATEGORI) {
+      const { count } = await listBerita({ kategori: c, limit: 1, publishedOnly: true });
+      counts[c] = count;
+    }
+    const wrap = $("#sidebarCats");
+    wrap.innerHTML = CONFIG.KATEGORI.map(c => `<div class="sidebar-cat" data-cat="${c}"><span>${c}</span><span class="count">${counts[c]}</span></div>`).join("");
+    wrap.querySelectorAll(".sidebar-cat").forEach(el => el.addEventListener("click", () => {
+      kategoriAktif = el.dataset.cat;
+      offset = 0;
+      renderFilter();
+      muatBerita(true);
+      window.scrollTo({ top: $("#berita").offsetTop - 70, behavior: "smooth" });
+    }));
+  } catch (e) {}
+}
+
 async function muatDaftar() {
-  const mapJenis = { jurusan: "panel-jurusan", fasilitas: "panel-fasilitas", ekskul: "panel-ekskul", agenda: "panel-agenda" };
-  // mapping jenis di DB -> panel
   const jenisDb = { "panel-jurusan": "jurusan", "panel-fasilitas": "fasilitas", "panel-ekskul": "ekstrakurikuler", "panel-agenda": "agenda" };
   for (const panelId of Object.keys(jenisDb)) {
     const el = document.getElementById(panelId);
@@ -158,6 +235,7 @@ function initTabs() {
 function initModal() {
   $("#modalClose").addEventListener("click", () => $("#modalBerita").classList.remove("open"));
   $("#modalBerita").addEventListener("click", (e) => { if (e.target.id === "modalBerita") $("#modalBerita").classList.remove("open"); });
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape") $("#modalBerita").classList.remove("open"); });
 }
 
 function initMenu() {
@@ -165,13 +243,36 @@ function initMenu() {
   $$("#menu a").forEach(a => a.addEventListener("click", () => $("#menu").classList.remove("open")));
 }
 
+function initSearch() {
+  const input = $("#newsSearch");
+  input.addEventListener("input", () => {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => {
+      searchQuery = input.value;
+      offset = 0;
+      muatBerita(true);
+    }, 350);
+  });
+}
+
+function initBackToTop() {
+  const btn = $("#btnTop");
+  window.addEventListener("scroll", () => {
+    if (window.scrollY > 400) btn.classList.add("show"); else btn.classList.remove("show");
+  });
+  btn.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
+}
+
 async function main() {
   initMenu();
   initTabs();
   initModal();
+  initSearch();
+  initBackToTop();
   renderFilter();
   await muatInfo();
   await muatBerita(true);
+  await muatSidebar();
   await muatDaftar();
   $("#btnLoadMore").addEventListener("click", () => muatBerita(false));
 }
