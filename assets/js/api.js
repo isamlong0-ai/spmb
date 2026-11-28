@@ -1,5 +1,5 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { CONFIG } from "./config.js?v=8";
+import { CONFIG } from "./config.js?v=9";
 
 export const supabase = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
 // Klien tanpa sesi: dipakai untuk data publik agar tidak terpengaruh role/login
@@ -137,6 +137,15 @@ export async function listAlumni({ status = null, tahun = null, publishedOnly = 
   if (error) throw error;
   return data || [];
 }
+export async function listAlumniPage({ limit = 10, offset = 0, status = null, tahun = null } = {}) {
+  let q = supabase.from("alumni").select("*", { count: "exact" }).order("tahun_lulus", { ascending: false }).order("nama").range(offset, offset + limit - 1);
+  if (status && status !== "semua") q = q.eq("status", status);
+  if (tahun) q = q.eq("tahun_lulus", tahun);
+  const { data, error, count } = await q;
+  if (error) throw error;
+  return { data: data || [], count: count || 0 };
+}
+
 export async function saveAlumni(payload) {
   if (payload.id) {
     const { error } = await supabase.from("alumni").update(payload).eq("id", payload.id);

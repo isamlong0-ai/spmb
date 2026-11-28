@@ -1,4 +1,4 @@
-import { getInfo } from "./api.js?v=8";
+import { getInfo } from "./api.js?v=9";
 
 const $ = (s, r = document) => r.querySelector(s);
 function escapeHtml(s) { return String(s ?? "").replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c])); }

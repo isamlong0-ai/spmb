@@ -1,15 +1,15 @@
-import { CONFIG, PAGE_SIZE } from "./config.js";
+import { CONFIG } from "./config.js";
 import {
   getSession, signOut, webRole,
   getInfo, updateInfo,
   listBerita, getBerita, saveBerita, deleteBerita,
   listDaftar, saveDaftar, deleteDaftar,
-  listAlumni, saveAlumni, deleteAlumni,
+  listAlumni, listAlumniPage, saveAlumni, deleteAlumni,
   listGaleri, saveGaleri, deleteGaleri,
   uploadGambar,
   listUsers, createUser, deleteUser, resetUserPassword,
   supabase,
-} from "./api.js?v=8";
+} from "./api.js?v=9";
 
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
@@ -22,6 +22,28 @@ function toast(msg, type = "") {
 function escapeHtml(s) { return String(s ?? "").replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c])); }
 
 let role = null;
+const PAGE_SIZE = 10;
+let beritaPage = 1;
+let galeriPage = 1;
+let alumniPage = 1;
+
+function renderPager(id, page, total, onChange) {
+  const pages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+  const el = $("#" + id);
+  if (!el) return;
+  let html = `<button data-page="${page - 1}" ${page <= 1 ? "disabled" : ""}>&larr;</button>`;
+  for (let p = 1; p <= pages; p++) {
+    if (pages > 7 && p > 2 && p < pages - 1 && Math.abs(p - page) > 1) continue;
+    html += `<button data-page="${p}" class="${p === page ? "active" : ""}">${p}</button>`;
+  }
+  html += `<button data-page="${page + 1}" ${page >= pages ? "disabled" : ""}>&rarr;</button>`;
+  html += `<span class="pager-info">Hal ${page} / ${pages} · ${total} data</span>`;
+  el.innerHTML = html;
+  el.querySelectorAll("button[data-page]").forEach(b => b.addEventListener("click", () => {
+    const p = parseInt(b.dataset.page, 10);
+    if (p >= 1 && p <= pages && p !== page) onChange(p);
+  }));
+}
 
 async function guard() {
   const s = await getSession();
@@ -47,8 +69,10 @@ function initTabs() {
 }
 
 // ---------- BERITA ----------
-async function muatBeritaTable() {
-  const { data } = await listBerita({ kategori: null, limit: 50, offset: 0, publishedOnly: false });
+async function muatBeritaTable(page = beritaPage) {
+  beritaPage = page;
+  const { data, count } = await listBerita({ kategori: null, limit: PAGE_SIZE, offset: (page - 1) * PAGE_SIZE, publishedOnly: false });
+  if (data.length === 0 && page > 1) return muatBeritaTable(page - 1);
   const tbody = $("#tblBerita tbody");
   tbody.innerHTML = data.map(b => `<tr>
     <td>${escapeHtml(b.judul)}</td>
@@ -64,6 +88,7 @@ async function muatBeritaTable() {
   tbody.querySelectorAll("[data-edit]").forEach(b => b.addEventListener("click", () => editBerita(b.dataset.edit)));
   tbody.querySelectorAll("[data-pub]").forEach(b => b.addEventListener("click", () => togglePubBerita(b.dataset.pub)));
   tbody.querySelectorAll("[data-del]").forEach(b => b.addEventListener("click", () => hapusBerita(b.dataset.del)));
+  renderPager("pagerBerita", beritaPage, count, p => muatBeritaTable(p));
 }
 
 function resetFormBerita() {
@@ -277,8 +302,10 @@ async function muatUsers() {
 }
 
 // ---------- ALUMNI ----------
-async function muatAlumniTable() {
-  const items = await listAlumni();
+async function muatAlumniTable(page = alumniPage) {
+  alumniPage = page;
+  const { data: items, count } = await listAlumniPage({ limit: PAGE_SIZE, offset: (page - 1) * PAGE_SIZE });
+  if (items.length === 0 && page > 1) return muatAlumniTable(page - 1);
   const tbody = $("#tblAlumni tbody");
   tbody.innerHTML = items.map(a => `<tr>
     <td>${escapeHtml(a.nama)}</td>
@@ -294,6 +321,7 @@ async function muatAlumniTable() {
   tbody.querySelectorAll("[data-edit]").forEach(b => b.addEventListener("click", () => editAlumni(b.dataset.edit)));
   tbody.querySelectorAll("[data-pub]").forEach(b => b.addEventListener("click", () => togglePubAlumni(b.dataset.pub)));
   tbody.querySelectorAll("[data-del]").forEach(b => b.addEventListener("click", () => hapusAlumni(b.dataset.del)));
+  renderPager("pagerAlumni", alumniPage, count, p => muatAlumniTable(p));
 }
 async function editAlumni(id) {
   const items = await listAlumni();
@@ -393,8 +421,10 @@ async function simpanProfilDetail() {
 }
 
 // ---------- GALERI ----------
-async function muatGaleriTable() {
-  const { data } = await listGaleri({ limit: 50, offset: 0, publishedOnly: false });
+async function muatGaleriTable(page = galeriPage) {
+  galeriPage = page;
+  const { data, count } = await listGaleri({ limit: PAGE_SIZE, offset: (page - 1) * PAGE_SIZE, publishedOnly: false });
+  if (data.length === 0 && page > 1) return muatGaleriTable(page - 1);
   const tbody = $("#tblGaleri tbody");
   tbody.innerHTML = data.map(g => `<tr>
     <td>${escapeHtml(g.judul || "-")}</td>
@@ -410,6 +440,7 @@ async function muatGaleriTable() {
   tbody.querySelectorAll("[data-edit]").forEach(b => b.addEventListener("click", () => editGaleri(b.dataset.edit)));
   tbody.querySelectorAll("[data-pub]").forEach(b => b.addEventListener("click", () => togglePubGaleri(b.dataset.pub)));
   tbody.querySelectorAll("[data-del]").forEach(b => b.addEventListener("click", () => hapusGaleri(b.dataset.del)));
+  renderPager("pagerGaleri", galeriPage, count, p => muatGaleriTable(p));
 }
 async function editGaleri(id) {
   const { data } = await listGaleri({ limit: 100, offset: 0, publishedOnly: false });

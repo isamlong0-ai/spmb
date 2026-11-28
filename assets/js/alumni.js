@@ -1,5 +1,5 @@
 import { CONFIG } from "./config.js";
-import { getInfo, listDaftar, listAlumni, saveAlumni } from "./api.js?v=8";
+import { getInfo, listDaftar, listAlumni, saveAlumni } from "./api.js?v=9";
 
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));

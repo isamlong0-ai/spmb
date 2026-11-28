@@ -1,4 +1,4 @@
-import { getSession, signOut } from "./api.js?v=8";
+import { getSession, signOut } from "./api.js?v=9";
 
 const IDLE_MS = 15 * 60 * 1000;      // 15 menit
 const WARN_MS = 2 * 60 * 1000;       // peringatan 2 menit sebelum logout
