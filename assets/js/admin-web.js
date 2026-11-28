@@ -57,10 +57,12 @@ async function muatBeritaTable() {
     <td>${b.is_published ? "Terbit" : "Draft"}</td>
     <td>
       <button class="btn btn-outline btn-sm" data-edit="${b.id}">Edit</button>
+      <button class="btn btn-outline btn-sm" data-pub="${b.id}">${b.status === "published" || b.is_published ? "Sembunyikan" : "Terbitkan"}</button>
       <button class="btn btn-outline btn-sm" data-del="${b.id}" style="color:#dc2626">Hapus</button>
     </td>
   </tr>`).join("");
   tbody.querySelectorAll("[data-edit]").forEach(b => b.addEventListener("click", () => editBerita(b.dataset.edit)));
+  tbody.querySelectorAll("[data-pub]").forEach(b => b.addEventListener("click", () => togglePubBerita(b.dataset.pub)));
   tbody.querySelectorAll("[data-del]").forEach(b => b.addEventListener("click", () => hapusBerita(b.dataset.del)));
 }
 
@@ -85,6 +87,14 @@ async function editBerita(id) {
   $("#bGambarUrl").value = b.gambar_url || "";
   $("#formBeritaTitle").textContent = "Edit Berita";
   window.scrollTo({ top: 0, behavior: "smooth" });
+}
+async function togglePubBerita(id) {
+  const { data } = await listBerita({ limit: 100, offset: 0, publishedOnly: false });
+  const b = data.find(x => x.id === id);
+  if (!b) return;
+  const newStatus = (b.status === "published" || b.is_published) ? "pending" : "published";
+  try { await saveBerita({ id, status: newStatus, is_published: newStatus === "published" }); toast("Status publikasi diubah", "ok"); await muatBeritaTable(); }
+  catch (e) { toast(e.message, "err"); }
 }
 async function hapusBerita(id) {
   if (!confirm("Hapus berita ini?")) return;
@@ -384,10 +394,12 @@ async function muatGaleriTable() {
     <td>${g.status || (g.is_published ? "published" : "draft")}</td>
     <td>
       <button class="btn btn-outline btn-sm" data-edit="${g.id}">Edit</button>
+      <button class="btn btn-outline btn-sm" data-pub="${g.id}">${g.status === "published" || g.is_published ? "Sembunyikan" : "Terbitkan"}</button>
       <button class="btn btn-outline btn-sm" data-del="${g.id}" style="color:#dc2626">Hapus</button>
     </td>
   </tr>`).join("");
   tbody.querySelectorAll("[data-edit]").forEach(b => b.addEventListener("click", () => editGaleri(b.dataset.edit)));
+  tbody.querySelectorAll("[data-pub]").forEach(b => b.addEventListener("click", () => togglePubGaleri(b.dataset.pub)));
   tbody.querySelectorAll("[data-del]").forEach(b => b.addEventListener("click", () => hapusGaleri(b.dataset.del)));
 }
 async function editGaleri(id) {
@@ -407,6 +419,14 @@ function resetGaleri() {
   $("#gTanggal").value = new Date().toISOString().slice(0,10); $("#gStatus").value = "draft";
   $("#gUrl").value = ""; $("#gFile").value = "";
   $("#formGaleriTitle").textContent = "Tambah Foto";
+}
+async function togglePubGaleri(id) {
+  const { data } = await listGaleri({ limit: 100, offset: 0, publishedOnly: false });
+  const g = data.find(x => x.id === id);
+  if (!g) return;
+  const newStatus = (g.status === "published" || g.is_published) ? "pending" : "published";
+  try { await saveGaleri({ id, status: newStatus, is_published: newStatus === "published" }); toast("Status publikasi diubah", "ok"); await muatGaleriTable(); }
+  catch (e) { toast(e.message, "err"); }
 }
 async function hapusGaleri(id) {
   if (!confirm("Hapus foto ini?")) return;
@@ -507,6 +527,8 @@ async function main() {
   $("#btnResetGaleri").addEventListener("click", resetGaleri);
   $("#btnResetAlumni").addEventListener("click", resetAlumni);
   $("#btnLogout2").addEventListener("click", async () => { await signOut(); location.href = "admin.html"; });
+  const btnLogoutSidebar = $("#btnLogoutSidebar");
+  if (btnLogoutSidebar) btnLogoutSidebar.addEventListener("click", async () => { await signOut(); location.href = "admin.html"; });
 
   await muatBeritaTable();
   await muatInfoForm();
