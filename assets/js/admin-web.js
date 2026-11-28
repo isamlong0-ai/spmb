@@ -526,9 +526,7 @@ async function main() {
   $("#btnSimpanGaleri").addEventListener("click", simpanGaleri);
   $("#btnResetGaleri").addEventListener("click", resetGaleri);
   $("#btnResetAlumni").addEventListener("click", resetAlumni);
-  $("#btnLogout2").addEventListener("click", async () => { await signOut(); location.href = "admin.html"; });
-  const btnLogoutSidebar = $("#btnLogoutSidebar");
-  if (btnLogoutSidebar) btnLogoutSidebar.addEventListener("click", async () => { await signOut(); location.href = "admin.html"; });
+  // logout diikat di level atas (lihat bawah) agar tetap berfungsi walau main() gagal
 
   await muatBeritaTable();
   await muatInfoForm();
@@ -539,5 +537,16 @@ async function main() {
   if (role === "admin") await muatUsers();
   // default panel berita
 }
+
+// Logout selalu aktif (tidak bergantung main())
+function doLogout() {
+  signOut().finally(() => { location.href = "admin.html"; });
+}
+document.addEventListener("DOMContentLoaded", () => {
+  ["btnLogout2", "btnLogoutSidebar"].forEach((id) => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener("click", (e) => { e.preventDefault(); doLogout(); });
+  });
+});
 
 main();
