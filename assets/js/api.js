@@ -2,6 +2,10 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { CONFIG } from "./config.js";
 
 export const supabase = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
+// Klien tanpa sesi: dipakai untuk data publik agar tidak terpengaruh role/login
+export const supabaseAnon = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY, {
+  auth: { persistSession: false, autoRefreshToken: false },
+});
 
 export async function getSession() {
   const { data } = await supabase.auth.getSession();
@@ -28,7 +32,7 @@ export async function webRole() {
 // catatan: web_role() RPC dibuat di migration. Jika belum ada, fallback di atas.
 
 export async function getInfo() {
-  const { data, error } = await supabase.from("web_info").select("*").eq("id", 1).maybeSingle();
+  const { data, error } = await supabaseAnon.from("web_info").select("*").eq("id", 1).maybeSingle();
   if (error) throw error;
   return data;
 }
@@ -38,7 +42,8 @@ export async function updateInfo(payload) {
 }
 
 export async function listBerita({ kategori = null, limit = 6, offset = 0, publishedOnly = true, q = null, pinned = null } = {}) {
-  let query = supabase.from("web_berita").select("*", { count: "exact" }).order("is_pinned", { ascending: false }).order("tanggal", { ascending: false }).range(offset, offset + limit - 1);
+  const client = publishedOnly ? supabaseAnon : supabase;
+  let query = client.from("web_berita").select("*", { count: "exact" }).order("is_pinned", { ascending: false }).order("tanggal", { ascending: false }).range(offset, offset + limit - 1);
   if (publishedOnly) query = query.eq("is_published", true);
   if (kategori && kategori !== "Semua") query = query.eq("kategori", kategori);
   if (pinned === true) query = query.eq("is_pinned", true);
@@ -122,7 +127,8 @@ export async function resetUserPassword(id, password) { return callUserMgmt("res
 
 // ---------- Alumni ----------
 export async function listAlumni({ status = null, tahun = null, publishedOnly = false } = {}) {
-  let q = supabase.from("alumni").select("*").order("tahun_lulus", { ascending: false }).order("nama");
+  const client = publishedOnly ? supabaseAnon : supabase;
+  let q = client.from("alumni").select("*").order("tahun_lulus", { ascending: false }).order("nama");
   if (publishedOnly) q = q.eq("is_published", true);
   if (status && status !== "semua") q = q.eq("status", status);
   if (tahun) q = q.eq("tahun_lulus", tahun);
@@ -146,7 +152,8 @@ export async function deleteAlumni(id) {
 
 // ---------- Galeri ----------
 export async function listGaleri({ limit = 12, offset = 0, publishedOnly = true } = {}) {
-  let q = supabase.from("web_galeri").select("*", { count: "exact" }).order("tanggal", { ascending: false }).range(offset, offset + limit - 1);
+  const client = publishedOnly ? supabaseAnon : supabase;
+  let q = client.from("web_galeri").select("*", { count: "exact" }).order("tanggal", { ascending: false }).range(offset, offset + limit - 1);
   if (publishedOnly) q = q.eq("is_published", true);
   const { data, error, count } = await q;
   if (error) throw error;
