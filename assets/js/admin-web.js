@@ -25,9 +25,12 @@ async function guard() {
   const s = await getSession();
   if (!s) { location.href = "admin.html"; return null; }
   role = await webRole();
+  if (role === "admin_spmb") { location.href = "spmb/admin.html"; return null; }
   if (role === "editor") {
-    // sembunyikan tab non-berita
     $$(".admin-only, [data-panel='info'], [data-panel='daftar'], [data-panel='pengguna']").forEach(el => el.style.display = "none");
+  } else if (role !== "superadmin" && role !== "admin") {
+    // admin_web: sembunyikan pengguna (hanya superadmin)
+    $$(".admin-only, [data-panel='pengguna']").forEach(el => el.style.display = "none");
   }
   return s;
 }
@@ -285,8 +288,8 @@ async function main() {
   $("#btnResetDaftar").addEventListener("click", resetDaftar);
   $("#btnTambahUser").addEventListener("click", async () => {
     try {
-      await createUser($("#uEmail").value.trim(), $("#uPassword").value);
-      toast("Editor ditambahkan", "ok");
+      await createUser($("#uEmail").value.trim(), $("#uPassword").value, $("#uRole").value);
+      toast("Pengguna ditambahkan", "ok");
       $("#uEmail").value = $("#uPassword").value = "";
       await muatUsers();
     } catch (e) { toast(e.message, "err"); }

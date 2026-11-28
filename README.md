@@ -18,8 +18,10 @@ Proyek ini berisi dua modul:
 ## Login & hak akses
 
 - Satu akun Supabase Auth untuk admin (email `admin@smkn1tk.sch.id`).
-- **Admin**: akses penuh kedua dashboard + kelola akun editor.
-- **Editor** (2 akun): hanya bisa menambah/edit/hapus/publish **berita** di Website Sekolah. Tidak bisa mengubah informasi/daftar, dan tidak bisa membuka dashboard SPMB (diblokir UI + RLS).
+- **Superadmin**: akses penuh kedua dashboard (Website + SPMB) + kelola akun.
+- **Admin Website** (`admin_web`): hanya dashboard Website Sekolah (berita, informasi, daftar).
+- **Admin SPMB** (`admin_spmb`): hanya dashboard SPMB (data calon siswa, pengumuman, konten SPMB).
+- **Editor**: hanya bisa menambah/edit/hapus/publish **berita** di Website Sekolah.
 
 ## Menjalankan lokal
 

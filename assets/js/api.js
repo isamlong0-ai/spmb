@@ -114,6 +114,6 @@ async function callUserMgmt(action, body = {}) {
   return json;
 }
 export async function listUsers() { return callUserMgmt("list"); }
-export async function createUser(email, password) { return callUserMgmt("create", { email, password }); }
+export async function createUser(email, password, role = "editor") { return callUserMgmt("create", { email, password, role }); }
 export async function deleteUser(id) { return callUserMgmt("delete", { id }); }
 export async function resetUserPassword(id, password) { return callUserMgmt("reset_password", { id, password }); }

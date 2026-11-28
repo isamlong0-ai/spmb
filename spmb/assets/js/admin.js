@@ -40,7 +40,13 @@ async function initAuth() {
   // SPMB dashboard hanya untuk admin
   try {
     const { data: r } = await supabase.from("web_roles").select("role").eq("user_id", data.session.user.id).maybeSingle();
-    if (r && r.role !== "admin") { window.location.href = "../admin-web.html"; return; }
+    const role = r?.role;
+    if (role && !["superadmin","admin","admin_spmb"].includes(role)) {
+      // bukan admin SPMB -> arahkan ke dashboard website (jika punya akses) atau login
+      if (["admin_web","editor"].includes(role)) window.location.href = "../admin-web.html";
+      else window.location.href = "../admin.html";
+      return;
+    }
   } catch (e) { /* fallback: izinkan jika tabel belum ada */ }
   tampilkanAdmin(data.session.user);
   supabase.auth.onAuthStateChange((_event, session) => {

@@ -121,8 +121,13 @@
           <div class="form-grid">
             <div><label>Email</label><input class="input" id="uEmail" type="email"></div>
             <div><label>Password</label><input class="input" id="uPassword" type="password"></div>
+            <div><label>Peran</label><select class="input" id="uRole">
+              <option value="editor">Editor (berita)</option>
+              <option value="admin_web">Admin Website</option>
+              <option value="admin_spmb">Admin SPMB</option>
+            </select></div>
           </div>
-          <div class="actions"><button class="btn btn-primary" id="btnTambahUser">Tambah Editor</button></div>
+          <div class="actions"><button class="btn btn-primary" id="btnTambahUser">Tambah Pengguna</button></div>
         </div>
         <table class="table" id="tblUsers">
           <thead><tr><th>Email</th><th>Peran</th><th>Dibuat</th><th>Aksi</th></tr></thead>

@@ -35,7 +35,7 @@ Deno.serve(async (req) => {
   if (req.method !== "POST") return json({ error: "Method not allowed" }, 405);
 
   const role = await callerRole(req);
-  if (role !== "admin") return json({ error: "Hanya admin yang diizinkan" }, 403);
+  if (role !== "superadmin") return json({ error: "Hanya superadmin yang diizinkan" }, 403);
 
   let body: any = {};
   try { body = await req.json(); } catch { return json({ error: "Body tidak valid" }, 400); }
@@ -59,15 +59,17 @@ Deno.serve(async (req) => {
     if (action === "create") {
       const email = String(body?.email || "").trim();
       const password = String(body?.password || "");
+      const newRole = String(body?.role || "editor");
       if (!email || !password) return json({ error: "Email dan password wajib" }, 400);
       if (password.length < 8) return json({ error: "Password minimal 8 karakter" }, 400);
+      if (!["editor","admin_web","admin_spmb"].includes(newRole)) return json({ error: "Role tidak valid" }, 400);
       const { data, error } = await admin.auth.admin.createUser({
         email,
         password,
         email_confirm: true,
       });
       if (error) throw error;
-      const { error: re } = await admin.from("web_roles").insert({ user_id: data.user.id, role: "editor" });
+      const { error: re } = await admin.from("web_roles").insert({ user_id: data.user.id, role: newRole });
       if (re) throw re;
       return json({ ok: true, id: data.user.id });
     }
@@ -75,9 +77,9 @@ Deno.serve(async (req) => {
     if (action === "delete") {
       const id = String(body?.id || "");
       if (!id) return json({ error: "id wajib" }, 400);
-      // cegah hapus admin
+      // cegah hapus superadmin
       const { data: r } = await admin.from("web_roles").select("role").eq("user_id", id).maybeSingle();
-      if (r?.role === "admin") return json({ error: "Tidak bisa menghapus admin" }, 400);
+      if (r?.role === "superadmin") return json({ error: "Tidak bisa menghapus superadmin" }, 400);
       const { error } = await admin.auth.admin.deleteUser(id);
       if (error) throw error;
       await admin.from("web_roles").delete().eq("user_id", id);
