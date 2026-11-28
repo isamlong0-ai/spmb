@@ -250,6 +250,10 @@ async function muatDaftar() {
         if (jenisDb[panelId] === "agenda") {
           return `<div class="list-item"><div class="ikon">${it.ikon || "📅"}</div><div><div class="agenda-date">${it.tanggal ? new Date(it.tanggal).toLocaleDateString("id-ID", { day:"2-digit", month:"long", year:"numeric" }) : ""}</div><h4>${escapeHtml(it.judul)}</h4><p>${escapeHtml(it.deskripsi || "")}</p></div></div>`;
         }
+        if (jenisDb[panelId] === "jurusan") {
+          const src = `assets/img/program/${encodeURI((it.judul || "").trim() + ".png")}`;
+          return `<div class="list-item"><div class="ikon"><img class="prog-icon" src="${src}" alt="${escapeHtml(it.judul)}" loading="lazy" onerror="this.style.display='none'"></div><div><h4>${escapeHtml(it.judul)}</h4><p>${escapeHtml(it.deskripsi || "")}</p></div></div>`;
+        }
         return `<div class="list-item"><div class="ikon">${it.ikon || "•"}</div><div><h4>${escapeHtml(it.judul)}</h4><p>${escapeHtml(it.deskripsi || "")}</p></div></div>`;
       }).join("");
     } catch (e) { el.innerHTML = `<p style="color:var(--muted)">Belum ada data.</p>`; }

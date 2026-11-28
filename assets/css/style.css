@@ -269,6 +269,9 @@ textarea { min-height: 120px; resize: vertical; }
 .related-item .ri-title { font-size: 13.5px; font-weight: 600; color: var(--navy); }
 .related-item .ri-date { font-size: 11.5px; color: var(--muted); }
 
+/* ----- Ikon program keahlian ----- */
+.prog-icon { width: 44px; height: 44px; object-fit: contain; border-radius: 8px; }
+
 /* ----- Visi & Misi ----- */
 .vm-grid { gap: 26px; }
 .vm-card {
