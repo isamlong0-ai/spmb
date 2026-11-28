@@ -67,7 +67,7 @@ function resetFormBerita() {
   $("#bId").value = ""; $("#bJudul").value = ""; $("#bRingkasan").value = ""; $("#bIsi").value = "";
   $("#bGambarUrl").value = ""; $("#bGambarFile").value = "";
   $("#bTanggal").value = new Date().toISOString().slice(0, 10);
-  $("#bStatus").value = "true";
+  $("#bStatus").value = "draft";
   $("#bPinned").value = "false";
   $("#formBeritaTitle").textContent = "Tambah Berita";
 }
@@ -77,7 +77,7 @@ async function editBerita(id) {
   $("#bJudul").value = b.judul || "";
   $("#bKategori").value = b.kategori || CONFIG.KATEGORI[0];
   $("#bTanggal").value = (b.tanggal || "").slice(0, 10);
-  $("#bStatus").value = String(!!b.is_published);
+  $("#bStatus").value = b.status || (b.is_published ? "published" : "draft");
   $("#bPinned").value = String(!!b.is_pinned);
   $("#bRingkasan").value = b.ringkasan || "";
   $("#bIsi").value = b.isi || "";
@@ -102,7 +102,8 @@ async function simpanBerita() {
       ringkasan: $("#bRingkasan").value.trim(),
       isi: $("#bIsi").value.trim(),
       gambar_url: gambar || null,
-      is_published: $("#bStatus").value === "true",
+      status: $("#bStatus").value,
+      is_published: $("#bStatus").value === "published",
       is_pinned: $("#bPinned").value === "true",
     };
     const id = $("#bId").value;
@@ -356,6 +357,11 @@ async function main() {
   // kategori select
   $("#bKategori").innerHTML = CONFIG.KATEGORI.map(c => `<option value="${c}">${c}</option>`).join("");
   $("#bTanggal").value = new Date().toISOString().slice(0, 10);
+  if (role === "editor") {
+    const sel = $("#bStatus");
+    Array.from(sel.options).forEach(o => { if (o.value === "published") o.remove(); });
+    $("#bStatus").value = "pending";
+  }
 
   $("#btnSimpanBerita").addEventListener("click", simpanBerita);
   $("#btnResetBerita").addEventListener("click", resetFormBerita);

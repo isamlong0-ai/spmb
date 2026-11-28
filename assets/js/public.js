@@ -172,6 +172,8 @@ async function muatBerita(reset = false) {
 }
 
 async function bukaBerita(id) {
+  location.href = `berita.html?id=${id}`;
+  return;
   try {
     const b = await getBerita(id);
     $("#modalJudul").textContent = b.judul;

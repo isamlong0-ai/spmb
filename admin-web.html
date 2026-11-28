@@ -36,7 +36,11 @@
             <div><label>Judul</label><input class="input" id="bJudul"></div>
             <div><label>Kategori</label><select class="input" id="bKategori"></select></div>
             <div><label>Tanggal</label><input class="input" id="bTanggal" type="date"></div>
-            <div><label>Status</label><select class="input" id="bStatus"><option value="true">Terbit</option><option value="false">Draft</option></select></div>
+            <div><label>Status</label><select class="input" id="bStatus">
+              <option value="draft">Draft</option>
+              <option value="pending">Menunggu Verifikasi</option>
+              <option value="published">Terbit (Published)</option>
+            </select></div>
             <div><label>Sematkan (pinned)</label><select class="input" id="bPinned"><option value="false">Tidak</option><option value="true">Ya</option></select></div>
             <div class="full"><label>Ringkasan</label><textarea class="input" id="bRingkasan" style="min-height:70px"></textarea></div>
             <div class="full"><label>Isi Lengkap</label><textarea class="input" id="bIsi"></textarea></div>
