@@ -1,4 +1,4 @@
-import { getInfo, getBerita, listBerita } from "./api.js";
+import { getInfo, getBerita, listBerita } from "./api.js?v=7";
 
 const $ = (s, r = document) => r.querySelector(s);
 function toast(msg, type = "") {

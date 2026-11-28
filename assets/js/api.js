@@ -1,5 +1,5 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { CONFIG } from "./config.js";
+import { CONFIG } from "./config.js?v=7";
 
 export const supabase = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
 // Klien tanpa sesi: dipakai untuk data publik agar tidak terpengaruh role/login

@@ -1,5 +1,5 @@
 import { CONFIG } from "./config.js";
-import { getInfo, listBerita, getBerita, listDaftar, listGaleri } from "./api.js";
+import { getInfo, listBerita, getBerita, listDaftar, listGaleri } from "./api.js?v=7";
 
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));

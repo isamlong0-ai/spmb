@@ -1,4 +1,4 @@
-import { getSession, signIn, signOut, webRole } from "./api.js";
+import { getSession, signIn, signOut, webRole } from "./api.js?v=7";
 import { CONFIG } from "./config.js";
 
 const $ = (s, r = document) => r.querySelector(s);

@@ -9,7 +9,7 @@ import {
   uploadGambar,
   listUsers, createUser, deleteUser, resetUserPassword,
   supabase,
-} from "./api.js";
+} from "./api.js?v=7";
 
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
