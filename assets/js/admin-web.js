@@ -4,6 +4,7 @@ import {
   getInfo, updateInfo,
   listBerita, getBerita, saveBerita, deleteBerita,
   listDaftar, saveDaftar, deleteDaftar,
+  listAlumni, saveAlumni, deleteAlumni,
   uploadGambar,
   listUsers, createUser, deleteUser, resetUserPassword,
   supabase,
@@ -126,6 +127,7 @@ async function muatInfoForm() {
     $("#iWa").value = info.whatsapp || "";
     $("#iMaps").value = info.maps_embed_url || "";
     $("#iHero").value = info.hero_url || "";
+    $("#alumniFormAktif").checked = info.alumni_form_aktif !== false;
     const st = info.stats || {};
     $("#sBerdiri").value = st.tahun_berdiri || "";
     $("#sSiswa").value = st.jumlah_siswa || "";
@@ -147,6 +149,7 @@ async function simpanInfo() {
       whatsapp: $("#iWa").value.trim(),
       maps_embed_url: $("#iMaps").value.trim(),
       hero_url: $("#iHero").value.trim(),
+      alumni_form_aktif: $("#alumniFormAktif").checked,
       stats: {
         tahun_berdiri: $("#sBerdiri").value.trim(),
         jumlah_siswa: $("#sSiswa").value.trim(),
@@ -247,6 +250,86 @@ async function muatUsers() {
   } catch (e) { toast(e.message, "err"); }
 }
 
+// ---------- ALUMNI ----------
+async function muatAlumniTable() {
+  const items = await listAlumni();
+  const tbody = $("#tblAlumni tbody");
+  tbody.innerHTML = items.map(a => `<tr>
+    <td>${escapeHtml(a.nama)}</td>
+    <td>${a.tahun_lulus}</td>
+    <td>${escapeHtml(a.status)}</td>
+    <td>${a.is_published ? "Ya" : "Tidak"}</td>
+    <td>
+      <button class="btn btn-outline btn-sm" data-edit="${a.id}">Edit</button>
+      <button class="btn btn-outline btn-sm" data-pub="${a.id}">${a.is_published ? "Sembunyikan" : "Terbitkan"}</button>
+      <button class="btn btn-outline btn-sm" data-del="${a.id}" style="color:#dc2626">Hapus</button>
+    </td>
+  </tr>`).join("");
+  tbody.querySelectorAll("[data-edit]").forEach(b => b.addEventListener("click", () => editAlumni(b.dataset.edit)));
+  tbody.querySelectorAll("[data-pub]").forEach(b => b.addEventListener("click", () => togglePubAlumni(b.dataset.pub)));
+  tbody.querySelectorAll("[data-del]").forEach(b => b.addEventListener("click", () => hapusAlumni(b.dataset.del)));
+}
+async function editAlumni(id) {
+  const items = await listAlumni();
+  const a = items.find(x => x.id === id);
+  if (!a) return;
+  $("#alId").value = a.id;
+  $("#alNama").value = a.nama || "";
+  $("#alTahun").value = a.tahun_lulus || "";
+  $("#alNisn").value = a.nisn || "";
+  $("#alNis").value = a.nis || "";
+  $("#alJurusan").value = a.jurusan || "";
+  $("#alStatus").value = a.status || "belum_dilacak";
+  $("#alInstitusi").value = a.institusi || "";
+  $("#alKota").value = a.kota || "";
+  $("#alKontak").value = a.kontak || "";
+  $("#alPublished").value = String(!!a.is_published);
+  $("#alCatatan").value = a.catatan || "";
+  $("#formAlumniTitle").textContent = "Edit Alumni";
+}
+function resetAlumni() {
+  $("#alId").value = ""; $("#alNama").value = ""; $("#alTahun").value = "";
+  $("#alNisn").value = ""; $("#alNis").value = ""; $("#alJurusan").value = "";
+  $("#alInstitusi").value = ""; $("#alKota").value = ""; $("#alKontak").value = "";
+  $("#alCatatan").value = ""; $("#alPublished").value = "false";
+  $("#formAlumniTitle").textContent = "Edit Alumni";
+}
+async function togglePubAlumni(id) {
+  const items = await listAlumni();
+  const a = items.find(x => x.id === id);
+  if (!a) return;
+  try { await saveAlumni({ id, is_published: !a.is_published }); toast("Status publikasi diubah", "ok"); await muatAlumniTable(); }
+  catch (e) { toast(e.message, "err"); }
+}
+async function hapusAlumni(id) {
+  if (!confirm("Hapus data alumni ini?")) return;
+  try { await deleteAlumni(id); toast("Data dihapus", "ok"); await muatAlumniTable(); }
+  catch (e) { toast(e.message, "err"); }
+}
+async function simpanAlumni() {
+  try {
+    const payload = {
+      nama: $("#alNama").value.trim(),
+      tahun_lulus: parseInt($("#alTahun").value, 10),
+      nisn: $("#alNisn").value.trim() || null,
+      nis: $("#alNis").value.trim() || null,
+      jurusan: $("#alJurusan").value.trim() || null,
+      status: $("#alStatus").value,
+      institusi: $("#alInstitusi").value.trim() || null,
+      kota: $("#alKota").value.trim() || null,
+      kontak: $("#alKontak").value.trim() || null,
+      catatan: $("#alCatatan").value.trim() || null,
+      is_published: $("#alPublished").value === "true",
+    };
+    const id = $("#alId").value;
+    if (id) payload.id = id;
+    await saveAlumni(payload);
+    toast("Data alumni disimpan", "ok");
+    resetAlumni();
+    await muatAlumniTable();
+  } catch (e) { toast(e.message, "err"); }
+}
+
 // ---------- AKUN ----------
 async function gantiPassword() {
   const lama = $("#pLama").value, baru = $("#pBaru").value, konf = $("#pKonf").value;
@@ -295,11 +378,14 @@ async function main() {
     } catch (e) { toast(e.message, "err"); }
   });
   $("#btnGantiPass").addEventListener("click", gantiPassword);
+  $("#btnSimpanAlumni").addEventListener("click", simpanAlumni);
+  $("#btnResetAlumni").addEventListener("click", resetAlumni);
   $("#btnLogout2").addEventListener("click", async () => { await signOut(); location.href = "admin.html"; });
 
   await muatBeritaTable();
   await muatInfoForm();
   await muatDaftarTable();
+  await muatAlumniTable();
   if (role === "admin") await muatUsers();
   // default panel berita
 }

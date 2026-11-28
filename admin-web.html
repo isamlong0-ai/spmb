@@ -18,6 +18,7 @@
       <div class="side-link active" data-panel="berita">📰 Berita</div>
       <div class="side-link" data-panel="info">ℹ️ Informasi</div>
       <div class="side-link" data-panel="daftar">📋 Daftar (Jurusan/Fasilitas/Ekskul/Agenda)</div>
+      <div class="side-link" data-panel="alumni">🎓 Alumni</div>
       <div class="side-link admin-only" data-panel="pengguna">👥 Pengguna</div>
       <div class="side-link" data-panel="akun">🔑 Akun</div>
       <div style="margin-top:18px">
@@ -109,6 +110,49 @@
         </div>
         <table class="table" id="tblDaftar">
           <thead><tr><th>Jenis</th><th>Judul</th><th>Status</th><th>Aksi</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </section>
+
+      <!-- ALUMNI -->
+      <section class="panel" id="panel-alumni">
+        <h2>Alumni</h2>
+        <p style="color:var(--muted);margin-top:-6px">Moderasi &amp; kelola data alumni yang mendaftar dari website.</p>
+        <div class="card" style="padding:18px;margin-bottom:18px">
+          <label style="display:flex;align-items:center;gap:8px;font-weight:600">
+            <input type="checkbox" id="alumniFormAktif"> Aktifkan formulir pendaftaran alumni di website
+          </label>
+        </div>
+        <div class="card" style="padding:18px;margin-bottom:18px">
+          <h3 style="margin-top:0" id="formAlumniTitle">Edit Alumni</h3>
+          <div class="form-grid">
+            <div><label>Nama</label><input class="input" id="alNama"></div>
+            <div><label>Tahun Lulus</label><input class="input" id="alTahun" type="number"></div>
+            <div><label>NISN</label><input class="input" id="alNisn"></div>
+            <div><label>NIS/NIPD</label><input class="input" id="alNis"></div>
+            <div><label>Jurusan</label><input class="input" id="alJurusan"></div>
+            <div><label>Status</label><select class="input" id="alStatus">
+              <option value="kuliah">Kuliah</option>
+              <option value="kerja">Bekerja</option>
+              <option value="wirausaha">Wirausaha</option>
+              <option value="mencari">Mencari</option>
+              <option value="lainnya">Lainnya</option>
+              <option value="belum_dilacak">Belum Dilacak</option>
+            </select></div>
+            <div><label>Institusi</label><input class="input" id="alInstitusi"></div>
+            <div><label>Kota</label><input class="input" id="alKota"></div>
+            <div><label>Kontak</label><input class="input" id="alKontak"></div>
+            <div><label>Tampil Publik</label><select class="input" id="alPublished"><option value="true">Ya</option><option value="false">Tidak</option></select></div>
+            <div class="full"><label>Catatan</label><textarea class="input" id="alCatatan" style="min-height:70px"></textarea></div>
+          </div>
+          <div class="actions">
+            <button class="btn btn-primary" id="btnSimpanAlumni">Simpan</button>
+            <button class="btn btn-outline" id="btnResetAlumni">Batal</button>
+          </div>
+          <input type="hidden" id="alId">
+        </div>
+        <table class="table" id="tblAlumni">
+          <thead><tr><th>Nama</th><th>Tahun</th><th>Status</th><th>Publik</th><th>Aksi</th></tr></thead>
           <tbody></tbody>
         </table>
       </section>

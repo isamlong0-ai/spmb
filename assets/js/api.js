@@ -117,3 +117,27 @@ export async function listUsers() { return callUserMgmt("list"); }
 export async function createUser(email, password, role = "editor") { return callUserMgmt("create", { email, password, role }); }
 export async function deleteUser(id) { return callUserMgmt("delete", { id }); }
 export async function resetUserPassword(id, password) { return callUserMgmt("reset_password", { id, password }); }
+
+// ---------- Alumni ----------
+export async function listAlumni({ status = null, tahun = null, publishedOnly = false } = {}) {
+  let q = supabase.from("alumni").select("*").order("tahun_lulus", { ascending: false }).order("nama");
+  if (publishedOnly) q = q.eq("is_published", true);
+  if (status && status !== "semua") q = q.eq("status", status);
+  if (tahun) q = q.eq("tahun_lulus", tahun);
+  const { data, error } = await q;
+  if (error) throw error;
+  return data || [];
+}
+export async function saveAlumni(payload) {
+  if (payload.id) {
+    const { error } = await supabase.from("alumni").update(payload).eq("id", payload.id);
+    if (error) throw error;
+  } else {
+    const { error } = await supabase.from("alumni").insert(payload);
+    if (error) throw error;
+  }
+}
+export async function deleteAlumni(id) {
+  const { error } = await supabase.from("alumni").delete().eq("id", id);
+  if (error) throw error;
+}
