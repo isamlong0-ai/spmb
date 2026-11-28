@@ -9,7 +9,7 @@ import {
   uploadGambar,
   listUsers, createUser, deleteUser, resetUserPassword,
   supabase,
-} from "./api.js?v=7";
+} from "./api.js?v=8";
 
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
@@ -189,10 +189,12 @@ async function muatDaftarTable() {
     <td>${d.is_published ? "Terbit" : "Draft"}</td>
     <td>
       <button class="btn btn-outline btn-sm" data-edit="${d.id}">Edit</button>
+      <button class="btn btn-outline btn-sm" data-pub="${d.id}">${d.is_published ? "Nonaktifkan" : "Aktifkan"}</button>
       <button class="btn btn-outline btn-sm" data-del="${d.id}" style="color:#dc2626">Hapus</button>
     </td>
   </tr>`).join("");
   tbody.querySelectorAll("[data-edit]").forEach(b => b.addEventListener("click", () => editDaftar(b.dataset.edit)));
+  tbody.querySelectorAll("[data-pub]").forEach(b => b.addEventListener("click", () => togglePubDaftar(b.dataset.pub)));
   tbody.querySelectorAll("[data-del]").forEach(b => b.addEventListener("click", () => hapusDaftar(b.dataset.del)));
 }
 async function editDaftar(id) {
@@ -211,6 +213,13 @@ async function editDaftar(id) {
 function resetDaftar() {
   $("#dId").value = ""; $("#dJudul").value = ""; $("#dDeskripsi").value = "";
   $("#dTanggal").value = ""; $("#dIkon").value = ""; $("#dUrutan").value = "0";
+}
+async function togglePubDaftar(id) {
+  const items = await listDaftar();
+  const d = items.find(x => x.id === id);
+  if (!d) return;
+  try { await saveDaftar({ id, is_published: !d.is_published }); toast("Status diubah", "ok"); await muatDaftarTable(); }
+  catch (e) { toast(e.message, "err"); }
 }
 async function hapusDaftar(id) {
   if (!confirm("Hapus item ini?")) return;
@@ -411,7 +420,8 @@ async function editGaleri(id) {
   $("#gKategori").value = g.kategori || "";
   $("#gTanggal").value = (g.tanggal || "").slice(0, 10);
   $("#gStatus").value = g.status || (g.is_published ? "published" : "draft");
-  $("#gUrl").value = g.gambar_url || "";
+  const fotos = Array.isArray(g.fotos) ? g.fotos : (g.gambar_url ? [g.gambar_url] : []);
+  $("#gUrl").value = fotos.join("\n");
   $("#formGaleriTitle").textContent = "Edit Foto";
 }
 function resetGaleri() {
@@ -435,14 +445,15 @@ async function hapusGaleri(id) {
 }
 async function simpanGaleri() {
   try {
-    let url = $("#gUrl").value.trim();
-    const file = $("#gFile").files[0];
-    if (file) url = await uploadGambar(file, "galeri");
+    const urls = $("#gUrl").value.split("\n").map(s => s.trim()).filter(Boolean);
+    const files = Array.from($("#gFile").files || []);
+    for (const file of files) urls.push(await uploadGambar(file, "galeri"));
     const payload = {
       judul: $("#gJudul").value.trim() || null,
       kategori: $("#gKategori").value.trim() || null,
       tanggal: $("#gTanggal").value,
-      gambar_url: url,
+      gambar_url: urls[0] || null,
+      fotos: urls,
       status: $("#gStatus").value,
       is_published: $("#gStatus").value === "published",
     };

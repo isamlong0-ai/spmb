@@ -183,7 +183,12 @@
               <option value="pending">Menunggu Verifikasi</option>
               <option value="published">Terbit (Published)</option>
             </select></div>
-            <div class="full"><label>Gambar</label><input class="input" id="gFile" type="file" accept="image/*"><input class="input" id="gUrl" placeholder="atau URL gambar" style="margin-top:6px"></div>
+            <div class="full">
+              <label>Foto (bisa banyak sekaligus)</label>
+              <input class="input" id="gFile" type="file" accept="image/*" multiple>
+              <textarea class="input" id="gUrl" placeholder="Atau tempel URL gambar, satu per baris" style="margin-top:6px;min-height:70px"></textarea>
+              <small style="color:var(--muted);font-size:12px">Pilih beberapa file sekaligus (Ctrl/Shift + klik) untuk satu post galeri.</small>
+            </div>
           </div>
           <div class="actions">
             <button class="btn btn-primary" id="btnSimpanGaleri">Simpan</button>
@@ -309,6 +314,6 @@
     </main>
   </div>
 
-  <script type="module" src="assets/js/admin-web.js?v=7"></script>
+  <script type="module" src="assets/js/admin-web.js?v=8"></script>
 </body>
 </html>

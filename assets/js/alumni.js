@@ -1,5 +1,5 @@
 import { CONFIG } from "./config.js";
-import { getInfo, listDaftar, listAlumni, saveAlumni } from "./api.js?v=7";
+import { getInfo, listDaftar, listAlumni, saveAlumni } from "./api.js?v=8";
 
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
@@ -61,7 +61,7 @@ function initAlumniFilter() {
 async function initAlumniForm() {
   const sel = $("#aJurusan");
   try {
-    const items = await listDaftar("jurusan");
+    const items = await listDaftar("jurusan", true);
     if (items.length) sel.innerHTML = items.map(i => `<option value="${escapeHtml(i.judul)}">${escapeHtml(i.judul)}</option>`).join("");
     else throw new Error("none");
   } catch (e) {

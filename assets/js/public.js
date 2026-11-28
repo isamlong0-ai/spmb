@@ -1,5 +1,5 @@
 import { CONFIG } from "./config.js";
-import { getInfo, listBerita, getBerita, listDaftar, listGaleri } from "./api.js?v=7";
+import { getInfo, listBerita, getBerita, listDaftar, listGaleri } from "./api.js?v=8";
 
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
@@ -211,7 +211,7 @@ async function bukaBerita(id) {
 async function muatSidebar() {
   try {
     // satu request untuk latest + hitung kategori (lebih cepat)
-    const { data } = await listBerita({ limit: 100, publishedOnly: true });
+    const { data } = await listBerita({ limit: 100, publishedOnly: true, pinned: false });
     const latest = data.slice(0, 5);
     const wrap = $("#sidebarLatest");
     wrap.innerHTML = latest.map(b => `
@@ -244,7 +244,7 @@ async function muatDaftar() {
   for (const panelId of Object.keys(jenisDb)) {
     const el = document.getElementById(panelId);
     try {
-      const items = await listDaftar(jenisDb[panelId]);
+      const items = await listDaftar(jenisDb[panelId], true);
       if (items.length === 0) { el.innerHTML = `<p style="color:var(--muted)">Belum ada data.</p>`; continue; }
       el.innerHTML = items.map(it => {
         if (jenisDb[panelId] === "agenda") {
@@ -261,10 +261,13 @@ const GALERI_LIMIT = 12;
 let galeriTotal = 0;
 
 function kartuGaleri(g) {
+  const fotos = Array.isArray(g.fotos) && g.fotos.length ? g.fotos : (g.gambar_url ? [g.gambar_url] : []);
+  const cover = fotos[0] || "";
+  const badge = fotos.length > 1 ? `<span class="badge" style="margin-left:6px">${fotos.length} foto</span>` : "";
   return `<article class="card" data-id="${g.id}" style="cursor:pointer">
-    <img class="news-img" src="${g.gambar_url}" alt="${escapeHtml(g.judul || "")}" loading="lazy">
+    <img class="news-img" src="${cover}" alt="${escapeHtml(g.judul || "")}" loading="lazy">
     <div class="card-body">
-      <div class="news-meta"><span class="badge cat">${escapeHtml(g.kategori || "Umum")}</span><span>${new Date(g.tanggal).toLocaleDateString("id-ID", { day:"2-digit", month:"short", year:"numeric" })}</span></div>
+      <div class="news-meta"><span class="badge cat">${escapeHtml(g.kategori || "Umum")}</span>${badge}<span>${new Date(g.tanggal).toLocaleDateString("id-ID", { day:"2-digit", month:"short", year:"numeric" })}</span></div>
       <h3 class="news-title">${escapeHtml(g.judul || "Foto")}</h3>
     </div>
   </article>`;
@@ -291,17 +294,30 @@ async function muatGaleri(reset = false) {
   } catch (e) { toast("Gagal memuat galeri", "err"); }
 }
 
+let galeriFotos = [];
+let galeriIndex = 0;
+
+function tampilFotoGaleri() {
+  $("#modalGaleriImg").src = galeriFotos[galeriIndex] || "";
+  $("#galeriCounter").textContent = `${galeriIndex + 1} / ${galeriFotos.length}`;
+  $("#galeriPrev").style.display = galeriFotos.length > 1 ? "" : "none";
+  $("#galeriNext").style.display = galeriFotos.length > 1 ? "" : "none";
+}
 function bukaGaleri(id, data) {
   const g = data.find(x => x.id === id);
   if (!g) return;
+  galeriFotos = Array.isArray(g.fotos) && g.fotos.length ? g.fotos : (g.gambar_url ? [g.gambar_url] : []);
+  galeriIndex = 0;
   $("#modalGaleriJudul").textContent = g.judul || "Foto";
-  $("#modalGaleriImg").src = g.gambar_url;
+  tampilFotoGaleri();
   $("#modalGaleri").classList.add("open");
 }
 
 function initGaleriModal() {
   $("#modalGaleriClose").addEventListener("click", () => $("#modalGaleri").classList.remove("open"));
   $("#modalGaleri").addEventListener("click", (e) => { if (e.target.id === "modalGaleri") $("#modalGaleri").classList.remove("open"); });
+  $("#galeriPrev").addEventListener("click", () => { galeriIndex = Math.max(0, galeriIndex - 1); tampilFotoGaleri(); });
+  $("#galeriNext").addEventListener("click", () => { galeriIndex = Math.min(galeriFotos.length - 1, galeriIndex + 1); tampilFotoGaleri(); });
 }
 
 function initTabs() {

@@ -269,6 +269,32 @@ textarea { min-height: 120px; resize: vertical; }
 .related-item .ri-title { font-size: 13.5px; font-weight: 600; color: var(--navy); }
 .related-item .ri-date { font-size: 11.5px; color: var(--muted); }
 
+/* ----- Visi & Misi ----- */
+.vm-grid { gap: 26px; }
+.vm-card {
+  padding: 30px 28px;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--line);
+}
+.vm-card::after {
+  content: ""; position: absolute; right: -40px; top: -40px;
+  width: 150px; height: 150px; border-radius: 50%;
+  background: rgba(16,185,129,0.08);
+}
+.vm-card .vm-icon {
+  width: 52px; height: 52px; border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 25px; margin-bottom: 16px;
+  background: #ecfdf5;
+}
+.vm-card h3 { font-size: 22px; margin: 0 0 12px; color: var(--navy); }
+.vm-card p, .vm-card .vm-misi-text { font-size: 15px; color: var(--ink-2); margin: 0; line-height: 1.8; }
+.vm-visi { border-top: 4px solid var(--emerald); }
+.vm-misi { border-top: 4px solid #3b82f6; }
+.vm-misi .vm-icon { background: #eff6ff; }
+.vm-misi-text { padding-left: 16px; border-left: 3px solid #dbeafe; }
+
 /* ----- Back to top ----- */
 .btn-top { position: fixed; bottom: 22px; right: 22px; width: 44px; height: 44px; border-radius: 50%; border: none; background: var(--navy); color: #fff; font-size: 20px; cursor: pointer; box-shadow: var(--shadow); opacity: 0; pointer-events: none; transition: opacity .2s; z-index: 60; }
 .btn-top.show { opacity: 1; pointer-events: auto; }

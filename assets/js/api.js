@@ -1,5 +1,5 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { CONFIG } from "./config.js?v=7";
+import { CONFIG } from "./config.js?v=8";
 
 export const supabase = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
 // Klien tanpa sesi: dipakai untuk data publik agar tidak terpengaruh role/login
@@ -75,8 +75,9 @@ export async function deleteBerita(id) {
   if (error) throw error;
 }
 
-export async function listDaftar(jenis = null) {
+export async function listDaftar(jenis = null, publishedOnly = false) {
   let q = supabase.from("web_daftar").select("*").order("urutan", { ascending: true });
+  if (publishedOnly) q = q.eq("is_published", true);
   if (jenis) q = q.eq("jenis", jenis);
   const { data, error } = await q;
   if (error) throw error;
