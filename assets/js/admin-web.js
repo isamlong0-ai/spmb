@@ -131,6 +131,7 @@ async function muatInfoForm() {
     $("#iWa").value = info.whatsapp || "";
     $("#iMaps").value = info.maps_embed_url || "";
     $("#iHero").value = info.hero_url || "";
+    $("#iLogo").value = info.logo_url || "";
     $("#alumniFormAktif").checked = info.alumni_form_aktif !== false;
     const st = info.stats || {};
     $("#sBerdiri").value = st.tahun_berdiri || "";
@@ -153,6 +154,7 @@ async function simpanInfo() {
       whatsapp: $("#iWa").value.trim(),
       maps_embed_url: $("#iMaps").value.trim(),
       hero_url: $("#iHero").value.trim(),
+      logo_url: $("#iLogo").value.trim(),
       alumni_form_aktif: $("#alumniFormAktif").checked,
       stats: {
         tahun_berdiri: $("#sBerdiri").value.trim(),
@@ -374,6 +376,16 @@ async function main() {
       const url = await uploadGambar(file, "info");
       $("#iHero").value = url;
       toast("Gambar hero diunggah", "ok");
+    } catch (err) { toast(err.message || "Gagal mengunggah", "err"); }
+  });
+  $("#iLogoFile").addEventListener("change", async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    if (file.size > 500 * 1024) { toast("Ukuran logo maksimal 500 KB", "err"); return; }
+    try {
+      const url = await uploadGambar(file, "info");
+      $("#iLogo").value = url;
+      toast("Logo diunggah", "ok");
     } catch (err) { toast(err.message || "Gagal mengunggah", "err"); }
   });
   $("#btnSimpanDaftar").addEventListener("click", simpanDaftar);

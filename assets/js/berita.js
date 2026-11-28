@@ -11,6 +11,7 @@ function escapeHtml(s) { return String(s ?? "").replace(/[&<>"']/g, c => ({ "&":
 async function main() {
   const id = new URLSearchParams(location.search).get("id");
   const wrap = $("#beritaDetail");
+  try { const info = await getInfo(); if (info.logo_url) { const lg = $("#navLogo"); if (lg) lg.src = info.logo_url; } } catch (e) {}
   if (!id) { wrap.innerHTML = "<p>Berita tidak ditemukan.</p>"; return; }
   try {
     const b = await getBerita(id);

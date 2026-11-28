@@ -104,6 +104,7 @@ async function main() {
   // toggle form
   try {
     const info = await getInfo();
+    if (info.logo_url) { const lg = $("#navLogo"); if (lg) lg.src = info.logo_url; }
     const wrap = $("#alumniFormWrap");
     if (info.alumni_form_aktif === false) {
       wrap.style.display = "none";

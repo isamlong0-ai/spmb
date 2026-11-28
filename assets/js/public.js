@@ -39,6 +39,7 @@ async function muatInfo() {
     const wa = info.whatsapp || CONFIG.WHATSAPP;
     $("#waLink").href = `https://wa.me/${wa}`;
     $("#mapsFrame").src = info.maps_embed_url || CONFIG.MAPS_EMBED;
+    if (info.logo_url) { const lg = $("#navLogo"); if (lg) lg.src = info.logo_url; }
     $("#footerNama").textContent = info.nama_sekolah || CONFIG.NAMA_SEKOLAH;
     $("#footerTagline").textContent = info.tagline || CONFIG.TAGLINE;
     // toggle formulir alumni
