@@ -99,7 +99,7 @@ async function main() {
     $$("#alumniTabs .tab").forEach(x => x.classList.remove("active"));
     t.classList.add("active");
     document.querySelectorAll(".tab-panel").forEach(p => p.style.display = "none");
-    document.getElementById("panel-" + t.dataset.tab).style.display = "";
+    document.getElementById("panel-" + t.dataset.tab).style.display = "block";
   }));
   // toggle form
   try {
