@@ -27,7 +27,8 @@ async function callerRole(req: Request): Promise<string | null> {
   const { data, error } = await admin.auth.getUser(token);
   if (error || !data?.user) return null;
   const { data: r } = await admin.from("web_roles").select("role").eq("user_id", data.user.id).maybeSingle();
-  return r?.role ?? null;
+  const role = r?.role ?? null;
+  return role === "admin" ? "superadmin" : role;
 }
 
 Deno.serve(async (req) => {
