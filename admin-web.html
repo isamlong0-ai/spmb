@@ -17,6 +17,7 @@
       <h3>Web Sekolah</h3>
       <div class="side-link active" data-panel="berita">📰 Berita</div>
       <div class="side-link" data-panel="info">ℹ️ Informasi</div>
+      <div class="side-link" data-panel="profil">🏫 Profil Detail</div>
       <div class="side-link" data-panel="daftar">📋 Daftar (Jurusan/Fasilitas/Ekskul/Agenda)</div>
       <div class="side-link" data-panel="alumni">🎓 Alumni</div>
       <div class="side-link admin-only" data-panel="pengguna">👥 Pengguna</div>
@@ -91,6 +92,75 @@
             <div><label>Jumlah Program Keahlian</label><input class="input" id="sJurusan"></div>
           </div>
           <div class="actions"><button class="btn btn-primary" id="btnSimpanInfo">Simpan Informasi</button></div>
+        </div>
+      </section>
+
+      <!-- PROFIL DETAIL -->
+      <section class="panel" id="panel-profil">
+        <h2>Profil Detail Sekolah</h2>
+        <p style="color:var(--muted);margin-top:-6px">Data lengkap sekolah (seperti portal Kemendikdasmen), dikelola admin.</p>
+        <div class="card" style="padding:18px">
+          <h3 style="margin-top:0">A. Identitas Sekolah</h3>
+          <div class="form-grid">
+            <div><label>NPSN</label><input class="input" id="dNpsn"></div>
+            <div><label>Bentuk Pendidikan</label><input class="input" id="dBentuk" placeholder="SMK"></div>
+            <div><label>Status Sekolah</label><input class="input" id="dStatusSekolah" placeholder="Negeri"></div>
+            <div><label>Akreditasi</label><input class="input" id="dAkreditasi" placeholder="B"></div>
+            <div><label>Alamat Jalan</label><input class="input" id="dAlamatJalan"></div>
+            <div><label>Provinsi</label><input class="input" id="dProvinsi"></div>
+            <div><label>Kabupaten/Kota</label><input class="input" id="dKabupaten"></div>
+            <div><label>Kecamatan</label><input class="input" id="dKecamatan"></div>
+            <div><label>Desa/Kelurahan</label><input class="input" id="dDesa"></div>
+            <div><label>Kode Pos</label><input class="input" id="dKodePos"></div>
+            <div><label>Email</label><input class="input" id="dEmail"></div>
+            <div><label>Website</label><input class="input" id="dWebsite"></div>
+            <div><label>Nomor Telepon</label><input class="input" id="dTelepon"></div>
+            <div><label>Luas Tanah (m²)</label><input class="input" id="dLuasTanah"></div>
+            <div><label>Nomor SK Pendirian</label><input class="input" id="dSkPendirian"></div>
+            <div><label>Tanggal SK Pendirian</label><input class="input" id="dTglSkPendirian"></div>
+            <div><label>Nomor SK Akreditasi</label><input class="input" id="dSkAkreditasi"></div>
+            <div><label>Tanggal SK Akreditasi</label><input class="input" id="dTglSkAkreditasi"></div>
+            <div><label>Status Sertifikat ISO</label><input class="input" id="dIso"></div>
+            <div><label>Sumber Listrik</label><input class="input" id="dListrik"></div>
+            <div><label>Daya Listrik (VA)</label><input class="input" id="dDaya"></div>
+            <div><label>Akses Internet</label><input class="input" id="dInternet"></div>
+            <div><label>Penyedia Internet</label><input class="input" id="dProvider"></div>
+            <div><label>Lintang</label><input class="input" id="dLintang"></div>
+            <div><label>Bujur</label><input class="input" id="dBujur"></div>
+          </div>
+
+          <h3>B. Siswa, Kelas, Rombel, dan Program Keahlian</h3>
+          <div class="form-grid">
+            <div><label>Jumlah Peserta Didik</label><input class="input" id="dJmlSiswa"></div>
+            <div><label>Siswa Laki-laki</label><input class="input" id="dSiswaL"></div>
+            <div><label>Siswa Perempuan</label><input class="input" id="dSiswaP"></div>
+            <div><label>Jumlah Rombel</label><input class="input" id="dRombel"></div>
+            <div><label>Jumlah Program Keahlian</label><input class="input" id="dJmlProg"></div>
+            <div class="full"><label>Program Keahlian (satu per baris)</label><textarea class="input" id="dProgram" style="min-height:90px"></textarea></div>
+            <div class="full"><label>Rombel per Kompetensi (satu per baris: Kompetensi | Tingkat I | II | III | IV | Total)</label><textarea class="input" id="dRombelDetail" style="min-height:90px"></textarea></div>
+          </div>
+
+          <h3>C. Sarana dan Prasarana</h3>
+          <div class="form-grid">
+            <div class="full"><label>Daftar Ruangan (satu per baris: Jenis Ruang | Jumlah | Luas)</label><textarea class="input" id="dRuangan" style="min-height:110px"></textarea></div>
+            <div class="full"><label>Daftar Peralatan (satu per baris: Jenis Sarana | Nama | Jumlah | Status)</label><textarea class="input" id="dPeralatan" style="min-height:110px"></textarea></div>
+          </div>
+
+          <h3>D. Ketenagaan</h3>
+          <div class="form-grid">
+            <div><label>Guru (Laki-laki)</label><input class="input" id="dGuruL"></div>
+            <div><label>Guru (Perempuan)</label><input class="input" id="dGuruP"></div>
+            <div><label>Tenaga Admin (Laki-laki)</label><input class="input" id="dAdminL"></div>
+            <div><label>Tenaga Admin (Perempuan)</label><input class="input" id="dAdminP"></div>
+            <div class="full"><label>Guru per Mata Pelajaran (satu per baris: Mapel | L | P | Total)</label><textarea class="input" id="dGuruMapel" style="min-height:90px"></textarea></div>
+          </div>
+
+          <h3>E. Kerja Sama DUDI</h3>
+          <div class="form-grid">
+            <div class="full"><label>Mitra DUDI (satu per baris: Nama | Bentuk Kerjasama | Bidang Usaha | Status)</label><textarea class="input" id="dDudi" style="min-height:110px"></textarea></div>
+          </div>
+
+          <div class="actions"><button class="btn btn-primary" id="btnSimpanProfil">Simpan Profil Detail</button></div>
         </div>
       </section>
 

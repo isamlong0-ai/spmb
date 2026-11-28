@@ -336,6 +336,42 @@ async function simpanAlumni() {
   } catch (e) { toast(e.message, "err"); }
 }
 
+// ---------- PROFIL DETAIL ----------
+const PROFIL_FIELDS = [
+  ["dNpsn","npsn"],["dBentuk","bentuk"],["dStatusSekolah","status_sekolah"],["dAkreditasi","akreditasi"],
+  ["dAlamatJalan","alamat_jalan"],["dProvinsi","provinsi"],["dKabupaten","kabupaten"],["dKecamatan","kecamatan"],
+  ["dDesa","desa"],["dKodePos","kode_pos"],["dEmail","email"],["dWebsite","website"],["dTelepon","telepon"],
+  ["dLuasTanah","luas_tanah"],["dSkPendirian","sk_pendirian"],["dTglSkPendirian","tgl_sk_pendirian"],
+  ["dSkAkreditasi","sk_akreditasi"],["dTglSkAkreditasi","tgl_sk_akreditasi"],["dIso","iso"],
+  ["dListrik","listrik"],["dDaya","daya"],["dInternet","internet"],["dProvider","provider"],
+  ["dLintang","lintang"],["dBujur","bujur"],
+  ["dJmlSiswa","jml_siswa"],["dSiswaL","siswa_l"],["dSiswaP","siswa_p"],["dRombel","rombel"],["dJmlProg","jml_prog"],
+  ["dGuruL","guru_l"],["dGuruP","guru_p"],["dAdminL","admin_l"],["dAdminP","admin_p"],
+];
+const PROFIL_TEXTAREAS = [
+  ["dProgram","program"],["dRombelDetail","rombel_detail"],["dRuangan","ruangan"],["dPeralatan","peralatan"],
+  ["dGuruMapel","guru_mapel"],["dDudi","dudi"],
+];
+
+async function muatProfilDetail() {
+  try {
+    const info = await getInfo();
+    const d = info.detail || {};
+    PROFIL_FIELDS.forEach(([id,key]) => { const el = $("#"+id); if (el) el.value = d[key] ?? ""; });
+    PROFIL_TEXTAREAS.forEach(([id,key]) => { const el = $("#"+id); if (el) el.value = d[key] ?? ""; });
+  } catch (e) { toast("Gagal memuat profil detail", "err"); }
+}
+async function simpanProfilDetail() {
+  try {
+    const d = {};
+    PROFIL_FIELDS.forEach(([id,key]) => { d[key] = ($("#"+id).value || "").trim(); });
+    PROFIL_TEXTAREAS.forEach(([id,key]) => { d[key] = ($("#"+id).value || "").trim(); });
+    const info = await getInfo();
+    await updateInfo({ ...info, detail: d });
+    toast("Profil detail disimpan", "ok");
+  } catch (e) { toast(e.message, "err"); }
+}
+
 // ---------- AKUN ----------
 async function gantiPassword() {
   const lama = $("#pLama").value, baru = $("#pBaru").value, konf = $("#pKonf").value;
@@ -399,12 +435,14 @@ async function main() {
     } catch (e) { toast(e.message, "err"); }
   });
   $("#btnGantiPass").addEventListener("click", gantiPassword);
+  $("#btnSimpanProfil").addEventListener("click", simpanProfilDetail);
   $("#btnSimpanAlumni").addEventListener("click", simpanAlumni);
   $("#btnResetAlumni").addEventListener("click", resetAlumni);
   $("#btnLogout2").addEventListener("click", async () => { await signOut(); location.href = "admin.html"; });
 
   await muatBeritaTable();
   await muatInfoForm();
+  await muatProfilDetail();
   await muatDaftarTable();
   await muatAlumniTable();
   if (role === "admin") await muatUsers();
