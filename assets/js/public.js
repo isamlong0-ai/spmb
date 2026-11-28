@@ -209,11 +209,12 @@ async function bukaBerita(id) {
 }
 
 async function muatSidebar() {
-  // berita terbaru
   try {
-    const { data } = await listBerita({ limit: 5, publishedOnly: true });
+    // satu request untuk latest + hitung kategori (lebih cepat)
+    const { data } = await listBerita({ limit: 100, publishedOnly: true });
+    const latest = data.slice(0, 5);
     const wrap = $("#sidebarLatest");
-    wrap.innerHTML = data.map(b => `
+    wrap.innerHTML = latest.map(b => `
       <div class="sidebar-item" data-id="${b.id}">
         ${b.gambar_url ? `<img src="${b.gambar_url}" alt="" loading="lazy">` : `<div style="width:56px;height:42px;background:#e2e8f0;border-radius:6px;flex-shrink:0"></div>`}
         <div>
@@ -222,18 +223,13 @@ async function muatSidebar() {
         </div>
       </div>`).join("");
     wrap.querySelectorAll(".sidebar-item").forEach(el => el.addEventListener("click", () => bukaBerita(el.dataset.id)));
-  } catch (e) {}
-  // kategori counts
-  try {
+
     const counts = {};
     CONFIG.KATEGORI.forEach(c => counts[c] = 0);
-    for (const c of CONFIG.KATEGORI) {
-      const { count } = await listBerita({ kategori: c, limit: 1, publishedOnly: true });
-      counts[c] = count;
-    }
-    const wrap = $("#sidebarCats");
-    wrap.innerHTML = CONFIG.KATEGORI.map(c => `<div class="sidebar-cat" data-cat="${c}"><span>${c}</span><span class="count">${counts[c]}</span></div>`).join("");
-    wrap.querySelectorAll(".sidebar-cat").forEach(el => el.addEventListener("click", () => {
+    data.forEach(b => { if (counts[b.kategori] !== undefined) counts[b.kategori]++; });
+    const catWrap = $("#sidebarCats");
+    catWrap.innerHTML = CONFIG.KATEGORI.map(c => `<div class="sidebar-cat" data-cat="${c}"><span>${c}</span><span class="count">${counts[c]}</span></div>`).join("");
+    catWrap.querySelectorAll(".sidebar-cat").forEach(el => el.addEventListener("click", () => {
       kategoriAktif = el.dataset.cat;
       offset = 0;
       renderFilter();
@@ -355,11 +351,7 @@ async function main() {
   initSearch();
   initBackToTop();
   renderFilter();
-  await muatInfo();
-  await muatBerita(true);
-  await muatSidebar();
-  await muatDaftar();
-  await muatGaleri(true);
+  await Promise.all([muatInfo(), muatBerita(true), muatSidebar(), muatDaftar(), muatGaleri(true)]);
   initGaleriModal();
   $("#btnLoadGaleri").addEventListener("click", () => muatGaleri(false));
   $("#btnLoadMore").addEventListener("click", () => muatBerita(false));
