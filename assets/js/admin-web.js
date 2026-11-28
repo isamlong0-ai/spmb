@@ -271,6 +271,16 @@ async function main() {
   $("#btnSimpanBerita").addEventListener("click", simpanBerita);
   $("#btnResetBerita").addEventListener("click", resetFormBerita);
   $("#btnSimpanInfo").addEventListener("click", simpanInfo);
+  $("#iHeroFile").addEventListener("change", async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    if (file.size > 2 * 1024 * 1024) { toast("Ukuran gambar maksimal 2 MB", "err"); return; }
+    try {
+      const url = await uploadGambar(file, "info");
+      $("#iHero").value = url;
+      toast("Gambar hero diunggah", "ok");
+    } catch (err) { toast(err.message || "Gagal mengunggah", "err"); }
+  });
   $("#btnSimpanDaftar").addEventListener("click", simpanDaftar);
   $("#btnResetDaftar").addEventListener("click", resetDaftar);
   $("#btnTambahUser").addEventListener("click", async () => {

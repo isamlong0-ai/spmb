@@ -89,9 +89,9 @@ export async function deleteDaftar(id) {
   if (error) throw error;
 }
 
-export async function uploadGambar(file) {
+export async function uploadGambar(file, folder = "berita") {
   const ext = (file.name.split(".").pop() || "jpg").toLowerCase();
-  const path = `berita/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+  const path = `${folder}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
   const { error } = await supabase.storage.from("web-sekolah").upload(path, file, { upsert: false });
   if (error) throw error;
   const { data } = supabase.storage.from("web-sekolah").getPublicUrl(path);

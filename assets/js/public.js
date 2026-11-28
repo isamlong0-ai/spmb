@@ -41,6 +41,17 @@ async function muatInfo() {
     $("#mapsFrame").src = info.maps_embed_url || CONFIG.MAPS_EMBED;
     $("#footerNama").textContent = info.nama_sekolah || CONFIG.NAMA_SEKOLAH;
     $("#footerTagline").textContent = info.tagline || CONFIG.TAGLINE;
+    // hero background (gambar bisa diubah dari admin)
+    const hero = document.querySelector(".hero");
+    if (info.hero_url) {
+      hero.classList.add("has-image");
+      hero.style.backgroundImage = `url("${info.hero_url}")`;
+      hero.style.backgroundSize = "cover";
+      hero.style.backgroundPosition = "center";
+    } else {
+      hero.classList.remove("has-image");
+      hero.style.backgroundImage = "";
+    }
   } catch (e) {
     $("#heroJudul").textContent = CONFIG.NAMA_SEKOLAH;
     $("#navTagline").textContent = CONFIG.TAGLINE;
@@ -59,6 +70,9 @@ async function muatInfo() {
     $("#mapsFrame").src = CONFIG.MAPS_EMBED;
     $("#footerNama").textContent = CONFIG.NAMA_SEKOLAH;
     $("#footerTagline").textContent = CONFIG.TAGLINE;
+    const hero = document.querySelector(".hero");
+    hero.classList.remove("has-image");
+    hero.style.backgroundImage = "";
   }
 }
 
