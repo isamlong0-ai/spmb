@@ -34,24 +34,24 @@ function tgl(s) {
 
 /* ------------------------------ Autentikasi ---------------------------- */
 async function initAuth() {
-  // Login tunggal: halaman login ada di root (../admin.html)
+  // Login tunggal: halaman login ada di root (../akses.html)
   const { data } = await supabase.auth.getSession();
-  if (!data.session) { window.location.href = "../admin.html"; return; }
+  if (!data.session) { window.location.href = "../akses.html"; return; }
   // SPMB dashboard hanya untuk admin
   try {
     const { data: r } = await supabase.from("web_roles").select("role").eq("user_id", data.session.user.id).maybeSingle();
     const role = r?.role;
     if (role && !["superadmin","admin","admin_spmb"].includes(role)) {
       // bukan admin SPMB -> arahkan ke dashboard website (jika punya akses) atau login
-      if (["admin_web","editor"].includes(role)) window.location.href = "../admin-web.html";
-      else window.location.href = "../admin.html";
+      if (["admin_web","editor"].includes(role)) window.location.href = "../dashboard.html";
+      else window.location.href = "../akses.html";
       return;
     }
   } catch (e) { /* fallback: izinkan jika tabel belum ada */ }
   tampilkanAdmin(data.session.user);
   supabase.auth.onAuthStateChange((_event, session) => {
     if (session) tampilkanAdmin(session.user);
-    else window.location.href = "../admin.html";
+    else window.location.href = "../akses.html";
   });
 
   $("#btnLogin").addEventListener("click", async () => {

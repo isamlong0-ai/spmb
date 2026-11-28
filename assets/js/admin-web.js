@@ -25,7 +25,7 @@ let role = null;
 
 async function guard() {
   const s = await getSession();
-  if (!s) { location.href = "admin.html"; return null; }
+  if (!s) { location.href = "akses.html"; return null; }
   role = await webRole();
   if (role === "admin_spmb") { location.href = "spmb/admin.html"; return null; }
   if (role === "editor") {
@@ -551,7 +551,7 @@ async function main() {
 
 // Logout selalu aktif (tidak bergantung main())
 function doLogout() {
-  signOut().finally(() => { location.href = "admin.html"; });
+  signOut().finally(() => { location.href = "akses.html"; });
 }
 document.addEventListener("DOMContentLoaded", () => {
   ["btnLogout2", "btnLogoutSidebar"].forEach((id) => {

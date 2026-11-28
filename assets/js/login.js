@@ -12,7 +12,7 @@ async function renderChooser(user) {
   const cards = [];
   const canWeb = ["superadmin","admin","admin_web","editor"].includes(role);
   const canSpmb = ["superadmin","admin","admin_spmb"].includes(role);
-  if (canWeb) cards.push({ ic: "🌐", title: "Website Sekolah", desc: "Berita, informasi, profil, dan kontak sekolah.", href: "admin-web.html" });
+  if (canWeb) cards.push({ ic: "🌐", title: "Website Sekolah", desc: "Berita, informasi, profil, dan kontak sekolah.", href: "dashboard.html" });
   if (canSpmb) cards.push({ ic: "🎓", title: "SPMB", desc: "Data calon siswa, pengumuman, dan konten SPMB.", href: "spmb/admin.html" });
   if (cards.length === 0) {
     $("#dashGrid").innerHTML = `<p style="color:var(--muted)">Akun Anda tidak memiliki akses dashboard.</p>`;

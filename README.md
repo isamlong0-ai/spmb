@@ -2,7 +2,7 @@
 
 Proyek ini berisi dua modul:
 
-- **Website Sekolah** (root `/`) — halaman one-page (W3.CSS) menampilkan profil, berita & kegiatan, informasi, dan kontak sekolah. Admin: `admin-web.html`.
+- **Website Sekolah** (root `/`) — halaman one-page (W3.CSS) menampilkan profil, berita & kegiatan, informasi, dan kontak sekolah. Admin: `dashboard.html`.
 - **SPMB** (folder `spmb/`) — aplikasi pengumpulan data calon siswa (formulir, cek data, pengumuman, panel admin). Admin: `spmb/admin.html`.
 
 ## Peta URL (GitHub Pages + domain `smkn1-tk.my.id`)
@@ -11,8 +11,8 @@ Proyek ini berisi dua modul:
 |---|---|
 | `https://smkn1-tk.my.id/` | Website Sekolah (beranda) |
 | `https://smkn1-tk.my.id/spmb/` | Beranda SPMB |
-| `https://smkn1-tk.my.id/admin.html` | Login admin (satu akun untuk kedua modul) |
-| `https://smkn1-tk.my.id/admin-web.html` | Dashboard Website Sekolah |
+| `https://smkn1-tk.my.id/akses.html` | Login admin (satu akun untuk kedua modul) |
+| `https://smkn1-tk.my.id/dashboard.html` | Dashboard Website Sekolah |
 | `https://smkn1-tk.my.id/spmb/admin.html` | Dashboard SPMB |
 
 ## Login & hak akses
@@ -45,7 +45,7 @@ Deploy Edge Function untuk kelola akun editor:
 supabase functions deploy web-kelola-user
 ```
 
-Setelah migration dijalankan, akun admin otomatis mendapat role `admin` lewat seed SQL. Akun editor dibuat dari tab **Pengguna** di `admin-web.html`.
+Setelah migration dijalankan, akun admin otomatis mendapat role `superadmin` lewat seed SQL. Akun editor dibuat dari tab **Pengguna** di `dashboard.html`.
 
 ## Modul SPMB
 
