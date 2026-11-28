@@ -127,8 +127,7 @@ function renderFeatured(b, pinned = false) {
       <div><a class="btn btn-primary btn-sm" href="berita.html?id=${b.id}">Baca Selengkapnya</a></div>
     </div>
   </div>`;
-  wrap.querySelector("[data-open]").addEventListener("click", () => bukaBerita(b.id));
-  wrap.querySelector(".featured-card").addEventListener("click", (e) => { if (!e.target.closest("button")) bukaBerita(b.id); });
+  // navigasi ditangani oleh tautan di dalam kartu
 }
 
 async function muatBerita(reset = false) {
