@@ -3,11 +3,13 @@
 -- Pisahkan admin website vs SPMB + superadmin
 -- ============================================================
 
--- 1. Migrasi role lama 'admin' -> 'superadmin'
+-- 1. Lepas constraint lama dulu agar bisa migrasi role
+alter table public.web_roles drop constraint if exists web_roles_role_check;
+
+-- 2. Migrasi role lama 'admin' -> 'superadmin'
 update public.web_roles set role = 'superadmin' where role = 'admin';
 
--- 2. Perbarui constraint role
-alter table public.web_roles drop constraint if exists web_roles_role_check;
+-- 3. Pasang constraint baru
 alter table public.web_roles
   add constraint web_roles_role_check
   check (role in ('superadmin','admin_web','admin_spmb','editor'));
