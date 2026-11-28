@@ -3,208 +3,179 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#065f46">
-  <meta name="description" content="Beranda resmi SPMB SMK Negeri 1 Teluk Keramat Tahun Pelajaran 2026/2027. Informasi pengumpulan data calon siswa, sambutan, dan cara mengisi formulir.">
-  <title>Pengumpulan Data Calon Siswa — SMKN 1 Teluk Keramat</title>
+  <meta name="theme-color" content="#0f172a">
+  <meta name="description" content="Website resmi SMK Negeri 1 Teluk Keramat. Berita, kegiatan, dan informasi sekolah.">
+  <title>SMK Negeri 1 Teluk Keramat</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/styles.css?v=3">
+  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+  <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
 
 <!-- ===================== NAVBAR ===================== -->
-<nav class="lp-nav">
+<nav class="nav">
   <div class="wrap">
-    <a class="lp-brand" href="index.html">
+    <a class="brand" href="#beranda">
       <img src="https://lh3.googleusercontent.com/d/1zArv6yZsZ-YZCSTtEbTBUQp4C0kv325f" alt="Logo Sekolah">
-      <div><strong>SMKN 1 TELUK KERAMAT</strong><span>Pengumpulan Data Calon Siswa — SPMB</span></div>
+      <div>SMKN 1 TELUK KERAMAT<small id="navTagline">Sekolah Vokasi Unggul</small></div>
     </a>
-    <div class="lp-links">
-      <a href="index.html">Beranda</a>
-      <a href="pengumuman.html">Pengumuman</a>
-      <a data-requires-open href="cek.html">Cek Data</a>
-      <a href="admin.html">Admin</a>
-      <a class="cta" data-requires-open href="pendaftaran.html">Isi Formulir →</a>
+    <button class="hamburger" id="hamburger" aria-label="Menu">&#9776;</button>
+    <div class="menu" id="menu">
+      <a href="#profil">Profil</a>
+      <a href="#berita">Berita</a>
+      <a href="#informasi">Informasi</a>
+      <a href="#kontak">Kontak</a>
+      <a class="btn-spmb" href="spmb/index.html" target="_blank" rel="noopener">SPMB</a>
+      <a href="admin.html">Login Admin</a>
     </div>
   </div>
 </nav>
 
-<div class="lp-gate hidden" id="lpGateNotice" role="status"></div>
-
 <!-- ===================== HERO ===================== -->
-<header class="lp-hero">
+<header class="hero" id="beranda">
   <div class="wrap">
     <div>
-      <span class="lp-eyebrow"><span class="dot"></span> Pengumpulan Data Calon Siswa — SPMB</span>
-      <h1 id="lpJudul">Selamat Datang di Pengumpulan Data Calon Siswa</h1>
-      <p class="lp-tagline" id="lpTagline">Raih masa depanmu bersama keluarga besar SMK Negeri 1 Teluk Keramat.</p>
-      <div class="lp-cta">
-        <a class="btn btn-light" data-requires-open href="pendaftaran.html">📝 Isi Formulir Data Calon Siswa</a>
-        <a class="btn btn-outline-light" data-requires-open href="cek.html">🔍 Cek Data Formulir Calon Siswa</a>
-        <a class="btn btn-outline-light" href="https://spmb-dikbud.kalbarprov.go.id/login" target="_blank" rel="noopener">🌐 Pendaftaran</a>
+      <span class="badge" style="background:rgba(255,255,255,0.15);color:#a7f3d0">Website Resmi Sekolah</span>
+      <h1 id="heroJudul">SMK Negeri 1 Teluk Keramat</h1>
+      <p id="heroTagline">Membangun generasi cerdas, terampil, dan berakhlak melalui pendidikan vokasi yang unggul.</p>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="#berita">Lihat Berita</a>
+        <a class="btn btn-ghost" href="spmb/index.html" target="_blank" rel="noopener">Daftar SPMB</a>
       </div>
     </div>
-
-    <aside class="lp-hero-card">
-      <h3>Informasi Formulir</h3>
-      <div class="lp-info-row">
-        <div class="lp-info-icon">🎓</div>
-        <div><small>Tahun Pelajaran</small><strong id="lpTahun">2026/2027</strong></div>
-      </div>
-      <div class="lp-info-row">
-        <div class="lp-info-icon">📅</div>
-        <div><small>Waktu Pengisian Formulir</small><strong id="lpWaktu">01 November – 31 Desember 2026</strong></div>
-      </div>
-      <div class="lp-info-row">
-        <div class="lp-info-icon">📢</div>
-        <div><small>Status Formulir</small><span class="lp-status dibuka" id="lpStatus">Dibuka</span></div>
-      </div>
+    <aside class="hero-card">
+      <h3>Informasi Sekolah</h3>
+      <div class="hero-stat"><span>Tahun Berdiri</span><strong id="statBerdiri">-</strong></div>
+      <div class="hero-stat"><span>Jumlah Siswa</span><strong id="statSiswa">-</strong></div>
+      <div class="hero-stat"><span>Guru &amp; Tendik</span><strong id="statGuru">-</strong></div>
+      <div class="hero-stat"><span>Program Keahlian</span><strong id="statJurusan">-</strong></div>
     </aside>
   </div>
 </header>
 
-<!-- ===================== SAMBUTAN ===================== -->
-<section class="lp-section" id="sambutan">
+<!-- ===================== PROFIL ===================== -->
+<section class="section" id="profil">
   <div class="wrap">
-    <div class="lp-head">
-      <div class="kicker">Sambutan</div>
-      <h2>Kata Sambutan Kepala Sekolah</h2>
-      <p>Sepatah kata dari kami untuk calon siswa dan orang tua/wali.</p>
-    </div>
-    <div class="lp-sambutan">
-      <div class="lp-quote">“</div>
-      <div>
-        <div class="isi" id="lpSambutan">Memuat sambutan…</div>
-        <div class="ttd">Kepala SMK Negeri 1 Teluk Keramat<small>Tahun Pelajaran <span class="tahun-inline">2026/2027</span></small></div>
-      </div>
+    <div class="kicker">Profil</div>
+    <h2 class="sec-title">Tentang Sekolah</h2>
+    <p class="sec-sub" id="tentangText">Memuat...</p>
+    <div class="grid grid-2">
+      <div class="card"><div class="card-body">
+        <h3>Visi</h3><p id="visiText">-</p>
+      </div></div>
+      <div class="card"><div class="card-body">
+        <h3>Misi</h3><p id="misiText" style="white-space:pre-line">-</p>
+      </div></div>
     </div>
   </div>
 </section>
 
-<!-- ===================== INFO PORTAL DINAS ===================== -->
-<section class="lp-section alt" id="infoDinas">
+<!-- ===================== BERITA ===================== -->
+<section class="section alt" id="berita">
   <div class="wrap">
-    <div class="lp-head">
-      <div class="kicker"></div>
-      <h2>Kanal Resmi Dinas Pendidikan dan Kebudayaan Provinsi Kalimantan Barat</h2>
-      <p id="dinasSumber">Bersumber dari portal resmi SPMB Dinas Pendidikan Kalimantan Barat.</p>
+    <div class="kicker">Berita</div>
+    <h2 class="sec-title">Berita &amp; Kegiatan Sekolah</h2>
+    <p class="sec-sub">Informasi terbaru seputar kegiatan, prestasi, dan pengumuman sekolah.</p>
+    <div class="filter-row" id="filterBerita"></div>
+    <div class="news-grid" id="newsGrid">
+      <div class="skeleton" style="height:220px"></div>
+      <div class="skeleton" style="height:220px"></div>
+      <div class="skeleton" style="height:220px"></div>
     </div>
-    <div class="lp-grid-info">
-      <div class="lp-card" style="grid-column:1/-1">
-        <h4>📢 Pengumuman Penting</h4>
-        <ul id="dinasPengumuman" style="margin:0 0 12px;padding-left:20px;color:var(--ink-2);font-size:13.5px;line-height:1.8">
-          <li>Belum ada pengumuman yang ditampilkan.</li>
-        </ul>
-        <a id="dinasPortalLink" href="https://spmb-dikbud.kalbarprov.go.id/" target="_blank" rel="noopener">Buka portal resmi ↗</a>
-      </div>
-      <div class="lp-card" style="grid-column:1/-1">
-        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
-          <h4 style="margin:0">🗓 Jadwal Lengkap SPMB Kalbar 2026</h4>
-          <a id="dinasJadwal" href="https://spmb-dikbud.kalbarprov.go.id/jadwal" target="_blank" rel="noopener" style="font-size:12.5px">Buka di portal dinas ↗</a>
-        </div>
-        <div id="jadwalTabs" class="jadwal-tabs"></div>
-        <div id="jadwalTimeline" class="jadwal-timeline"></div>
-      </div>
-      <div class="lp-card">
-        <h4>🎥 Video Panduan Pembuatan Akun</h4>
-        <p style="font-size:13.5px;color:var(--ink-2);line-height:1.7;margin:0 0 12px">Langkah demi langkah membuat akun SPMB di portal resmi dinas.</p>
-        <a id="dinasVideoAkun" href="https://spmb-dikbud.kalbarprov.go.id/" target="_blank" rel="noopener">Tonton Video ↗</a>
-      </div>
-      <div class="lp-card">
-        <h4>🎬 Video Panduan SMK</h4>
-        <p style="font-size:13.5px;color:var(--ink-2);line-height:1.7;margin:0 0 12px">Panduan pendaftaran tingkat SMK dari portal dinas (dibuka di tab baru).</p>
-        <a id="dinasVideo" href="https://spmb-dikbud.kalbarprov.go.id/" target="_blank" rel="noopener">Tonton Video ↗</a>
-      </div>
-      <div class="lp-card">
-        <h4>📄 Surat Pernyataan (SPTJM)</h4>
-        <p style="font-size:13.5px;color:var(--ink-2);line-height:1.7;margin:0 0 12px">Format resmi Surat Pernyataan Tanggung Jawab Mutlak dari portal dinas.</p>
-        <a id="dinasSurat" href="https://spmb-dikbud.kalbarprov.go.id/" target="_blank" rel="noopener">Unduh Dokumen ↗</a>
-      </div>
-      <div class="lp-card">
-        <h4>📊 Persentase Minat Calon Siswa</h4>
-        <p class="hint" style="margin:0 0 12px">SMKN 1 Teluk Keramat · sumber: portal dinas</p>
-        <div id="dinasMinat" style="color:var(--ink-2)">Data belum tersedia.</div>
-        <div id="minatChart" class="chart-list" style="margin-top:14px"></div>
-      </div>
+    <div class="load-more">
+      <button class="btn btn-outline" id="btnLoadMore">Muat Lebih Banyak</button>
     </div>
   </div>
 </section>
 
 <!-- ===================== INFORMASI ===================== -->
-<section class="lp-section" id="informasi">
+<section class="section" id="informasi">
   <div class="wrap">
-    <div class="lp-head">
-      <div class="kicker">Informasi</div>
-      <h2>Yang Perlu Disiapkan</h2>
-      <p>Siapkan berkas berikut sebelum mengisi formulir data calon siswa agar proses lebih lancar.</p>
+    <div class="kicker">Informasi</div>
+    <h2 class="sec-title">Informasi Sekolah</h2>
+    <p class="sec-sub">Program keahlian, fasilitas, ekstrakurikuler, dan agenda sekolah.</p>
+    <div class="tabs" id="infoTabs">
+      <button class="tab active" data-tab="jurusan">Program Keahlian</button>
+      <button class="tab" data-tab="fasilitas">Fasilitas</button>
+      <button class="tab" data-tab="ekskul">Ekstrakurikuler</button>
+      <button class="tab" data-tab="agenda">Agenda</button>
     </div>
-    <div class="lp-grid-info">
-      <div class="lp-card">
-        <h4>📂 Dokumen Pendukung</h4>
-        <ul>
-          <li>Kartu Keluarga (KK)</li>
-          <li>Akta Kelahiran</li>
-          <li>Rapor SMP / Sederajat (nilai semester 1–5)</li>
-          <li>Kartu Indonesia Pintar (jika ada)</li>
-          <li>Foto siswa terbaru</li>
-        </ul>
+    <div class="tab-panel active" id="panel-jurusan"></div>
+    <div class="tab-panel" id="panel-fasilitas"></div>
+    <div class="tab-panel" id="panel-ekskul"></div>
+    <div class="tab-panel" id="panel-agenda"></div>
+  </div>
+</section>
+
+<!-- ===================== KONTAK ===================== -->
+<section class="section alt" id="kontak">
+  <div class="wrap">
+    <div class="kicker">Kontak</div>
+    <h2 class="sec-title">Hubungi Kami</h2>
+    <p class="sec-sub">Kami siap membantu informasi seputar sekolah.</p>
+    <div class="kontak-grid">
+      <div class="kontak-card">
+        <h4>Informasi Kontak</h4>
+        <div class="kontak-row"><span class="ic">&#128205;</span><span id="alamatText">-</span></div>
+        <div class="kontak-row"><span class="ic">&#128222;</span><span id="teleponText">-</span></div>
+        <div class="kontak-row"><span class="ic">&#9993;</span><span id="emailText">-</span></div>
+        <div class="kontak-row"><span class="ic">&#128172;</span><a id="waLink" href="#" target="_blank" rel="noopener">WhatsApp Sekolah</a></div>
       </div>
-      <div class="lp-card">
-        <h4>🎯 Pilihan Jurusan</h4>
-        <ul>
-          <li>Agribisnis Tanaman Pangan dan Hortikultura</li>
-          <li>Akuntansi</li>
-          <li>Bisnis Retail</li>
-          <li>Desain Komunikasi Visual</li>
-          <li>Manajemen Perkantoran</li>
-          <li>Teknik Kendaraan Ringan</li>
-          <li>Teknik Komputer dan Jaringan</li>
-        </ul>
-      </div>
-      <div class="lp-card">
-        <h4>🌐 Portal Pendaftaran Resmi (Dinas)</h4>
-        <p style="font-size:13.5px;color:var(--ink-2);line-height:1.7;margin:0 0 10px">Formulir di halaman ini <b>hanya untuk pengumpulan data calon siswa</b>. Pendaftaran resmi wajib dilakukan terpisah di portal Dinas Pendidikan Provinsi Kalimantan Barat.</p>
-        <a href="https://spmb-dikbud.kalbarprov.go.id/" target="_blank" rel="noopener">https://spmb-dikbud.kalbarprov.go.id/</a>
-      </div>
-      <div class="lp-card">
-        <h4>💬 Butuh Bantuan?</h4>
-        <p style="font-size:13.5px;color:var(--ink-2);line-height:1.7;margin:0 0 10px">Hubungi panitia SPMB melalui WhatsApp:</p>
-        <div style="font-size:13px;line-height:2">
-          <a href="https://wa.me/6281345497178" target="_blank"> Randika</a> ·
-          <a href="https://wa.me/6285174399784" target="_blank"> Luffi</a> ·
-          <a href="https://wa.me/6289694213072" target="_blank"> Reza</a> ·
-          <a href="https://wa.me/6289694108488" target="_blank"> Aldino</a> ·
-          <a href="https://wa.me/6289693332583" target="_blank"> Jumbadi</a> ·
-          <a href="https://wa.me/6285142816705" target="_blank"> Wawan</a>
-        </div>
+      <div class="map-wrap">
+        <iframe id="mapsFrame" loading="lazy" allowfullscreen></iframe>
       </div>
     </div>
   </div>
 </section>
 
 <!-- ===================== FOOTER ===================== -->
-<footer class="lp-footer">
+<footer>
   <div class="wrap">
-    <div>
-      <h5>SMK Negeri 1 Teluk Keramat</h5>
-      <p>Panitia Sistem Penerimaan Murid Baru — SPMB<br>Kabupaten Sambas, Kalimantan Barat</p>
+    <div class="grid grid-3">
+      <div>
+        <h5 id="footerNama">SMK Negeri 1 Teluk Keramat</h5>
+        <p id="footerTagline">Sekolah vokasi unggul.</p>
+      </div>
+      <div>
+        <h5>Tautan</h5>
+        <p>
+          <a href="#beranda">Beranda</a><br>
+          <a href="#profil">Profil</a><br>
+          <a href="#berita">Berita</a><br>
+          <a href="spmb/index.html">SPMB</a><br>
+          <a href="admin.html">Login Admin</a>
+        </p>
+      </div>
+      <div>
+        <h5>Informasi</h5>
+        <p>Tautan SPMB: <a href="spmb/index.html">spmb/</a><br>
+        Portal Dinas: <a href="https://spmb-dikbud.kalbarprov.go.id/" target="_blank" rel="noopener">spmb-dikbud.kalbarprov.go.id</a></p>
+      </div>
     </div>
-    <div>
-      <h5>Tautan Cepat</h5>
-      <p><a href="index.html">Beranda</a><br><a data-requires-open href="pendaftaran.html">Formulir Data Calon Siswa</a><br><a href="pengumuman.html">Pengumuman</a><br><a data-requires-open href="cek.html">Cek Data</a><br><a href="admin.html">Panel Admin</a></p>
-    </div>
-    <div>
-      <h5>Informasi</h5>
-      <p>Tahun Pelajaran: <span class="tahun-inline">2026/2027</span><br>
-      <a href="https://spmb-dikbud.kalbarprov.go.id/" target="_blank">Portal Pendaftaran Resmi Dinas</a></p>
-    </div>
-  </div>
-  <div class="wrap bottom">
-    © <span id="lpTahunPoros">2026</span> SMKN 1 Teluk Keramat — Seluruh hak dilindungi.
+    <div class="wrap bottom" id="footerCopy">© 2026 SMK Negeri 1 Teluk Keramat — Seluruh hak dilindungi.</div>
   </div>
 </footer>
 
-<script type="module" src="assets/js/landing.js?v=15"></script>
+<!-- ===================== MODAL BERITA ===================== -->
+<div class="modal-backdrop" id="modalBerita">
+  <div class="modal">
+    <div class="modal-head">
+      <h3 id="modalJudul">-</h3>
+      <button class="modal-close" id="modalClose">&times;</button>
+    </div>
+    <div class="modal-body">
+      <img id="modalImg" alt="" style="display:none">
+      <div class="news-meta" id="modalMeta"></div>
+      <div class="isi" id="modalIsi"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== TOAST ===================== -->
+<div id="toastWrap"></div>
+
+<script type="module" src="assets/js/public.js"></script>
 </body>
 </html>

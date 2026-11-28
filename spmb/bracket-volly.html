@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Skema Pertandingan Volly — 11 Tim (Sistem Gugur)</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card: #1e293b;
+      --card2: #334155;
+      --accent: #22c55e;
+      --accent2: #3b82f6;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --border: #475569;
+      --danger: #ef4444;
+      --gold: #fbbf24;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 20px;
+    }
+    h1 { margin: 0 0 4px; font-size: 24px; }
+    .sub { color: var(--muted); margin: 0 0 20px; font-size: 14px; }
+    section { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-bottom: 16px; }
+    h2 { margin: 0 0 12px; font-size: 16px; color: var(--accent); }
+    .team-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 8px; }
+    .team-grid input {
+      width: 100%; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--border);
+      background: var(--card2); color: var(--text); font-size: 14px;
+    }
+    .team-grid label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 2px; }
+    .actions { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+    button {
+      padding: 8px 14px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 13px;
+      background: var(--accent); color: #0f172a;
+    }
+    button:hover { filter: brightness(1.1); }
+    button.danger { background: var(--danger); color: #fff; }
+    button.secondary { background: var(--card2); color: var(--text); border: 1px solid var(--border); }
+    .bracket-wrap { overflow-x: auto; }
+    .bracket { display: flex; gap: 32px; min-height: 580px; position: relative; padding: 10px 0; }
+    .round { display: flex; flex-direction: column; justify-content: space-around; flex: 1; min-width: 170px; min-height: 580px; }
+    .round h3 { text-align: center; font-size: 13px; color: var(--muted); margin: 0 0 8px; text-transform: uppercase; letter-spacing: 1px; }
+    .match {
+      background: var(--card2); border: 1px solid var(--border); border-radius: 10px; padding: 6px;
+      min-height: 58px; display: flex; flex-direction: column; justify-content: center; gap: 4px;
+    }
+    .team-row {
+      display: flex; align-items: center; gap: 6px; padding: 4px 6px; border-radius: 6px;
+      background: rgba(15,23,42,0.4);
+    }
+    .team-row.winner { background: rgba(34,197,94,0.2); border: 1px solid var(--accent); }
+    .team-row.bye { opacity: 0.5; font-style: italic; }
+    .team-row .name { flex: 1; font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .team-row input.score {
+      width: 46px; padding: 4px; border-radius: 6px; border: 1px solid var(--border);
+      background: var(--card); color: var(--text); text-align: center; font-size: 13px;
+    }
+    .team-row select.winner-sel {
+      font-size: 11px; padding: 2px 4px; border-radius: 4px; border: 1px solid var(--border);
+      background: var(--card); color: var(--text);
+    }
+    .match .vs { text-align: center; font-size: 10px; color: var(--muted); }
+    .champion-box {
+      margin-top: 16px; text-align: center; padding: 14px; border-radius: 12px;
+      background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%); color: #1f2937;
+      font-weight: 800; font-size: 18px;
+    }
+    .champion-box .label { font-size: 12px; font-weight: 600; opacity: 0.8; }
+    svg.connectors { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
+    .round { z-index: 1; }
+    @media print {
+      body { background: #fff; color: #000; }
+      section { border: 1px solid #999; background: #fff; }
+      .actions { display: none; }
+      .team-grid input, .team-row input.score { border: 1px solid #999; background: #fff; color: #000; }
+    }
+  </style>
+</head>
+<body>
+  <h1>🏆 Skema Pertandingan Volly — 11 Tim (Sistem Gugur)</h1>
+  <p class="sub">Isi nama tim dan skor tiap pertandingan. Pemenang otomatis maju ke babak berikutnya. Data tersimpan di browser (localStorage).</p>
+
+  <section>
+    <h2>📋 Nama Tim (11 tim)</h2>
+    <div id="teamInputs" class="team-grid"></div>
+    <div class="actions">
+      <button id="saveBtn">💾 Simpan</button>
+      <button id="resetBtn" class="danger">🔄 Reset</button>
+      <button id="printBtn" class="secondary">🖨 Cetak / PDF</button>
+    </div>
+  </section>
+
+  <section>
+    <h2>🏟️ Bagan Pertandingan (Knockout)</h2>
+    <div class="bracket-wrap">
+      <div class="bracket" id="bracket">
+        <svg class="connectors" id="connectors"></svg>
+      </div>
+    </div>
+    <div id="champion" class="champion-box" style="display:none;">
+      <div class="label">🏆 JUARA</div>
+      <div id="championName"></div>
+    </div>
+  </section>
+
+  <script>
+    const NUM_TEAMS = 11;
+    const LEAVES = 16;
+    const BYES = 5;
+    // Penempatan 11 tim & 5 bye agar tidak ada bye vs bye di babak 1.
+    // -1 = bye. Setiap bye dipasangkan dengan satu tim.
+    const LEAF_PLAN = [0, 1, 2, -1, 3, 4, 5, -1, 6, 7, 8, -1, 9, -1, 10, -1];
+    const STORAGE_KEY = 'volly_bracket_11_v1';
+
+    let state = loadState() || defaultState();
+    const matchEls = { r1: [], r2: [], r3: [], r4: [] };
+
+    function defaultState() {
+      const teams = Array.from({ length: NUM_TEAMS }, (_, i) => `Tim ${i + 1}`);
+      return {
+        teams,
+        r1: Array(8).fill(null).map(() => ({ a: '', b: '', w: 'auto' })),
+        r2: Array(4).fill(null).map(() => ({ a: '', b: '', w: 'auto' })),
+        r3: Array(2).fill(null).map(() => ({ a: '', b: '', w: 'auto' })),
+        r4: Array(1).fill(null).map(() => ({ a: '', b: '', w: 'auto' })),
+      };
+    }
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return null;
+        const s = JSON.parse(raw);
+        if (!s.teams || s.teams.length !== NUM_TEAMS) return null;
+        return s;
+      } catch (e) { return null; }
+    }
+
+    function saveState() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    function leaves() {
+      return LEAF_PLAN.map((p) => (p === -1 ? 'BYE' : (state.teams[p] || `Tim ${p + 1}`)));
+    }
+
+    function isBye(name) {
+      return name === 'BYE' || name === '' || name === null || name === undefined;
+    }
+
+    function resolveWinner(aName, bName, m) {
+      // TBD = belum diputuskan -> tidak auto-maju (kecuali pilihan manual)
+      if (aName === 'TBD' || bName === 'TBD') {
+        if (m && m.w === 'A' && aName !== 'TBD' && aName !== null) return aName;
+        if (m && m.w === 'B' && bName !== 'TBD' && bName !== null) return bName;
+        return null;
+      }
+      const aBye = isBye(aName);
+      const bBye = isBye(bName);
+      if (aBye && bBye) return null;
+      if (aBye) return bName;
+      if (bBye) return aName;
+      if (aName === null || bName === null) return null;
+      if (m && m.w === 'A') return aName;
+      if (m && m.w === 'B') return bName;
+      const sa = parseFloat(m.a), sb = parseFloat(m.b);
+      if (!isNaN(sa) && !isNaN(sb)) {
+        if (sa > sb) return aName;
+        if (sb > sa) return bName;
+      }
+      return null;
+    }
+
+    function winnerR1(idx) { return resolveWinner(leaves()[2 * idx], leaves()[2 * idx + 1], state.r1[idx]); }
+    function winnerR2(idx) { return resolveWinner(winnerR1(2 * idx), winnerR1(2 * idx + 1), state.r2[idx]); }
+    function winnerR3(idx) { return resolveWinner(winnerR2(2 * idx), winnerR2(2 * idx + 1), state.r3[idx]); }
+    function winnerR4() { return resolveWinner(winnerR3(0), winnerR3(1), state.r4[0]); }
+
+    function renderTeamInputs() {
+      const container = document.getElementById('teamInputs');
+      container.innerHTML = '';
+      state.teams.forEach((name, i) => {
+        const wrap = document.createElement('div');
+        const label = document.createElement('label');
+        label.textContent = `Tim ${i + 1}`;
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.value = name;
+        input.addEventListener('change', (e) => {
+          state.teams[i] = e.target.value.trim() || `Tim ${i + 1}`;
+          renderBracket();
+          saveState();
+        });
+        wrap.appendChild(label);
+        wrap.appendChild(input);
+        container.appendChild(wrap);
+      });
+    }
+
+    function teamRow(name, side, m, roundKey, idx, isWinner) {
+      const row = document.createElement('div');
+      const bye = isBye(name) && name !== 'TBD';
+      row.className = 'team-row' + (isWinner ? ' winner' : '') + (bye ? ' bye' : '');
+      const nameEl = document.createElement('span');
+      nameEl.className = 'name';
+      nameEl.textContent = name === null ? 'TBD' : name;
+      row.appendChild(nameEl);
+
+      const realMatch = !bye && name !== 'TBD' && name !== null;
+      // score input only if both sides real (handled by caller passing flag)
+      return row;
+    }
+
+    function renderMatchCard(roundKey, idx, aName, bName, m) {
+      const card = document.createElement('div');
+      card.className = 'match';
+      matchEls[roundKey][idx] = card;
+
+      const aBye = isBye(aName) && aName !== 'TBD' && aName !== null;
+      const bBye = isBye(bName) && bName !== 'TBD' && bName !== null;
+      const bothReal = !aBye && !bBye && aName !== 'TBD' && bName !== 'TBD' && aName !== null && bName !== null;
+
+      const w = resolveWinner(aName, bName, m);
+
+      // Team A row
+      const rowA = document.createElement('div');
+      rowA.className = 'team-row' + (w === aName && aName !== null && !isBye(aName) ? ' winner' : '') + (aBye ? ' bye' : '');
+      const nameA = document.createElement('span');
+      nameA.className = 'name';
+      nameA.textContent = aName === null ? 'TBD' : aName;
+      rowA.appendChild(nameA);
+      if (bothReal) {
+        const inp = document.createElement('input');
+        inp.className = 'score';
+        inp.type = 'number';
+        inp.min = '0';
+        inp.value = m.a || '';
+        inp.addEventListener('change', (e) => {
+          state[roundKey][idx].a = e.target.value;
+          renderBracket();
+          saveState();
+        });
+        rowA.appendChild(inp);
+      }
+      card.appendChild(rowA);
+
+      const vs = document.createElement('div');
+      vs.className = 'vs';
+      vs.textContent = 'vs';
+      card.appendChild(vs);
+
+      // Team B row
+      const rowB = document.createElement('div');
+      rowB.className = 'team-row' + (w === bName && bName !== null && !isBye(bName) ? ' winner' : '') + (bBye ? ' bye' : '');
+      const nameB = document.createElement('span');
+      nameB.className = 'name';
+      nameB.textContent = bName === null ? 'TBD' : bName;
+      rowB.appendChild(nameB);
+      if (bothReal) {
+        const inp = document.createElement('input');
+        inp.className = 'score';
+        inp.type = 'number';
+        inp.min = '0';
+        inp.value = m.b || '';
+        inp.addEventListener('change', (e) => {
+          state[roundKey][idx].b = e.target.value;
+          renderBracket();
+          saveState();
+        });
+        rowB.appendChild(inp);
+        // winner select
+        const sel = document.createElement('select');
+        sel.className = 'winner-sel';
+        const optAuto = document.createElement('option'); optAuto.value = 'auto'; optAuto.textContent = 'Auto';
+        const optA = document.createElement('option'); optA.value = 'A'; optA.textContent = 'A menang';
+        const optB = document.createElement('option'); optB.value = 'B'; optB.textContent = 'B menang';
+        sel.appendChild(optAuto); sel.appendChild(optA); sel.appendChild(optB);
+        sel.value = m.w || 'auto';
+        sel.addEventListener('change', (e) => {
+          state[roundKey][idx].w = e.target.value;
+          renderBracket();
+          saveState();
+        });
+        rowB.appendChild(sel);
+      }
+      card.appendChild(rowB);
+
+      return card;
+    }
+
+    function renderBracket() {
+      const bracket = document.getElementById('bracket');
+      // keep svg
+      const svg = document.getElementById('connectors');
+      bracket.innerHTML = '';
+      bracket.appendChild(svg);
+      matchEls.r1 = []; matchEls.r2 = []; matchEls.r3 = []; matchEls.r4 = [];
+
+      const L = leaves();
+
+      // Round 1
+      const r1col = document.createElement('div');
+      r1col.className = 'round';
+      const h1 = document.createElement('h3'); h1.textContent = 'Babak 1 (8 match)'; r1col.appendChild(h1);
+      for (let i = 0; i < 8; i++) {
+        const card = renderMatchCard('r1', i, L[2 * i], L[2 * i + 1], state.r1[i]);
+        r1col.appendChild(card);
+      }
+      bracket.appendChild(r1col);
+
+      // Round 2
+      const r2col = document.createElement('div');
+      r2col.className = 'round';
+      const h2 = document.createElement('h3'); h2.textContent = 'Perempat Final'; r2col.appendChild(h2);
+      for (let i = 0; i < 4; i++) {
+        const a = winnerR1(2 * i);
+        const b = winnerR1(2 * i + 1);
+        const card = renderMatchCard('r2', i, a, b, state.r2[i]);
+        r2col.appendChild(card);
+      }
+      bracket.appendChild(r2col);
+
+      // Round 3
+      const r3col = document.createElement('div');
+      r3col.className = 'round';
+      const h3 = document.createElement('h3'); h3.textContent = 'Semifinal'; r3col.appendChild(h3);
+      for (let i = 0; i < 2; i++) {
+        const a = winnerR2(2 * i);
+        const b = winnerR2(2 * i + 1);
+        const card = renderMatchCard('r3', i, a, b, state.r3[i]);
+        r3col.appendChild(card);
+      }
+      bracket.appendChild(r3col);
+
+      // Round 4
+      const r4col = document.createElement('div');
+      r4col.className = 'round';
+      const h4 = document.createElement('h3'); h4.textContent = 'Final'; r4col.appendChild(h4);
+      const a = winnerR3(0);
+      const b = winnerR3(1);
+      const card = renderMatchCard('r4', 0, a, b, state.r4[0]);
+      r4col.appendChild(card);
+      bracket.appendChild(r4col);
+
+      // champion
+      const champ = winnerR4();
+      const champBox = document.getElementById('champion');
+      if (champ && !isBye(champ)) {
+        champBox.style.display = 'block';
+        document.getElementById('championName').textContent = '🏆 ' + champ;
+      } else {
+        champBox.style.display = 'none';
+      }
+
+      requestAnimationFrame(() => requestAnimationFrame(drawConnectors));
+      setTimeout(drawConnectors, 50);
+    }
+
+    function drawConnectors() {
+      const svg = document.getElementById('connectors');
+      const bracket = document.getElementById('bracket');
+      svg.innerHTML = '';
+      const crect = bracket.getBoundingClientRect();
+      svg.setAttribute('width', crect.width);
+      svg.setAttribute('height', crect.height);
+      const transitions = [['r1', 'r2'], ['r2', 'r3'], ['r3', 'r4']];
+      transitions.forEach(([from, to]) => {
+        for (let i = 0; i < matchEls[from].length; i++) {
+          const el = matchEls[from][i];
+          const pel = matchEls[to][Math.floor(i / 2)];
+          if (!el || !pel) continue;
+          const r1b = el.getBoundingClientRect();
+          const r2b = pel.getBoundingClientRect();
+          const x1 = r1b.right - crect.left;
+          const y1 = r1b.top - crect.top + r1b.height / 2;
+          const x2 = r2b.left - crect.left;
+          const y2 = r2b.top - crect.top + r2b.height / 2;
+          const midX = (x1 + x2) / 2;
+          const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+          path.setAttribute('d', `M ${x1} ${y1} H ${midX} V ${y2} H ${x2}`);
+          path.setAttribute('stroke', '#64748b');
+          path.setAttribute('stroke-width', '2');
+          path.setAttribute('fill', 'none');
+          svg.appendChild(path);
+        }
+      });
+    }
+
+    document.getElementById('saveBtn').addEventListener('click', () => {
+      saveState();
+      alert('Tersimpan.');
+    });
+    document.getElementById('resetBtn').addEventListener('click', () => {
+      if (confirm('Reset semua data?')) {
+        state = defaultState();
+        saveState();
+        renderTeamInputs();
+        renderBracket();
+      }
+    });
+    document.getElementById('printBtn').addEventListener('click', () => window.print());
+
+    renderTeamInputs();
+    renderBracket();
+    window.addEventListener('resize', drawConnectors);
+  </script>
+</body>
+</html>

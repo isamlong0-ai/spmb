@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Web Sekolah — SMKN 1 Teluk Keramat</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <div id="toastWrap"></div>
+  <div class="admin-shell">
+    <aside class="sidebar">
+      <h3>Web Sekolah</h3>
+      <div class="side-link active" data-panel="berita">📰 Berita</div>
+      <div class="side-link" data-panel="info">ℹ️ Informasi</div>
+      <div class="side-link" data-panel="daftar">📋 Daftar (Jurusan/Fasilitas/Ekskul/Agenda)</div>
+      <div class="side-link admin-only" data-panel="pengguna">👥 Pengguna</div>
+      <div class="side-link" data-panel="akun">🔑 Akun</div>
+      <div style="margin-top:18px">
+        <a href="admin.html" style="color:#94a3b8;font-size:13px">← Pilih dashboard</a><br>
+        <a href="index.html" target="_blank" style="color:#94a3b8;font-size:13px">Lihat situs</a>
+      </div>
+    </aside>
+    <main class="content">
+      <!-- BERITA -->
+      <section class="panel active" id="panel-berita">
+        <h2>Berita</h2>
+        <div class="card" style="padding:18px;margin-bottom:18px">
+          <h3 style="margin-top:0" id="formBeritaTitle">Tambah Berita</h3>
+          <div class="form-grid">
+            <div><label>Judul</label><input class="input" id="bJudul"></div>
+            <div><label>Kategori</label><select class="input" id="bKategori"></select></div>
+            <div><label>Tanggal</label><input class="input" id="bTanggal" type="date"></div>
+            <div><label>Status</label><select class="input" id="bStatus"><option value="true">Terbit</option><option value="false">Draft</option></select></div>
+            <div class="full"><label>Ringkasan</label><textarea class="input" id="bRingkasan" style="min-height:70px"></textarea></div>
+            <div class="full"><label>Isi Lengkap</label><textarea class="input" id="bIsi"></textarea></div>
+            <div class="full"><label>Gambar (opsional)</label><input class="input" id="bGambarFile" type="file" accept="image/*"><input class="input" id="bGambarUrl" placeholder="atau URL gambar" style="margin-top:6px"></div>
+          </div>
+          <div class="actions">
+            <button class="btn btn-primary" id="btnSimpanBerita">Simpan</button>
+            <button class="btn btn-outline" id="btnResetBerita">Batal</button>
+          </div>
+          <input type="hidden" id="bId">
+        </div>
+        <table class="table" id="tblBerita">
+          <thead><tr><th>Judul</th><th>Kategori</th><th>Tanggal</th><th>Status</th><th>Aksi</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </section>
+
+      <!-- INFO -->
+      <section class="panel" id="panel-info">
+        <h2>Informasi Sekolah</h2>
+        <div class="card" style="padding:18px">
+          <div class="form-grid">
+            <div><label>Nama Sekolah</label><input class="input" id="iNama"></div>
+            <div><label>Tagline</label><input class="input" id="iTagline"></div>
+            <div class="full"><label>Tentang</label><textarea class="input" id="iTentang"></textarea></div>
+            <div class="full"><label>Visi</label><textarea class="input" id="iVisi" style="min-height:70px"></textarea></div>
+            <div class="full"><label>Misi</label><textarea class="input" id="iMisi"></textarea></div>
+            <div><label>Alamat</label><input class="input" id="iAlamat"></div>
+            <div><label>Telepon</label><input class="input" id="iTelepon"></div>
+            <div><label>Email</label><input class="input" id="iEmail"></div>
+            <div><label>WhatsApp (62...)</label><input class="input" id="iWa"></div>
+            <div><label>URL Maps Embed</label><input class="input" id="iMaps"></div>
+            <div><label>URL Hero (opsional)</label><input class="input" id="iHero"></div>
+            <div><label>Tahun Berdiri</label><input class="input" id="sBerdiri"></div>
+            <div><label>Jumlah Siswa</label><input class="input" id="sSiswa"></div>
+            <div><label>Jumlah Guru</label><input class="input" id="sGuru"></div>
+            <div><label>Jumlah Program Keahlian</label><input class="input" id="sJurusan"></div>
+          </div>
+          <div class="actions"><button class="btn btn-primary" id="btnSimpanInfo">Simpan Informasi</button></div>
+        </div>
+      </section>
+
+      <!-- DAFTAR -->
+      <section class="panel" id="panel-daftar">
+        <h2>Daftar Item</h2>
+        <p style="color:var(--muted);margin-top:-6px">Kelola jurusan, fasilitas, ekstrakurikuler, dan agenda.</p>
+        <div class="card" style="padding:18px;margin-bottom:18px">
+          <div class="form-grid">
+            <div><label>Jenis</label><select class="input" id="dJenis">
+              <option value="jurusan">Program Keahlian</option>
+              <option value="fasilitas">Fasilitas</option>
+              <option value="ekstrakurikuler">Ekstrakurikuler</option>
+              <option value="agenda">Agenda</option>
+            </select></div>
+            <div><label>Judul</label><input class="input" id="dJudul"></div>
+            <div class="full"><label>Deskripsi</label><textarea class="input" id="dDeskripsi" style="min-height:70px"></textarea></div>
+            <div><label>Tanggal (agenda)</label><input class="input" id="dTanggal" type="date"></div>
+            <div><label>Ikon/Emoji</label><input class="input" id="dIkon" placeholder="🎓"></div>
+            <div><label>Urutan</label><input class="input" id="dUrutan" type="number" value="0"></div>
+            <div><label>Status</label><select class="input" id="dStatus"><option value="true">Terbit</option><option value="false">Draft</option></select></div>
+          </div>
+          <div class="actions">
+            <button class="btn btn-primary" id="btnSimpanDaftar">Simpan</button>
+            <button class="btn btn-outline" id="btnResetDaftar">Batal</button>
+          </div>
+          <input type="hidden" id="dId">
+        </div>
+        <table class="table" id="tblDaftar">
+          <thead><tr><th>Jenis</th><th>Judul</th><th>Status</th><th>Aksi</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </section>
+
+      <!-- PENGGUNA -->
+      <section class="panel" id="panel-pengguna">
+        <h2>Pengguna</h2>
+        <p style="color:var(--muted);margin-top:-6px">Kelola akun editor (penulis berita). Khusus admin.</p>
+        <div class="card" style="padding:18px;margin-bottom:18px">
+          <div class="form-grid">
+            <div><label>Email</label><input class="input" id="uEmail" type="email"></div>
+            <div><label>Password</label><input class="input" id="uPassword" type="password"></div>
+          </div>
+          <div class="actions"><button class="btn btn-primary" id="btnTambahUser">Tambah Editor</button></div>
+        </div>
+        <table class="table" id="tblUsers">
+          <thead><tr><th>Email</th><th>Peran</th><th>Dibuat</th><th>Aksi</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </section>
+
+      <!-- AKUN -->
+      <section class="panel" id="panel-akun">
+        <h2>Akun</h2>
+        <div class="card" style="padding:18px;max-width:420px">
+          <div class="field"><label>Password Lama</label><input class="input" id="pLama" type="password"></div>
+          <div class="field"><label>Password Baru</label><input class="input" id="pBaru" type="password"></div>
+          <div class="field"><label>Konfirmasi</label><input class="input" id="pKonf" type="password"></div>
+          <div class="actions">
+            <button class="btn btn-primary" id="btnGantiPass">Ganti Password</button>
+            <button class="btn btn-outline" id="btnLogout2">Keluar</button>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script type="module" src="assets/js/admin-web.js"></script>
+</body>
+</html>
