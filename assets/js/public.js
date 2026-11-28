@@ -102,14 +102,14 @@ function renderFilter() {
 function kartuBerita(b) {
   const tgl = new Date(b.tanggal).toLocaleDateString("id-ID", { day: "2-digit", month: "short", year: "numeric" });
   const img = b.gambar_url ? `<img class="news-img" src="${b.gambar_url}" alt="" loading="lazy">` : `<div class="news-img"></div>`;
-  return `<article class="card" data-id="${b.id}">
+  return `<a class="card" href="berita.html?id=${b.id}" data-id="${b.id}" style="display:block;text-decoration:none;color:inherit">
     ${img}
     <div class="card-body">
       <div class="news-meta"><span class="badge cat">${b.kategori || "Umum"}</span><span>${tgl}</span></div>
       <h3 class="news-title">${escapeHtml(b.judul)}</h3>
       <p class="news-excerpt">${escapeHtml(b.ringkasan || "")}</p>
     </div>
-  </article>`;
+  </a>`;
 }
 
 function renderFeatured(b, pinned = false) {
@@ -124,7 +124,7 @@ function renderFeatured(b, pinned = false) {
       <div class="f-kicker">${kicker}</div>
       <h3>${escapeHtml(b.judul)}</h3>
       <p>${escapeHtml(b.ringkasan || "")}</p>
-      <div><button class="btn btn-primary btn-sm" data-open="${b.id}">Baca Selengkapnya</button></div>
+      <div><a class="btn btn-primary btn-sm" href="berita.html?id=${b.id}">Baca Selengkapnya</a></div>
     </div>
   </div>`;
   wrap.querySelector("[data-open]").addEventListener("click", () => bukaBerita(b.id));
